@@ -8,19 +8,19 @@ class CreateTeacherOfTable extends Migration
 {
     public function up(): void
     {
-        Schema::create('TeacherOf', function (Blueprint $table) {
-            $table->bigInteger('ID')->primary();
-            $table->bigInteger('Group');
-            $table->bigInteger('Teacher');
+        Schema::create('teacher_of', function (Blueprint $table) {
+            $table->bigInteger('id')->primary();
+            $table->bigInteger('group_id');
+            $table->bigInteger('teacher_id');
 
-            $table->foreign('Teacher')
-                  ->references('UserID')
-                  ->on('Teacher')
+            $table->foreign('teacher_id')
+                  ->references('user_id')
+                  ->on('teachers')
                   ->onDelete('cascade')
                   ->onUpdate('cascade');
-            $table->foreign('Group')
-                  ->references('GroupID')
-                  ->on('Group')
+            $table->foreign('group_id')
+                  ->references('id')
+                  ->on('groups')
                   ->onDelete('cascade')
                   ->onUpdate('cascade');
         });
@@ -28,6 +28,6 @@ class CreateTeacherOfTable extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('TeacherOf');
+        Schema::dropIfExists('teacher_of');
     }
 };

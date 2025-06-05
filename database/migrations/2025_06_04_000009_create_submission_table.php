@@ -8,21 +8,21 @@ class CreateSubmissionTable extends Migration
 {
     public function up(): void
     {
-        Schema::create('Submission', function (Blueprint $table) {
-            $table->bigInteger('ID')->primary();
-            $table->json('Answer');
-            $table->integer('CorrectAnswer');
-            $table->bigInteger('StudentID');
-            $table->bigInteger('TeacherID');
+        Schema::create('submissions', function (Blueprint $table) {
+            $table->bigInteger('id')->primary();
+            $table->json('answer');
+            $table->integer('correct_answer');
+            $table->bigInteger('student_id');
+            $table->bigInteger('teacher_id');
 
-            $table->foreign('StudentID')
-                  ->references('UserID')
-                  ->on('Student')
+            $table->foreign('student_id')
+                  ->references('user_id')
+                  ->on('students')
                   ->onDelete('cascade')
                   ->onUpdate('cascade');
-            $table->foreign('TeacherID')
-                  ->references('UserID')
-                  ->on('Teacher')
+            $table->foreign('teacher_id')
+                  ->references('user_id')
+                  ->on('teachers')
                   ->onDelete('cascade')
                   ->onUpdate('cascade');
         });
@@ -30,6 +30,6 @@ class CreateSubmissionTable extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('Submission');
+        Schema::dropIfExists('submissions');
     }
 };

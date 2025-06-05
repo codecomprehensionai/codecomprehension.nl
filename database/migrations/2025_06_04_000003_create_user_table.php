@@ -9,7 +9,7 @@ class CreateUserTable extends Migration
     public function up(): void
     {
         Schema::create('User', function (Blueprint $table) {
-            $table->bigInteger('UserID')->primary();
+            $table->bigInteger('id')->primary();
             $table->string('name');
         });
     }

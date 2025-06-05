@@ -8,26 +8,26 @@ class CreateAssignmentTable extends Migration
 {
     public function up(): void
     {
-        Schema::create('Assignment', function (Blueprint $table) {
-            $table->bigInteger('AssignmentID')->primary();
-            $table->text('Title');
-            $table->integer('Level');
-            $table->timestamp('DueDate');
-            $table->integer('EstimatedTime');
-            $table->json('Test');
-            $table->bigInteger('LanguageID');
-            $table->json('Questions');
-            $table->bigInteger('GroupID');
+        Schema::create('assignments', function (Blueprint $table) {
+            $table->bigInteger('id')->primary();
+            $table->text('title');
+            $table->integer('level');
+            $table->timestamp('due_date');
+            $table->integer('estimated_time');
+            $table->json('test');
+            $table->bigInteger('language_id');
+            $table->json('questions');
+            $table->bigInteger('group_id')->nullable();
 
             // Foreign keys:
-            $table->foreign('LanguageID')
-                  ->references('LanguageID')
-                  ->on('Language')
+            $table->foreign('language_id')
+                  ->references('id')
+                  ->on('languages')
                   ->onDelete('cascade')
                   ->onUpdate('cascade');
-            $table->foreign('GroupID')
-                  ->references('GroupID')
-                  ->on('Group')
+            $table->foreign('group_id')
+                  ->references('id')
+                  ->on('groups')
                   ->onDelete('set null')
                   ->onUpdate('cascade');
         });
@@ -35,6 +35,6 @@ class CreateAssignmentTable extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('Assignment');
+        Schema::dropIfExists('assignments');
     }
 };

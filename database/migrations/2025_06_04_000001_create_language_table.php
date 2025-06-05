@@ -8,14 +8,14 @@ class CreateLanguageTable extends Migration
 {
     public function up(): void
     {
-        Schema::create('Language', function (Blueprint $table) {
-            $table->bigInteger('LanguageID')->primary();
-            $table->string('LanguageName');
+        Schema::create('languages', function (Blueprint $table) {
+            $table->bigInteger('id')->primary();
+            $table->string('language_name');
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('Language');
+        Schema::dropIfExists('languages');
     }
 }

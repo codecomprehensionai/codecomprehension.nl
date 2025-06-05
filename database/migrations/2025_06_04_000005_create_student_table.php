@@ -8,10 +8,10 @@ class CreateStudentTable extends Migration
 {
     public function up(): void
     {
-        Schema::create('Student', function (Blueprint $table) {
-            $table->bigInteger('UserID')->primary();
-            $table->foreign('UserID')
-                  ->references('UserID')
+        Schema::create('students', function (Blueprint $table) {
+            $table->bigInteger('user_id')->primary();
+            $table->foreign('user_id')
+                  ->references('id')
                   ->on('User')
                   ->onDelete('cascade')
                   ->onUpdate('cascade');
@@ -20,6 +20,6 @@ class CreateStudentTable extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('Student');
+        Schema::dropIfExists('students');
     }
 };

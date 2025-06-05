@@ -8,14 +8,14 @@ class CreateGroupTable extends Migration
 {
     public function up(): void
     {
-        Schema::create('Group', function (Blueprint $table) {
-            $table->bigInteger('GroupID')->primary();
+        Schema::create('groups', function (Blueprint $table) {
+            $table->bigInteger('id')->primary();
             $table->string('group_name');
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('Group');
+        Schema::dropIfExists('groups');
     }
 }
