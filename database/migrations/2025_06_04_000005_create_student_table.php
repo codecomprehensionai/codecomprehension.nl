@@ -12,7 +12,7 @@ class CreateStudentTable extends Migration
             $table->bigInteger('user_id')->primary();
             $table->foreign('user_id')
                   ->references('id')
-                  ->on('User')
+                  ->on('users')
                   ->onDelete('cascade')
                   ->onUpdate('cascade');
         });
