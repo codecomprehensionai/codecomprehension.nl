@@ -35,4 +35,14 @@ return [
         ],
     ],
 
+    'lti' => [
+        'canvas' => [
+            'client_id' => env('LTI_CANVAS_CLIENT_ID'),
+            'auth_login_url' => env('LTI_CANVAS_AUTH_LOGIN_URL', 'https://canvas.test.instructure.com/api/lti/authorize_redirect'),
+            'auth_token_url' => env('LTI_CANVAS_AUTH_TOKEN_URL', 'https://canvas.test.instructure.com/login/oauth2/token'),
+            'key_set_url' => env('LTI_CANVAS_KEY_SET_URL', 'https://canvas.test.instructure.com/api/lti/security/jwks'),
+            'deployment_id' => env('LTI_CANVAS_DEPLOYMENT_ID', '1'),
+        ],
+    ],
+
 ];

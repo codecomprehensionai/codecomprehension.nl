@@ -1,107 +1,44 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AssignmentController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\StudentController;
-use App\Http\Controllers\TeacherController;
-use App\Http\Controllers\GroupController;
-use App\Http\Controllers\LanguageController;
-use App\Http\Controllers\SubmissionController;
-use App\Http\Controllers\StudentGroupController;
-use App\Http\Controllers\TeacherOfController;
+use App\Http\Controllers\LtiController;
+use App\Http\Controllers\LtiTestController;
+use App\Http\Controllers\LtiDebugController;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-// API Routes
-Route::prefix('api')->group(function () {
-    
-    // User routes
-    Route::prefix('users')->group(function () {
-        Route::get('/', [UserController::class, 'index']);
-        Route::get('/{id}', [UserController::class, 'show']);
-        Route::post('/', [UserController::class, 'store']);
-        Route::put('/{id}', [UserController::class, 'update']);
-        Route::delete('/{id}', [UserController::class, 'destroy']);
-    });
+// LTI Routes
+Route::prefix('auth')->group(function () {
+    Route::get('oidc', [LtiController::class, 'oidcInitiation'])->name('lti.oidc');
+    Route::post('oidc', [LtiController::class, 'oidcInitiation']);
+    // Route::post('launch', [LtiController::class, 'launch'])->name('lti.launch');
+    Route::post('callback', [LtiController::class, 'launch'])->name('lti.launch');
+    Route::get('jwks', [LtiController::class, 'jwks'])->name('lti.jwks');
+});
 
-    // Student routes
-    Route::prefix('students')->group(function () {
-        Route::get('/', [StudentController::class, 'index']);
-        Route::get('/{id}', [StudentController::class, 'show']);
-        Route::post('/', [StudentController::class, 'store']);
-        Route::delete('/{id}', [StudentController::class, 'destroy']);
-        Route::get('/{id}/groups', [StudentController::class, 'groups']);
-        Route::get('/{id}/submissions', [StudentController::class, 'submissions']);
-    });
+Route::get('lti', [LtiController::class, 'tool'])->name('lti.tool');
+Route::get('lti/config', [LtiController::class, 'config'])->name('lti.config');
 
-    // Teacher routes
-    Route::prefix('teachers')->group(function () {
-        Route::get('/', [TeacherController::class, 'index']);
-        Route::get('/{id}', [TeacherController::class, 'show']);
-        Route::post('/', [TeacherController::class, 'store']);
-        Route::delete('/{id}', [TeacherController::class, 'destroy']);
-        Route::get('/{id}/groups', [TeacherController::class, 'groups']);
-        Route::get('/{id}/submissions', [TeacherController::class, 'submissions']);
-    });
+// Protected LTI API routes
+Route::middleware(['lti'])->prefix('api/lti')->group(function () {
+    Route::get('user', [LtiController::class, 'getUserInfo'])->name('lti.api.user');
+    Route::get('course', [LtiController::class, 'getCourseInfo'])->name('lti.api.course');
+    Route::post('grade', [LtiController::class, 'sendGrade'])->name('lti.api.grade');
+});
 
-    // Group routes
-    Route::prefix('groups')->group(function () {
-        Route::get('/', [GroupController::class, 'index']);
-        Route::get('/{id}', [GroupController::class, 'show']);
-        Route::post('/', [GroupController::class, 'store']);
-        Route::put('/{id}', [GroupController::class, 'update']);
-        Route::delete('/{id}', [GroupController::class, 'destroy']);
-        Route::get('/{id}/assignments', [GroupController::class, 'assignments']);
-        Route::get('/{id}/students', [GroupController::class, 'students']);
-        Route::get('/{id}/teachers', [GroupController::class, 'teachers']);
-    });
+// LTI Testing Routes (for development only - remove in production)
+Route::prefix('lti/test')->group(function () {
+    Route::get('/', [LtiTestController::class, 'dashboard'])->name('lti.test.dashboard');
+    Route::post('oidc', [LtiTestController::class, 'simulateOidc'])->name('lti.test.oidc');
+    Route::post('tool', [LtiTestController::class, 'testTool'])->name('lti.test.tool');
+    Route::post('grade', [LtiTestController::class, 'testGradePassback'])->name('lti.test.grade');
+    Route::get('clear', [LtiTestController::class, 'clearSession'])->name('lti.test.clear');
+});
 
-    // Language routes
-    Route::prefix('languages')->group(function () {
-        Route::get('/', [LanguageController::class, 'index']);
-        Route::get('/{id}', [LanguageController::class, 'show']);
-        Route::post('/', [LanguageController::class, 'store']);
-        Route::put('/{id}', [LanguageController::class, 'update']);
-        Route::delete('/{id}', [LanguageController::class, 'destroy']);
-        Route::get('/{id}/assignments', [LanguageController::class, 'assignments']);
-    });
-
-    // Assignment routes
-    Route::prefix('assignments')->group(function () {
-        Route::get('/', [AssignmentController::class, 'index']);
-        Route::get('/{id}', [AssignmentController::class, 'show']);
-        Route::post('/', [AssignmentController::class, 'store']);
-        Route::put('/{id}', [AssignmentController::class, 'update']);
-        Route::delete('/{id}', [AssignmentController::class, 'destroy']);
-    });
-
-    // Submission routes
-    Route::prefix('submissions')->group(function () {
-        Route::get('/', [SubmissionController::class, 'index']);
-        Route::get('/{id}', [SubmissionController::class, 'show']);
-        Route::post('/', [SubmissionController::class, 'store']);
-        Route::put('/{id}', [SubmissionController::class, 'update']);
-        Route::delete('/{id}', [SubmissionController::class, 'destroy']);
-    });
-
-    // Student-Group relationship routes
-    Route::prefix('student-groups')->group(function () {
-        Route::get('/', [StudentGroupController::class, 'index']);
-        Route::get('/{id}', [StudentGroupController::class, 'show']);
-        Route::post('/', [StudentGroupController::class, 'store']);
-        Route::delete('/{id}', [StudentGroupController::class, 'destroy']);
-        Route::post('/remove', [StudentGroupController::class, 'removeStudentFromGroup']);
-    });
-
-    // Teacher-Group relationship routes
-    Route::prefix('teacher-groups')->group(function () {
-        Route::get('/', [TeacherOfController::class, 'index']);
-        Route::get('/{id}', [TeacherOfController::class, 'show']);
-        Route::post('/', [TeacherOfController::class, 'store']);
-        Route::delete('/{id}', [TeacherOfController::class, 'destroy']);
-        Route::post('/remove', [TeacherOfController::class, 'removeTeacherFromGroup']);
-    });
+// LTI Debug Routes (for development only - remove in production)
+Route::prefix('lti/debug')->group(function () {
+    Route::any('/', [LtiDebugController::class, 'debug'])->name('lti.debug');
+    Route::any('launch', [LtiDebugController::class, 'captureLaunch'])->name('lti.debug.launch');
 });
