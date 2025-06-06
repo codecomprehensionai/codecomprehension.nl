@@ -72,7 +72,7 @@ Route::prefix('api')->group(function () {
 
     // Assignment routes
     Route::prefix('assignments')->group(function () {
-        Route::get('/', [AssignmentController::class, 'index']);
+        Route::get('/', [AssignmentController::class, 'home']);
         Route::get('/{id}', [AssignmentController::class, 'show']);
         Route::post('/', [AssignmentController::class, 'store']);
         Route::put('/{id}', [AssignmentController::class, 'update']);
