@@ -13,19 +13,18 @@ return new class extends Migration
     {
         Schema::create('lti_states', function (Blueprint $table) {
             $table->id();
-            $table->string('state_key', 64)->unique(); // The state parameter
+            $table->string('state_key', 64)->unique();
             $table->string('nonce', 64);
-            $table->text('issuer'); // Changed to TEXT for longer URLs
-            $table->string('client_id', 100); // Increased size for client IDs
-            $table->text('login_hint')->nullable(); // Changed to TEXT for longer hints
-            $table->text('lti_message_hint')->nullable(); // Changed to TEXT for JWT tokens
-            $table->text('target_link_uri')->nullable(); // Changed to TEXT for longer URIs
-            $table->string('deployment_id', 500)->nullable(); // Increased size for deployment IDs
-            $table->json('additional_data')->nullable(); // For canvas-specific params
+            $table->text('issuer');
+            $table->string('client_id', 100);
+            $table->text('login_hint')->nullable();
+            $table->text('lti_message_hint')->nullable();
+            $table->text('target_link_uri')->nullable();
+            $table->string('deployment_id', 500)->nullable();
+            $table->json('additional_data')->nullable();
             $table->timestamp('expires_at');
             $table->timestamps();
 
-            // Indexes for performance
             $table->index('state_key');
             $table->index('expires_at');
         });

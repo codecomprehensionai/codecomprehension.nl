@@ -46,6 +46,7 @@ class LtiService
         foreach ($roles as $role) {
             if (str_contains($role, 'Instructor')) {
                 $normalizedRoles[] = 'instructor';
+                dd($context);
             } elseif (str_contains($role, 'Student')) {
                 $normalizedRoles[] = 'student';
             } elseif (str_contains($role, 'Administrator')) {
@@ -64,6 +65,15 @@ class LtiService
     public function hasRole(string $role, ?array $ltiContext = null): bool
     {
         return in_array($role, $this->extractRoles($ltiContext));
+    }
+
+    /**
+     * Check if AGS (Assignment and Grade Services) is supported
+     */
+    public function supportsAgs(?array $ltiContext = null): bool
+    {
+        $context = $ltiContext ?? session('lti_context');
+        return isset($context['https://purl.imsglobal.org/spec/lti-ags/claim/endpoint']);
     }
 
     /**
@@ -107,19 +117,6 @@ class LtiService
         ];
     }
 
-    /**
-     * Check if current launch supports Assignment and Grade Services (AGS)
-     */
-    public function supportsAgs(?array $ltiContext = null): bool
-    {
-        $context = $ltiContext ?? session('lti_context');
-
-        if (!$context) {
-            return false;
-        }
-
-        return isset($context['https://purl.imsglobal.org/spec/lti-ags/claim/endpoint']);
-    }
 
     /**
      * Get AGS endpoints if available

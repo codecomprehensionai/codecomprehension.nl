@@ -175,12 +175,12 @@ class LtiController extends Controller
             }
 
             $ltiState = LtiState::validateAndRetrieve($state);
-            
+
             if (!$ltiState) {
                 Log::error('Invalid or expired state parameter', [
                     'received_state' => $state,
                 ]);
-                
+
                 return view('lti.error', [
                     'error' => 'Invalid or Expired State',
                     'message' => 'The LTI launch state has expired or is invalid. Please try launching the tool again from your LMS.',
@@ -253,8 +253,7 @@ class LtiController extends Controller
                 ]);
             }
 
-            // Store comprehensive LTI context in session
-            session([
+            $sessionData = [
                 'lti_context' => $payload,
                 'lti_user_id' => $payload['sub'] ?? null,
                 'lti_context_id' => $payload['https://purl.imsglobal.org/spec/lti/claim/context']['id'] ?? null,
@@ -263,16 +262,25 @@ class LtiController extends Controller
                 'lti_message_type' => $payload['https://purl.imsglobal.org/spec/lti/claim/message_type'] ?? null,
                 'lti_version' => $payload['https://purl.imsglobal.org/spec/lti/claim/version'] ?? null,
                 'lti_roles' => $payload['https://purl.imsglobal.org/spec/lti/claim/roles'] ?? [],
-                'lti_storage_target' => $ltiStorageTarget, // Store for Safari compatibility
-            ]);
+                'lti_storage_target' => $ltiStorageTarget,
+                'lti_launch_timestamp' => now()->timestamp,
+            ];
 
-            // Consume the LTI state to prevent replay attacks
+            // Store session data
+            session($sessionData);
+
+            // Force session save before redirect
+            session()->save();
+
             $ltiState->consume();
 
-            Log::info('LTI Launch successful', [
+            Log::info('LTI Launch successful - Session data stored', [
+                'session_id' => session()->getId(),
                 'user_id' => $payload['sub'] ?? 'unknown',
                 'context_id' => $payload['https://purl.imsglobal.org/spec/lti/claim/context']['id'] ?? 'unknown',
                 'message_type' => $payload['https://purl.imsglobal.org/spec/lti/claim/message_type'] ?? 'unknown',
+                'session_has_lti_context' => !empty(session('lti_context')),
+                'session_data_keys' => array_keys(session()->all()),
             ]);
 
             // Redirect to the target URI (Step 4: Resource Display)
