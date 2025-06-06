@@ -20,6 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'auth/oidc',
             'auth/launch',
             'auth/callback',
+            'lti/storage*',
             'lti*',
         ]);
     })

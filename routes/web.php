@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LtiController;
 use App\Http\Controllers\LtiTestController;
 use App\Http\Controllers\LtiDebugController;
+use App\Http\Controllers\LtiStorageController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -21,6 +22,13 @@ Route::prefix('auth')->group(function () {
 Route::get('lti', [LtiController::class, 'tool'])->name('lti.tool');
 Route::get('lti/config', [LtiController::class, 'config'])->name('lti.config');
 
+// LTI Platform Storage API (for Safari compatibility)
+Route::prefix('lti/storage')->group(function () {
+    Route::post('/', [LtiStorageController::class, 'store'])->name('lti.storage.store');
+    Route::get('/', [LtiStorageController::class, 'retrieve'])->name('lti.storage.retrieve');
+    Route::get('postmessage', [LtiStorageController::class, 'postMessage'])->name('lti.storage.postmessage');
+});
+
 // Protected LTI API routes
 Route::middleware(['lti'])->prefix('api/lti')->group(function () {
     Route::get('user', [LtiController::class, 'getUserInfo'])->name('lti.api.user');
@@ -28,17 +36,3 @@ Route::middleware(['lti'])->prefix('api/lti')->group(function () {
     Route::post('grade', [LtiController::class, 'sendGrade'])->name('lti.api.grade');
 });
 
-// LTI Testing Routes (for development only - remove in production)
-Route::prefix('lti/test')->group(function () {
-    Route::get('/', [LtiTestController::class, 'dashboard'])->name('lti.test.dashboard');
-    Route::post('oidc', [LtiTestController::class, 'simulateOidc'])->name('lti.test.oidc');
-    Route::post('tool', [LtiTestController::class, 'testTool'])->name('lti.test.tool');
-    Route::post('grade', [LtiTestController::class, 'testGradePassback'])->name('lti.test.grade');
-    Route::get('clear', [LtiTestController::class, 'clearSession'])->name('lti.test.clear');
-});
-
-// LTI Debug Routes (for development only - remove in production)
-Route::prefix('lti/debug')->group(function () {
-    Route::any('/', [LtiDebugController::class, 'debug'])->name('lti.debug');
-    Route::any('launch', [LtiDebugController::class, 'captureLaunch'])->name('lti.debug.launch');
-});

@@ -7,6 +7,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use App\Services\LtiService;
+use App\Models\LtiState;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Firebase\JWT\JWK;
@@ -84,17 +85,30 @@ class LtiController extends Controller
             $state = bin2hex(random_bytes(16));
             $nonce = bin2hex(random_bytes(16));
 
-            // Store all relevant data in session for validation in launch
-            session([
-                'lti_state' => $state,
-                'lti_nonce' => $nonce,
-                'lti_target_link_uri' => $targetLinkUri,
+            // Store LTI state in database instead of session for cross-origin compatibility
+            $stateData = [
+                'state' => $state,
+                'nonce' => $nonce,
+                'issuer' => $issuer,
+                'client_id' => $clientId,
+                'login_hint' => $loginHint,
                 'lti_message_hint' => $ltiMessageHint,
-                'lti_deployment_id' => $deploymentId,
-                'lti_canvas_region' => $canvasRegion,
-                'lti_canvas_environment' => $canvasEnvironment,
-                'lti_issuer' => $issuer,
-                'lti_client_id' => $clientId,
+                'target_link_uri' => $targetLinkUri,
+                'deployment_id' => $deploymentId,
+                'additional_data' => [
+                    'canvas_region' => $canvasRegion,
+                    'canvas_environment' => $canvasEnvironment,
+                ]
+            ];
+
+            $ltiState = LtiState::createState($stateData);
+
+            Log::info('LTI state stored in database', [
+                'state' => $state,
+                'nonce' => $nonce,
+                'state_id' => $ltiState->id,
+                'issuer' => $issuer,
+                'client_id' => $clientId
             ]);
 
             // Determine redirect URI based on the target_link_uri or use default
@@ -151,18 +165,34 @@ class LtiController extends Controller
                 'lti_storage_target' => $ltiStorageTarget,
             ]);
 
-            // Validate state parameter (CSRF protection)
-            $expectedState = session('lti_state');
-            if ($state !== $expectedState) {
-                Log::error('Invalid state parameter', [
-                    'received' => $state,
-                    'expected' => $expectedState
-                ]);
+            // Validate state parameter using database storage (CSRF protection)
+            if (!$state) {
+                Log::error('Missing state parameter in launch request');
                 return view('lti.error', [
-                    'error' => 'Invalid State',
-                    'message' => 'The launch request contains an invalid state parameter. This may indicate a security issue or expired session.',
+                    'error' => 'Missing State',
+                    'message' => 'The launch request is missing the required state parameter.',
                 ]);
             }
+
+            $ltiState = LtiState::validateAndRetrieve($state);
+            
+            if (!$ltiState) {
+                Log::error('Invalid or expired state parameter', [
+                    'received_state' => $state,
+                ]);
+                
+                return view('lti.error', [
+                    'error' => 'Invalid or Expired State',
+                    'message' => 'The LTI launch state has expired or is invalid. Please try launching the tool again from your LMS.',
+                ]);
+            }
+
+            Log::info('State validation successful', [
+                'received_state' => $state,
+                'stored_state_id' => $ltiState->id,
+                'issuer' => $ltiState->issuer,
+                'client_id' => $ltiState->client_id
+            ]);
 
             if (!$idToken) {
                 Log::error('Missing id_token in launch request');
@@ -184,7 +214,7 @@ class LtiController extends Controller
             }
 
             // Validate nonce (replay attack protection)
-            $expectedNonce = session('lti_nonce');
+            $expectedNonce = $ltiState->nonce;
             if (!isset($payload['nonce']) || $payload['nonce'] !== $expectedNonce) {
                 Log::error('Invalid nonce', [
                     'received' => $payload['nonce'] ?? 'missing',
@@ -197,7 +227,7 @@ class LtiController extends Controller
             }
 
             // Validate issuer matches expected Canvas issuer
-            $expectedIssuer = session('lti_issuer');
+            $expectedIssuer = $ltiState->issuer;
             if (!isset($payload['iss']) || $payload['iss'] !== $expectedIssuer) {
                 Log::error('Invalid issuer', [
                     'received' => $payload['iss'] ?? 'missing',
@@ -210,7 +240,7 @@ class LtiController extends Controller
             }
 
             // Validate audience (client_id)
-            $expectedClientId = session('lti_client_id');
+            $expectedClientId = $ltiState->client_id;
             $audience = $payload['aud'] ?? null;
             if ($audience !== $expectedClientId) {
                 Log::error('Invalid audience', [
@@ -236,13 +266,8 @@ class LtiController extends Controller
                 'lti_storage_target' => $ltiStorageTarget, // Store for Safari compatibility
             ]);
 
-            // Clear temporary session data
-            session()->forget([
-                'lti_state',
-                'lti_nonce',
-                'lti_issuer',
-                'lti_client_id'
-            ]);
+            // Consume the LTI state to prevent replay attacks
+            $ltiState->consume();
 
             Log::info('LTI Launch successful', [
                 'user_id' => $payload['sub'] ?? 'unknown',
@@ -251,8 +276,7 @@ class LtiController extends Controller
             ]);
 
             // Redirect to the target URI (Step 4: Resource Display)
-            $targetUri = session('lti_target_link_uri', route('lti.tool'));
-            session()->forget('lti_target_link_uri');
+            $targetUri = $ltiState->target_link_uri ?: route('lti.tool');
 
             return redirect($targetUri);
         } catch (\Exception $e) {

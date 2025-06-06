@@ -59,10 +59,12 @@ Use this JSON configuration when registering the tool in your LMS:
 ## Available Endpoints
 
 - **OIDC Initiation**: `GET/POST /auth/oidc`
-- **LTI Launch**: `POST /auth/launch`
+- **LTI Launch**: `POST /auth/callback` (maps to launch method)
 - **Public JWK Set**: `GET /auth/jwks`
 - **Tool Interface**: `GET /lti`
 - **Tool Configuration**: `GET /lti/config`
+- **Platform Storage API**: `POST /lti/storage` (store), `GET /lti/storage` (retrieve)
+- **PostMessage Storage**: `GET /lti/storage/postmessage` (Safari compatibility)
 
 ## Canvas Setup Instructions
 
@@ -104,21 +106,33 @@ Use this JSON configuration when registering the tool in your LMS:
 
 ## Troubleshooting
 
-1. **"LTI context required" error**
-   - Ensure you're launching from an LMS, not accessing directly
-   - Check that session storage is working
+### Session Issues (RESOLVED)
 
-2. **"Invalid state parameter" error**
-   - Check that your domain matches the configured redirect URI
-   - Ensure sessions are persisting between requests
+**❌ Previous Issue: "Invalid state parameter" or "Session Lost" errors**
 
-3. **JWT validation errors**
+This was caused by session isolation between OIDC initiation and launch callback, particularly affecting Safari and cross-origin scenarios.
+
+**✅ Solution Implemented:**
+
+1. **Database-backed State Storage**: Replaced session storage with `lti_states` database table
+2. **LTI Platform Storage API**: Added `/lti/storage` endpoints for Safari compatibility
+3. **PostMessage API**: Implemented cross-origin storage communication
+4. **Automatic Cleanup**: Expired states are automatically cleaned up
+
+### Other Common Issues
+
+1. **JWT validation errors**
    - Verify the public JWK URL is accessible
    - Check that your RSA keys were generated correctly
+   - Ensure Canvas can reach your JWKS endpoint
 
-4. **Platform not found**
+2. **Platform not found**
    - Verify the client_id in your LTI configuration
    - Check that the issuer matches your LMS
+
+3. **Redirect URI mismatch**
+   - Ensure Canvas Developer Key redirect URI matches `/auth/callback`
+   - Check that your domain is correctly configured
 
 ## Development and Testing
 

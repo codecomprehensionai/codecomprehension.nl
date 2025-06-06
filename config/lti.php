@@ -30,6 +30,11 @@ return [
         'target_link_uri' => env('APP_URL', 'http://localhost:8000/'),
         'oidc_initiation_url' => env('APP_URL', 'http://localhost:8000') . '/auth/oidc',
         'public_jwk_url' => env('APP_URL', 'http://localhost:8000') . '/auth/jwks',
+        'platform_storage_api' => [
+            'store_url' => env('APP_URL', 'http://localhost:8000') . '/lti/storage',
+            'retrieve_url' => env('APP_URL', 'http://localhost:8000') . '/lti/storage',
+            'postmessage_url' => env('APP_URL', 'http://localhost:8000') . '/lti/storage/postmessage',
+        ],
         'scopes' => [
             'https://purl.imsglobal.org/spec/lti-ags/scope/lineitem',
             'https://purl.imsglobal.org/spec/lti-ags/scope/lineitem.readonly',
