@@ -14,6 +14,7 @@ class CreateSubmissionTable extends Migration
             $table->integer('correct_answer');
             $table->bigInteger('student_id');
             $table->bigInteger('teacher_id');
+            $table->string('feedback')->nullable();
 
             $table->foreign('student_id')
                   ->references('user_id')
