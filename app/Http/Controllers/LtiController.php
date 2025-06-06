@@ -429,7 +429,7 @@ class LtiController extends Controller
 
             // Validate the JWT with algorithm allowlist
             JWT::$leeway = 60; // Allow 60 seconds of clock skew
-            $decoded = JWT::decode($jwt, $keys, ['RS256']);
+            $decoded = JWT::decode($jwt, $keys);
 
             // Convert to array for easier handling
             $payload = json_decode(json_encode($decoded), true);
