@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\User;
+use Database\Factories\UserFactory;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AssignmentController;
 use App\Http\Controllers\UserController;
@@ -15,7 +17,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// API Routes
 Route::prefix('api')->group(function () {
     
     // User routes
@@ -105,3 +106,4 @@ Route::prefix('api')->group(function () {
         Route::post('/remove', [TeacherOfController::class, 'removeTeacherFromGroup']);
     });
 });
+
