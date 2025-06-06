@@ -8,19 +8,19 @@ class CreateStudentGroupTable extends Migration
 {
     public function up(): void
     {
-        Schema::create('StudentGroup', function (Blueprint $table) {
-            $table->bigInteger('ID')->primary();
-            $table->bigInteger('StudentID');
-            $table->bigInteger('GroupID');
+        Schema::create('student_groups', function (Blueprint $table) {
+            $table->id();
+            $table->bigInteger('student_id');
+            $table->bigInteger('group_id');
 
-            $table->foreign('StudentID')
-                  ->references('UserID')
-                  ->on('Student')
+            $table->foreign('student_id')
+                  ->references('user_id')
+                  ->on('students')
                   ->onDelete('cascade')
                   ->onUpdate('cascade');
-            $table->foreign('GroupID')
-                  ->references('GroupID')
-                  ->on('Group')
+            $table->foreign('group_id')
+                  ->references('id')
+                  ->on('groups')
                   ->onDelete('cascade')
                   ->onUpdate('cascade');
         });
@@ -28,6 +28,6 @@ class CreateStudentGroupTable extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('StudentGroup');
+        Schema::dropIfExists('student_groups');
     }
 };
