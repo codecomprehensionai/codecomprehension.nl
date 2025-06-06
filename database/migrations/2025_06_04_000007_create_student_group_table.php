@@ -9,7 +9,7 @@ class CreateStudentGroupTable extends Migration
     public function up(): void
     {
         Schema::create('student_groups', function (Blueprint $table) {
-            $table->bigInteger('id')->primary();
+            $table->id();
             $table->bigInteger('student_id');
             $table->bigInteger('group_id');
 

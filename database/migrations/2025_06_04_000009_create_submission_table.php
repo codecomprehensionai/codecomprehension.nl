@@ -9,7 +9,7 @@ class CreateSubmissionTable extends Migration
     public function up(): void
     {
         Schema::create('submissions', function (Blueprint $table) {
-            $table->bigInteger('id')->primary();
+            $table->id();
             $table->json('answer');
             $table->integer('correct_answer');
             $table->bigInteger('student_id');

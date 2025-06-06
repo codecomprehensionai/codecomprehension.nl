@@ -9,7 +9,7 @@ class CreateAssignmentTable extends Migration
     public function up(): void
     {
         Schema::create('assignments', function (Blueprint $table) {
-            $table->bigInteger('id')->primary();
+            $table->id();
             $table->text('title');
             $table->integer('level');
             $table->timestamp('due_date');

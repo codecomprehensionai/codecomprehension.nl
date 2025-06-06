@@ -9,7 +9,7 @@ class CreateTeacherOfTable extends Migration
     public function up(): void
     {
         Schema::create('teacher_of', function (Blueprint $table) {
-            $table->bigInteger('id')->primary();
+            $table->id();
             $table->bigInteger('group_id');
             $table->bigInteger('teacher_id');
 

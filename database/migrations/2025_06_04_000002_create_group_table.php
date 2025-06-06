@@ -9,7 +9,7 @@ class CreateGroupTable extends Migration
     public function up(): void
     {
         Schema::create('groups', function (Blueprint $table) {
-            $table->bigInteger('id')->primary();
+            $table->id();
             $table->string('group_name');
         });
     }
