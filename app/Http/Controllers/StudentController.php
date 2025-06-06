@@ -15,12 +15,20 @@ class StudentController extends Controller
      */
     public function index(): JsonResponse
     {
-        $students = Student::with(['user', 'groups', 'submissions'])->get();
-
-        return response()->json([
-            'success' => true,
-            'data' => $students
-        ]);
+        try {
+            $students = Student::with(['user', 'groups', 'submissions'])->get();
+    
+            return response()->json([
+                'success' => true,
+                'data' => $students
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Fout bij ophalen van studenten',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
