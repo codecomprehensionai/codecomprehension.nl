@@ -13,19 +13,21 @@ return new class extends Migration
             $table->foreignId('assignment_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
 
             /* Question metadata */
-            $table->string('level');
-            $table->string('type');
             $table->string('language');
+            $table->string('type');
+            $table->string('level');
+            $table->integer('estimated_answer_duration');
+
+            /* Question aidata */
             $table->string('topic')->nullable();
             $table->json('tags')->nullable();
-            $table->integer('estimated_duration');
 
             /* Question content */
             $table->text('question')->nullable();
             $table->text('explanation')->nullable();
-            $table->text('answer')->nullable();
             $table->text('code')->nullable();
             $table->json('options')->nullable();
+            $table->text('answer')->nullable();
         });
     }
 

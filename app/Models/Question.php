@@ -21,17 +21,17 @@ class Question extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'level',
-        'type',
         'language',
+        'type',
+        'level',
+        'estimated_answer_duration',
         'topic',
         'tags',
-        'estimated_duration',
         'question',
         'explanation',
-        'answer',
         'code',
         'options',
+        'answer',
     ];
 
     /**
@@ -62,7 +62,7 @@ class Question extends Model
      *
      * @return HasMany<Submission, Question>
      */
-    public function submission(): HasMany
+    public function submissions(): HasMany
     {
         return $this->hasMany(Submission::class);
     }
