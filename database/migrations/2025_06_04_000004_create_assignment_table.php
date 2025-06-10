@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateAssignmentTable extends Migration
+return new class extends Migration
 {
     public function up(): void
     {
@@ -21,15 +21,15 @@ class CreateAssignmentTable extends Migration
 
             // Foreign keys:
             $table->foreign('language_id')
-                  ->references('id')
-                  ->on('languages')
-                  ->onDelete('cascade')
-                  ->onUpdate('cascade');
+                ->references('id')
+                ->on('languages')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
             $table->foreign('group_id')
-                  ->references('id')
-                  ->on('groups')
-                  ->onDelete('set null')
-                  ->onUpdate('cascade');
+                ->references('id')
+                ->on('groups')
+                ->onDelete('set null')
+                ->onUpdate('cascade');
         });
     }
 

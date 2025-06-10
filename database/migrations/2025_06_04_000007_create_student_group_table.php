@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateStudentGroupTable extends Migration
+return new class extends Migration
 {
     public function up(): void
     {
@@ -14,15 +14,15 @@ class CreateStudentGroupTable extends Migration
             $table->bigInteger('group_id');
 
             $table->foreign('student_id')
-                  ->references('user_id')
-                  ->on('students')
-                  ->onDelete('cascade')
-                  ->onUpdate('cascade');
+                ->references('user_id')
+                ->on('students')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
             $table->foreign('group_id')
-                  ->references('id')
-                  ->on('groups')
-                  ->onDelete('cascade')
-                  ->onUpdate('cascade');
+                ->references('id')
+                ->on('groups')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
         });
     }
 

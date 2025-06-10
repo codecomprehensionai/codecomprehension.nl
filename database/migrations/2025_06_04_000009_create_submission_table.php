@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateSubmissionTable extends Migration
+return new class extends Migration
 {
     public function up(): void
     {
@@ -17,15 +17,15 @@ class CreateSubmissionTable extends Migration
             $table->string('feedback')->nullable();
 
             $table->foreign('student_id')
-                  ->references('user_id')
-                  ->on('students')
-                  ->onDelete('cascade')
-                  ->onUpdate('cascade');
+                ->references('user_id')
+                ->on('students')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
             $table->foreign('teacher_id')
-                  ->references('user_id')
-                  ->on('teachers')
-                  ->onDelete('cascade')
-                  ->onUpdate('cascade');
+                ->references('user_id')
+                ->on('teachers')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
         });
     }
 

@@ -4,17 +4,17 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTeacherTable extends Migration
+return new class extends Migration
 {
     public function up(): void
     {
         Schema::create('teachers', function (Blueprint $table) {
             $table->bigInteger('user_id')->primary();
             $table->foreign('user_id')
-                  ->references('id')
-                  ->on('users')
-                  ->onDelete('cascade')
-                  ->onUpdate('cascade');
+                ->references('id')
+                ->on('users')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
         });
     }
 
@@ -22,4 +22,4 @@ class CreateTeacherTable extends Migration
     {
         Schema::dropIfExists('teachers');
     }
-}
+};
