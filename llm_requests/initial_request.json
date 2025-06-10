@@ -1,0 +1,24 @@
+{
+    "assignment": {
+        "id": "",
+        "title": "",
+        "description": ""
+    },
+    "question_configuration": {
+        "languages": [
+            "array allowed language"
+        ],
+        "types": [
+            "array allowed type"
+        ],
+        "levels": [
+            "array allowed level"
+        ],
+        "estimated_answer_durations": [
+            "array allowed estimated answer duration"
+        ],
+        "topics": [
+            "array of question topics"
+        ]
+    }
+}
