@@ -3,8 +3,10 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use App\Enums\UserType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -15,6 +17,7 @@ class User extends Authenticatable
 
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory;
+
     use Notifiable;
 
     /**
@@ -23,6 +26,7 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
+        'type',
         'name',
         'email',
         'password',
@@ -39,23 +43,15 @@ class User extends Authenticatable
     ];
 
     /**
-     * Get the student profile associated with the user.
+     * Get the groups this user belongs to.
      *
-     * @return HasOne<Student, User>
+     * @return BelongsToMany<Group, User>
      */
-    public function student(): HasOne
+    public function groups()
     {
-        return $this->hasOne(Student::class);
-    }
-
-    /**
-     * Get the teacher profile associated with the user.
-     *
-     * @return HasOne<Teacher, User>
-     */
-    public function teacher(): HasOne
-    {
-        return $this->hasOne(Teacher::class);
+        return $this->belongsToMany(Group::class, 'group_users')
+            ->using(GroupUser::class)
+            ->withTimestamps();
     }
 
     /**
@@ -66,6 +62,7 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
+            'type'              => UserType::class,
             'email_verified_at' => 'datetime',
             'password'          => 'hashed',
         ];

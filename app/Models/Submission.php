@@ -23,15 +23,6 @@ class Submission extends Model
     ];
 
     /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'is_correct' => 'boolean',
-    ];
-
-    /**
      * Get the group that owns the assignment.
      *
      * @return BelongsTo<Question, Submission>
@@ -42,12 +33,24 @@ class Submission extends Model
     }
 
     /**
-     * Get the student who submitted the question.
+     * Get the user who submitted the answer.
      *
-     * @return BelongsTo<Student, Submission>
+     * @return BelongsTo<User, Submission>
      */
-    public function student(): BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(Student::class);
+        return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'is_correct' => 'boolean',
+        ];
     }
 }

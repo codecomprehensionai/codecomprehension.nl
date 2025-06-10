@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\UserType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -32,26 +33,36 @@ class Group extends Model
     }
 
     /**
-     * Get the students in this group.
+     * Get the users in this group.
      *
-     * @return BelongsToMany<Student, Group>
+     * @return BelongsToMany<User, Group>
      */
-    public function students(): BelongsToMany
+    public function users(): BelongsToMany
     {
-        return $this->belongsToMany(Student::class, 'group_students')
-            ->using(GroupStudent::class)
+        return $this->belongsToMany(User::class, 'group_users')
+            ->using(GroupUser::class)
             ->withTimestamps();
     }
 
     /**
-     * Get the teachers of this group.
+     * Get the teachers in this group.
      *
-     * @return BelongsToMany<Teacher, Group>
+     * @return BelongsToMany<User, Group>
      */
     public function teachers(): BelongsToMany
     {
-        return $this->belongsToMany(Teacher::class, 'group_teachers')
-            ->using(GroupTeacher::class)
-            ->withTimestamps();
+        // TODO: test
+        return $this->users()->where('type', UserType::Teacher);
+    }
+
+    /**
+     * Get the students in this group.
+     *
+     * @return BelongsToMany<User, Group>
+     */
+    public function students(): BelongsToMany
+    {
+        // TODO: test
+        return $this->users()->where('type', UserType::Student);
     }
 }

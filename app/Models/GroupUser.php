@@ -5,12 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
-class GroupTeacher extends Pivot
+class GroupUser extends Pivot
 {
     /* https://laravel.com/docs/11.x/eloquent-relationships#custom-pivot-models-and-incrementing-ids */
     public $incrementing = true;
 
-    protected $table = 'group_students';
+    protected $table = 'group_users';
 
     /**
      * @return BelongsTo<Group, $this>
@@ -21,10 +21,10 @@ class GroupTeacher extends Pivot
     }
 
     /**
-     * @return BelongsTo<Student, $this>
+     * @return BelongsTo<User, $this>
      */
-    public function student(): BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(Student::class);
+        return $this->belongsTo(User::class);
     }
 }

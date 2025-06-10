@@ -35,19 +35,6 @@ class Question extends Model
     ];
 
     /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'level'    => QuestionLevel::class,
-        'type'     => QuestionType::class,
-        'language' => QuestionLanguage::class,
-        'tags'     => 'array',
-        'options'  => 'array',
-    ];
-
-    /**
      * Get the group that owns the assignment.
      *
      * @return BelongsTo<Assignment, Question>
@@ -65,5 +52,21 @@ class Question extends Model
     public function submissions(): HasMany
     {
         return $this->hasMany(Submission::class);
+    }
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'language' => QuestionLanguage::class,
+            'type'     => QuestionType::class,
+            'level'    => QuestionLevel::class,
+            'tags'     => 'array',
+            'options'  => 'array',
+        ];
     }
 }

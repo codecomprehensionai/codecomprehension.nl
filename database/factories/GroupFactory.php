@@ -17,7 +17,7 @@ class GroupFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->unique()->company(),
+            'name' => sprintf('Group %s', fake()->unique()->randomNumber(4, true)),
         ];
     }
 }

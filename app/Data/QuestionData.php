@@ -17,8 +17,8 @@ class QuestionData extends Data
         public int $estimatedAnswerDuration,
 
         /* Question aidata */
-        public ?string $topic = null,
-        public ?array $tags = null,
+        public ?string $topic,
+        public ?array $tags,
 
         /* Question content */
         public string $question,

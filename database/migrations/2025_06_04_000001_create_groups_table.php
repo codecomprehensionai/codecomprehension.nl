@@ -13,10 +13,18 @@ return new class extends Migration
             $table->string('name');
             $table->timestamps();
         });
+
+        Schema::create('group_users', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('group_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
+            $table->timestamps();
+        });
     }
 
     public function down(): void
     {
+        Schema::dropIfExists('group_users');
         Schema::dropIfExists('groups');
     }
 };
