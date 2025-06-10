@@ -4,23 +4,6 @@
         "title": "",
         "description": ""
     },
-    "question_configuration": {
-        "languages": [
-            "array allowed language"
-        ],
-        "types": [
-            "array allowed type"
-        ],
-        "levels": [
-            "array allowed level"
-        ],
-        "estimated_answer_durations": [
-            "array allowed estimated answer duration"
-        ],
-        "topics": [
-            "array of question topics"
-        ]
-    },
     "questions": [
         {
             "id": "",
@@ -42,5 +25,18 @@
             ],
             "answer": ""
         }
-    ]
+    ],
+    "new_question_configuration": {
+        "language": "",
+        "type": "",
+        "level": "",
+        "estimated_answer_duration": "",
+        "topics": [
+            ""
+        ],
+        "tags": [
+            ""
+        ]
+    },
+    "new_question_prompt": ""
 }

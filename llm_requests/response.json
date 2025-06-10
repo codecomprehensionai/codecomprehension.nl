@@ -1,0 +1,26 @@
+{
+    "assignment": {
+        "id": "",
+        "title": "",
+        "description": ""
+    },
+    "new_question": {
+        "language": "",
+        "type": "",
+        "level": "",
+        "estimated_answer_duration": "",
+        "topics": [
+            ""
+        ],
+        "tags": [
+            ""
+        ],
+        "question": "",
+        "explanation": "",
+        "code": "",
+        "options": [
+            ""
+        ],
+        "answer": ""
+    }
+}
