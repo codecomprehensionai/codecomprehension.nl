@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Assignment extends Model
 {
@@ -17,13 +19,9 @@ class Assignment extends Model
      */
     protected $fillable = [
         'title',
-        'level',
-        'due_date',
-        'estimated_time',
-        'test',
-        'language_id',
-        'questions',
-        'group_id',
+        'description',
+        'published_at',
+        'deadline_at',
     ];
 
     /**
@@ -32,19 +30,9 @@ class Assignment extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'test'      => 'array',
-        'questions' => 'array',
+        'published_at' => 'timestamp',
+        'deadline_at' => 'timestamp',
     ];
-
-    /**
-     * Get the language that owns the assignment.
-     *
-     * @return BelongsTo<Language, Assignment>
-     */
-    public function language(): BelongsTo
-    {
-        return $this->belongsTo(Language::class);
-    }
 
     /**
      * Get the group that owns the assignment.
@@ -54,5 +42,70 @@ class Assignment extends Model
     public function group(): BelongsTo
     {
         return $this->belongsTo(Group::class);
+    }
+
+    /**
+     * Get the teacher created the assignment.
+     *
+     * @return BelongsTo<User, Assignment>
+     */
+    public function teacher(): BelongsTo
+    {
+        return $this->belongsTo(Teacher::class);
+    }
+
+    /**
+     * Get the questions for the assignment.
+     *
+     * @return HasMany<AssignmentQuestion, Assignment>
+     */
+    public function questions(): HasMany
+    {
+        return $this->hasMany(AssignmentQuestion::class);
+    }
+
+    protected function estimatedDuration(): Attribute
+    {
+        return Attribute::make(
+            get: fn(): int => $this->questions
+                ->sum('estimated_duration'),
+        );
+    }
+
+    protected function topics(): Attribute
+    {
+        return Attribute::make(
+            get: fn(): array => $this->questions
+                ->pluck('topic')
+                ->filter()
+                ->unique()
+                ->values()
+                ->toArray(),
+        );
+    }
+
+    protected function tags(): Attribute
+    {
+        return Attribute::make(
+            get: fn(): array => $this->questions
+                ->pluck('tags')
+                ->filter()
+                ->flatten()
+                ->unique()
+                ->values()
+                ->toArray(),
+        );
+    }
+
+    protected function languages(): Attribute
+    {
+        return Attribute::make(
+            get: fn(): array => $this->questions
+                ->pluck('language')
+                ->filter()
+                ->unique()
+                ->values()
+                ->toArray(),
+        );
     }
 }

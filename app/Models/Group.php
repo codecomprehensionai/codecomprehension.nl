@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Group extends Model
 {
+    /** @use HasFactory<\Database\Factories\GroupFactory> */
     use HasFactory;
 
     /**
@@ -37,7 +38,9 @@ class Group extends Model
      */
     public function students(): BelongsToMany
     {
-        return $this->belongsToMany(Student::class, 'student_groups', 'group_id', 'student_id');
+        return $this->belongsToMany(Student::class, 'group_students')
+            ->using(GroupStudent::class)
+            ->withTimestamps();
     }
 
     /**
@@ -47,6 +50,8 @@ class Group extends Model
      */
     public function teachers(): BelongsToMany
     {
-        return $this->belongsToMany(Teacher::class, 'teacher_of', 'group_id', 'teacher_id');
+        return $this->belongsToMany(Teacher::class, 'group_teachers')
+            ->using(GroupTeacher::class)
+            ->withTimestamps();
     }
 }
