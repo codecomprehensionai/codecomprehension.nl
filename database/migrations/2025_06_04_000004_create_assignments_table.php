@@ -22,7 +22,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('assignment_questions', function (Blueprint $table) {
+        Schema::create('questions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('assignment_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
 
@@ -42,9 +42,9 @@ return new class extends Migration
             $table->json('options')->nullable();
         });
 
-        Schema::create('assignment_questions_submissions', function (Blueprint $table) {
+        Schema::create('submissions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('assignment_question_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('question_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('student_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
 
             $table->text('answer');

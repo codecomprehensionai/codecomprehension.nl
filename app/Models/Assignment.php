@@ -57,11 +57,11 @@ class Assignment extends Model
     /**
      * Get the questions for the assignment.
      *
-     * @return HasMany<AssignmentQuestion, Assignment>
+     * @return HasMany<Question, Assignment>
      */
     public function questions(): HasMany
     {
-        return $this->hasMany(AssignmentQuestion::class);
+        return $this->hasMany(Question::class);
     }
 
     protected function estimatedDuration(): Attribute

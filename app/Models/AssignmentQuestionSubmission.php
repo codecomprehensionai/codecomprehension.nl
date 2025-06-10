@@ -6,9 +6,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class AssignmentQuestionSubmission extends Model
+class Submission extends Model
 {
-    /** @use HasFactory<\Database\Factories\AssignmentQuestionSubmissionFactory> */
+    /** @use HasFactory<\Database\Factories\SubmissionFactory> */
     use HasFactory;
 
     /**
@@ -34,17 +34,17 @@ class AssignmentQuestionSubmission extends Model
     /**
      * Get the group that owns the assignment.
      *
-     * @return BelongsTo<AssignmentQuestion, AssignmentQuestionSubmission>
+     * @return BelongsTo<Question, Submission>
      */
-    public function assignmentQuestion(): BelongsTo
+    public function Question(): BelongsTo
     {
-        return $this->belongsTo(AssignmentQuestion::class);
+        return $this->belongsTo(Question::class);
     }
 
     /**
      * Get the student who submitted the question.
      *
-     * @return BelongsTo<Student, AssignmentQuestionSubmission>
+     * @return BelongsTo<Student, Submission>
      */
     public function student(): BelongsTo
     {

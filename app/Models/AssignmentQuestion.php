@@ -2,17 +2,17 @@
 
 namespace App\Models;
 
-use App\Enums\AssignmentQuestionLanguage;
-use App\Enums\AssignmentQuestionLevel;
-use App\Enums\AssignmentQuestionType;
+use App\Enums\QuestionLanguage;
+use App\Enums\QuestionLevel;
+use App\Enums\QuestionType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class AssignmentQuestion extends Model
+class Question extends Model
 {
-    /** @use HasFactory<\Database\Factories\AssignmentQuestionFactory> */
+    /** @use HasFactory<\Database\Factories\QuestionFactory> */
     use HasFactory;
 
     /**
@@ -40,9 +40,9 @@ class AssignmentQuestion extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'level' => AssignmentQuestionLevel::class,
-        'type' => AssignmentQuestionType::class,
-        'language' => AssignmentQuestionLanguage::class,
+        'level' => QuestionLevel::class,
+        'type' => QuestionType::class,
+        'language' => QuestionLanguage::class,
         'tags' => 'array',
         'options' => 'array',
     ];
@@ -60,10 +60,10 @@ class AssignmentQuestion extends Model
     /**
      * Get the submissions for this question.
      *
-     * @return HasMany<AssignmentQuestionSubmission, AssignmentQuestion>
+     * @return HasMany<Submission, Question>
      */
     public function submission(): HasMany
     {
-        return $this->hasMany(AssignmentQuestionSubmission::class);
+        return $this->hasMany(Submission::class);
     }
 }

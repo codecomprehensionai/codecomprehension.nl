@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum AssignmentQuestionType: string
+enum QuestionType: string
 {
     case CodeExplanation = 'code_explanation';
     case MultipleChoice = 'multiple_choice';

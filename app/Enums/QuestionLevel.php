@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum AssignmentQuestionLevel: string
+enum QuestionLevel: string
 {
     case Beginner = 'beginner';
     case Intermediate = 'intermediate';

@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum AssignmentQuestionLanguage: string
+enum QuestionLanguage: string
 {
     case Python = 'python';
 }
