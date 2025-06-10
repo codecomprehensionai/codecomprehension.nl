@@ -35,11 +35,11 @@ class Assignment extends Model
     }
 
     /**
-     * Get the teacher created the assignment.
+     * Get the user created the assignment.
      *
      * @return BelongsTo<User, Assignment>
      */
-    public function teacher(): BelongsTo
+    public function user(): BelongsTo
     {
         return $this->belongsTo(Teacher::class);
     }
@@ -70,7 +70,7 @@ class Assignment extends Model
     protected function estimatedAnswerDuration(): Attribute
     {
         return Attribute::make(
-            get: fn (): int => $this->questions
+            get: fn(): int => $this->questions
                 ->sum('estimated__answer_duration'),
         );
     }
@@ -78,7 +78,7 @@ class Assignment extends Model
     protected function topics(): Attribute
     {
         return Attribute::make(
-            get: fn (): array => $this->questions
+            get: fn(): array => $this->questions
                 ->pluck('topic')
                 ->filter()
                 ->unique()
@@ -90,7 +90,7 @@ class Assignment extends Model
     protected function tags(): Attribute
     {
         return Attribute::make(
-            get: fn (): array => $this->questions
+            get: fn(): array => $this->questions
                 ->pluck('tags')
                 ->filter()
                 ->flatten()
@@ -103,7 +103,7 @@ class Assignment extends Model
     protected function languages(): Attribute
     {
         return Attribute::make(
-            get: fn (): array => $this->questions
+            get: fn(): array => $this->questions
                 ->pluck('language')
                 ->filter()
                 ->unique()
