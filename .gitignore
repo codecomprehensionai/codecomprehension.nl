@@ -19,7 +19,9 @@ yarn-error.log
 # Public
 /public/*
 !/public/.htaccess
-!/public/favicon.ico
+!/public/*.ico
+!/public/*.svg
+!/public/*.png
 !/public/index.php
 !/public/robots.txt
 
