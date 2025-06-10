@@ -12,10 +12,10 @@ enum QuestionLevel: string
     public function getDescription(): string
     {
         return match ($this) {
-            self::Beginner => 'Basic concepts and syntax',
+            self::Beginner     => 'Basic concepts and syntax',
             self::Intermediate => 'Moderate complexity with multiple concepts',
-            self::Advanced => 'Complex scenarios and edge cases',
-            self::Expert => 'Highly advanced topics and optimization',
+            self::Advanced     => 'Complex scenarios and edge cases',
+            self::Expert       => 'Highly advanced topics and optimization',
         };
     }
 }

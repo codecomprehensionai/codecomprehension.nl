@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Assignment extends Model
@@ -31,7 +31,7 @@ class Assignment extends Model
      */
     protected $casts = [
         'published_at' => 'timestamp',
-        'deadline_at' => 'timestamp',
+        'deadline_at'  => 'timestamp',
     ];
 
     /**
@@ -67,7 +67,7 @@ class Assignment extends Model
     protected function estimatedDuration(): Attribute
     {
         return Attribute::make(
-            get: fn(): int => $this->questions
+            get: fn (): int => $this->questions
                 ->sum('estimated_duration'),
         );
     }
@@ -75,7 +75,7 @@ class Assignment extends Model
     protected function topics(): Attribute
     {
         return Attribute::make(
-            get: fn(): array => $this->questions
+            get: fn (): array => $this->questions
                 ->pluck('topic')
                 ->filter()
                 ->unique()
@@ -87,7 +87,7 @@ class Assignment extends Model
     protected function tags(): Attribute
     {
         return Attribute::make(
-            get: fn(): array => $this->questions
+            get: fn (): array => $this->questions
                 ->pluck('tags')
                 ->filter()
                 ->flatten()
@@ -100,7 +100,7 @@ class Assignment extends Model
     protected function languages(): Attribute
     {
         return Attribute::make(
-            get: fn(): array => $this->questions
+            get: fn (): array => $this->questions
                 ->pluck('language')
                 ->filter()
                 ->unique()

@@ -40,11 +40,11 @@ class Question extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'level' => QuestionLevel::class,
-        'type' => QuestionType::class,
+        'level'    => QuestionLevel::class,
+        'type'     => QuestionType::class,
         'language' => QuestionLanguage::class,
-        'tags' => 'array',
-        'options' => 'array',
+        'tags'     => 'array',
+        'options'  => 'array',
     ];
 
     /**

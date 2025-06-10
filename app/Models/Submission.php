@@ -36,7 +36,7 @@ class Submission extends Model
      *
      * @return BelongsTo<Question, Submission>
      */
-    public function Question(): BelongsTo
+    public function question(): BelongsTo
     {
         return $this->belongsTo(Question::class);
     }
