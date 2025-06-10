@@ -1,0 +1,28 @@
+includes:
+    - ./vendor/larastan/larastan/extension.neon
+
+rules:
+    - Spatie\Ray\PHPStan\RemainingRayCallRule
+
+parameters:
+    paths:
+        - app
+        - bootstrap
+        - config
+        - database
+        - routes
+
+    noEnvCallsOutsideOfConfig: true
+    checkModelProperties: true
+    checkModelAppends: true
+    checkOctaneCompatibility: true
+
+    # https://phpstan.org/config-reference#treatphpdoctypesascertain
+    treatPhpDocTypesAsCertain: false
+
+    level: 1
+
+    # https://phpstan.org/user-guide/ignoring-errors#generate-an-ignoreerrors-entry
+    ignoreErrors:
+#        - identifier: missingType.generics
+#        - identifier: missingType.iterableValue

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Assignment extends Model
 {
@@ -37,16 +38,20 @@ class Assignment extends Model
 
     /**
      * Get the language that owns the assignment.
+     *
+     * @return BelongsTo<Language, Assignment>
      */
-    public function language()
+    public function language(): BelongsTo
     {
         return $this->belongsTo(Language::class);
     }
 
     /**
      * Get the group that owns the assignment.
+     *
+     * @return BelongsTo<Group, Assignment>
      */
-    public function group()
+    public function group(): BelongsTo
     {
         return $this->belongsTo(Group::class);
     }
