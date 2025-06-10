@@ -37,6 +37,18 @@ yarn-error.log
 _ide_helper.php
 _ide_helper_models.php
 
-**/caddy
-frankenphp
-frankenphp-worker.php
+# Storage
+/storage/app/private/*
+/storage/app/public/*
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/testing/*
+/storage/framework/views/*
+/storage/logs/*
+/bootstrap/cache/*
+
+# Git
+/.git
+/.github
+.gitattributes
+.gitignore
