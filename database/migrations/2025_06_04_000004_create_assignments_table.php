@@ -21,36 +21,6 @@ return new class extends Migration
 
             $table->timestamps();
         });
-
-        Schema::create('questions', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('assignment_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
-
-            /* Question metadata */
-            $table->string('level');
-            $table->string('type');
-            $table->string('language');
-            $table->string('topic')->nullable();
-            $table->json('tags')->nullable();
-            $table->integer('estimated_duration');
-
-            /* Question content */
-            $table->text('question')->nullable();
-            $table->text('explanation')->nullable();
-            $table->text('answer')->nullable();
-            $table->text('code')->nullable();
-            $table->json('options')->nullable();
-        });
-
-        Schema::create('submissions', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('question_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
-            $table->foreignId('student_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
-
-            $table->text('answer');
-            $table->text('feedback')->nullable();
-            $table->boolean('is_correct')->default(false);
-        });
     }
 
     public function down(): void
