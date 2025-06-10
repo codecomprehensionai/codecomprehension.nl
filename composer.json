@@ -1,26 +1,32 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/laravel",
+    "name": "codecomprehensionai/codecomprehension",
     "type": "project",
     "description": "The skeleton application for the Laravel framework.",
     "keywords": [
-        "laravel",
-        "framework"
+        "CodeComprehesnion",
+        "backend"
     ],
     "license": "MIT",
     "require": {
         "php": "^8.2",
         "laravel/framework": "^12.0",
+        "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10.1"
     },
     "require-dev": {
+        "barryvdh/laravel-ide-helper": "^3.5",
         "fakerphp/faker": "^1.23",
+        "larastan/larastan": "^3.4",
         "laravel/pail": "^1.2.2",
         "laravel/pint": "^1.13",
         "laravel/sail": "^1.41",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.6",
-        "phpunit/phpunit": "^11.5.3"
+        "pestphp/pest": "^3.8",
+        "pestphp/pest-plugin-laravel": "^3.2",
+        "spatie/laravel-ray": "^1.40",
+        "tightenco/duster": "^3.2"
     },
     "autoload": {
         "psr-4": {
@@ -40,7 +46,10 @@
             "@php artisan package:discover --ansi"
         ],
         "post-update-cmd": [
-            "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
+            "@php artisan vendor:publish --tag=laravel-assets --ansi --force",
+            "@php artisan ide-helper:generate",
+            "@php artisan ide-helper:models -N",
+            "@php artisan ide-helper:meta"
         ],
         "post-root-package-install": [
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
@@ -57,7 +66,11 @@
         "test": [
             "@php artisan config:clear --ansi",
             "@php artisan test"
-        ]
+        ],
+        "lint": "./vendor/bin/duster fix",
+        "lint-ci": "./vendor/bin/duster lint",
+        "analyse": "./vendor/bin/phpstan --memory-limit=2G",
+        "analyse-ci": "./vendor/bin/phpstan --memory-limit=2G --error-format=github"
     },
     "extra": {
         "laravel": {
