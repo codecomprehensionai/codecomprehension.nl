@@ -12,10 +12,6 @@ use App\Http\Controllers\UserController;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
 Route::prefix('api')->group(function () {
     // User routes
     Route::prefix('users')->group(function () {
