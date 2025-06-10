@@ -10,27 +10,6 @@ class Assignment extends Model
     use HasFactory;
 
     /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
-    protected $table = 'assignments';
-
-    /**
-     * The primary key associated with the table.
-     *
-     * @var string
-     */
-    protected $primaryKey = 'id';
-
-    /**
-     * Indicates if the model should be timestamped.
-     *
-     * @var bool
-     */
-    public $timestamps = false;
-
-    /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
@@ -52,15 +31,8 @@ class Assignment extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'id' => 'integer',
-        'title' => 'string',
-        'level' => 'integer',
-        'due_date' => 'datetime',
-        'estimated_time' => 'integer',
         'test' => 'array',
-        'language_id' => 'integer',
         'questions' => 'array',
-        'group_id' => 'integer',
     ];
 
     /**
@@ -68,7 +40,7 @@ class Assignment extends Model
      */
     public function language()
     {
-        return $this->belongsTo(Language::class, 'language_id');
+        return $this->belongsTo(Language::class);
     }
 
     /**
@@ -76,6 +48,6 @@ class Assignment extends Model
      */
     public function group()
     {
-        return $this->belongsTo(Group::class, 'group_id');
+        return $this->belongsTo(Group::class);
     }
 }

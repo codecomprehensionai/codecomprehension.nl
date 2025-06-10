@@ -4,31 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Teacher extends Model
 {
     use HasFactory;
-
-    /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
-    protected $table = 'teachers';
-
-    /**
-     * The primary key associated with the table.
-     *
-     * @var string
-     */
-    protected $primaryKey = 'user_id';
-
-    /**
-     * Indicates if the model should be timestamped.
-     *
-     * @var bool
-     */
-    public $timestamps = false;
 
     /**
      * The attributes that are mass assignable.
@@ -40,35 +22,32 @@ class Teacher extends Model
     ];
 
     /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'user_id' => 'integer',
-    ];
-
-    /**
      * Get the user that owns the teacher.
+     *
+     * @return BelongsTo<User, Teacher>
      */
-    public function user()
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class);
     }
 
     /**
      * Get the groups that this teacher teaches.
+     *
+     * @return BelongsToMany<Group, Teacher>
      */
-    public function groups()
+    public function groups(): BelongsToMany
     {
         return $this->belongsToMany(Group::class, 'teacher_of', 'teacher_id', 'group_id');
     }
 
     /**
      * Get the submissions graded by this teacher.
+     *
+     * @return HasMany<Submission, Teacher>
      */
-    public function submissions()
+    public function submissions(): HasMany
     {
-        return $this->hasMany(Submission::class, 'teacher_id');
+        return $this->hasMany(Submission::class);
     }
 }

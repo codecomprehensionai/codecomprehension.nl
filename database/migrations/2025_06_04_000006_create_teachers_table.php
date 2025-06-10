@@ -8,6 +8,17 @@ return new class extends Migration
 {
     public function up(): void
     {
+        Schema::create('teachers', function (Blueprint $table) {
+            $table->bigInteger('user_id')->primary();
+            $table->foreign('user_id')
+                ->references('id')
+                ->on('users')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
+
+            $table->timestamps();
+        });
+
         Schema::create('teacher_of', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('group_id');
@@ -23,11 +34,14 @@ return new class extends Migration
                 ->on('groups')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
+
+            $table->timestamps();
         });
     }
 
     public function down(): void
     {
         Schema::dropIfExists('teacher_of');
+        Schema::dropIfExists('teachers');
     }
 };

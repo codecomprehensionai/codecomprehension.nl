@@ -4,31 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class StudentGroup extends Model
 {
     use HasFactory;
-
-    /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
-    protected $table = 'student_groups';
-
-    /**
-     * The primary key associated with the table.
-     *
-     * @var string
-     */
-    protected $primaryKey = 'id';
-
-    /**
-     * Indicates if the model should be timestamped.
-     *
-     * @var bool
-     */
-    public $timestamps = false;
 
     /**
      * The attributes that are mass assignable.
@@ -41,29 +21,22 @@ class StudentGroup extends Model
     ];
 
     /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'id' => 'integer',
-        'student_id' => 'integer',
-        'group_id' => 'integer',
-    ];
-
-    /**
      * Get the student that belongs to the group.
+     *
+     * @return BelongsTo<Student, StudentGroup>
      */
-    public function student()
+    public function student(): BelongsTo
     {
         return $this->belongsTo(Student::class, 'student_id', 'user_id');
     }
 
     /**
      * Get the group that the student belongs to.
+     *
+     * @return BelongsTo<Group, StudentGroup>
      */
-    public function group()
+    public function group(): BelongsTo
     {
-        return $this->belongsTo(Group::class, 'group_id');
+        return $this->belongsTo(Group::class);
     }
 }

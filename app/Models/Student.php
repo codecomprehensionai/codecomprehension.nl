@@ -4,31 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Student extends Model
 {
     use HasFactory;
-
-    /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
-    protected $table = 'students';
-
-    /**
-     * The primary key associated with the table.
-     *
-     * @var string
-     */
-    protected $primaryKey = 'user_id';
-
-    /**
-     * Indicates if the model should be timestamped.
-     *
-     * @var bool
-     */
-    public $timestamps = false;
 
     /**
      * The attributes that are mass assignable.
@@ -40,34 +22,31 @@ class Student extends Model
     ];
 
     /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'user_id' => 'integer',
-    ];
-
-    /**
      * Get the user that owns the student.
+     *
+     * @return BelongsTo<User, Student>
      */
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
     /**
      * Get the groups this student belongs to.
+     *
+     * @return BelongsToMany<Group, Student>
      */
-    public function groups()
+    public function groups(): BelongsToMany
     {
         return $this->belongsToMany(Group::class, 'student_groups', 'student_id', 'group_id');
     }
 
     /**
      * Get the submissions made by this student.
+     *
+     * @return HasMany<Submission, Student>
      */
-    public function submissions()
+    public function submissions(): HasMany
     {
         return $this->hasMany(Submission::class, 'student_id');
     }

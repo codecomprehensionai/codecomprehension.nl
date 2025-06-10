@@ -19,17 +19,20 @@ return new class extends Migration
             $table->json('questions');
             $table->bigInteger('group_id')->nullable();
 
-            // Foreign keys:
+
             $table->foreign('language_id')
                 ->references('id')
                 ->on('languages')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
+
             $table->foreign('group_id')
                 ->references('id')
                 ->on('groups')
                 ->onDelete('set null')
                 ->onUpdate('cascade');
+
+            $table->timestamps();
         });
     }
 
