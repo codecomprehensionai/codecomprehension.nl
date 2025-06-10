@@ -19,7 +19,6 @@ return new class extends Migration
             $table->json('questions');
             $table->bigInteger('group_id')->nullable();
 
-
             $table->foreign('language_id')
                 ->references('id')
                 ->on('languages')

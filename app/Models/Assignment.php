@@ -31,7 +31,7 @@ class Assignment extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'test' => 'array',
+        'test'      => 'array',
         'questions' => 'array',
     ];
 

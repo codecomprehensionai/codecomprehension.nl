@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\TeacherOf;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
 class TeacherOfController extends Controller
@@ -18,8 +18,47 @@ class TeacherOfController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $teacherOf
+            'data'    => $teacherOf,
         ]);
+    }
+
+    /**
+     * Assign a teacher to a group
+     */
+    public function store(Request $request): JsonResponse
+    {
+        try {
+            $validated = $request->validate([
+                'teacher_id' => 'required|integer|exists:teachers,user_id',
+                'group_id'   => 'required|integer|exists:groups,id',
+            ]);
+
+            // Check if relationship already exists
+            $exists = TeacherOf::where('teacher_id', $validated['teacher_id'])
+                ->where('group_id', $validated['group_id'])
+                ->exists();
+
+            if ($exists) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Teacher is already assigned to this group',
+                ], 409);
+            }
+
+            $teacherOf = TeacherOf::create($validated);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Teacher assigned to group successfully',
+                'data'    => $teacherOf->load(['teacher.user', 'group']),
+            ], 201);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors'  => $e->errors(),
+            ], 422);
+        }
     }
 
     /**
@@ -32,54 +71,14 @@ class TeacherOfController extends Controller
         if (!$teacherOf) {
             return response()->json([
                 'success' => false,
-                'message' => 'Teacher group relationship not found'
+                'message' => 'Teacher group relationship not found',
             ], 404);
         }
 
         return response()->json([
             'success' => true,
-            'data' => $teacherOf
+            'data'    => $teacherOf,
         ]);
-    }
-
-    /**
-     * Assign a teacher to a group
-     */
-    public function store(Request $request): JsonResponse
-    {
-        try {
-            $validated = $request->validate([
-                'teacher_id' => 'required|integer|exists:teachers,user_id',
-                'group_id' => 'required|integer|exists:groups,id'
-            ]);
-
-            // Check if relationship already exists
-            $exists = TeacherOf::where('teacher_id', $validated['teacher_id'])
-                               ->where('group_id', $validated['group_id'])
-                               ->exists();
-
-            if ($exists) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Teacher is already assigned to this group'
-                ], 409);
-            }
-
-            $teacherOf = TeacherOf::create($validated);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Teacher assigned to group successfully',
-                'data' => $teacherOf->load(['teacher.user', 'group'])
-            ], 201);
-
-        } catch (ValidationException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation failed',
-                'errors' => $e->errors()
-            ], 422);
-        }
     }
 
     /**
@@ -92,7 +91,7 @@ class TeacherOfController extends Controller
         if (!$teacherOf) {
             return response()->json([
                 'success' => false,
-                'message' => 'Teacher group relationship not found'
+                'message' => 'Teacher group relationship not found',
             ], 404);
         }
 
@@ -100,7 +99,7 @@ class TeacherOfController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Teacher removed from group successfully'
+            'message' => 'Teacher removed from group successfully',
         ]);
     }
 
@@ -112,17 +111,17 @@ class TeacherOfController extends Controller
         try {
             $validated = $request->validate([
                 'teacher_id' => 'required|integer|exists:teachers,user_id',
-                'group_id' => 'required|integer|exists:groups,id'
+                'group_id'   => 'required|integer|exists:groups,id',
             ]);
 
             $teacherOf = TeacherOf::where('teacher_id', $validated['teacher_id'])
-                                  ->where('group_id', $validated['group_id'])
-                                  ->first();
+                ->where('group_id', $validated['group_id'])
+                ->first();
 
             if (!$teacherOf) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Teacher is not assigned to this group'
+                    'message' => 'Teacher is not assigned to this group',
                 ], 404);
             }
 
@@ -130,14 +129,13 @@ class TeacherOfController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Teacher removed from group successfully'
+                'message' => 'Teacher removed from group successfully',
             ]);
-
         } catch (ValidationException $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
-                'errors' => $e->errors()
+                'errors'  => $e->errors(),
             ], 422);
         }
     }

@@ -44,8 +44,8 @@ class AppServiceProvider extends ServiceProvider
 
         /* Define morph aliasses */
         Relation::enforceMorphMap([
-            'token'         => Models\Token::class,
-            'user'          => Models\User::class,
+            'token' => Models\Token::class,
+            'user'  => Models\User::class,
         ]);
 
         /* Sanctum */

@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Language;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
 class LanguageController extends Controller
@@ -18,8 +18,34 @@ class LanguageController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $languages
+            'data'    => $languages,
         ]);
+    }
+
+    /**
+     * Create a new language
+     */
+    public function store(Request $request): JsonResponse
+    {
+        try {
+            $validated = $request->validate([
+                'language_name' => 'required|string|max:255',
+            ]);
+
+            $language = Language::create($validated);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Language created successfully',
+                'data'    => $language->load('assignments'),
+            ], 201);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors'  => $e->errors(),
+            ], 422);
+        }
     }
 
     /**
@@ -32,41 +58,14 @@ class LanguageController extends Controller
         if (!$language) {
             return response()->json([
                 'success' => false,
-                'message' => 'Language not found'
+                'message' => 'Language not found',
             ], 404);
         }
 
         return response()->json([
             'success' => true,
-            'data' => $language
+            'data'    => $language,
         ]);
-    }
-
-    /**
-     * Create a new language
-     */
-    public function store(Request $request): JsonResponse
-    {
-        try {
-            $validated = $request->validate([
-                'language_name' => 'required|string|max:255'
-            ]);
-
-            $language = Language::create($validated);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Language created successfully',
-                'data' => $language->load('assignments')
-            ], 201);
-
-        } catch (ValidationException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation failed',
-                'errors' => $e->errors()
-            ], 422);
-        }
     }
 
     /**
@@ -79,13 +78,13 @@ class LanguageController extends Controller
         if (!$language) {
             return response()->json([
                 'success' => false,
-                'message' => 'Language not found'
+                'message' => 'Language not found',
             ], 404);
         }
 
         try {
             $validated = $request->validate([
-                'language_name' => 'sometimes|required|string|max:255'
+                'language_name' => 'sometimes|required|string|max:255',
             ]);
 
             $language->update($validated);
@@ -93,14 +92,13 @@ class LanguageController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Language updated successfully',
-                'data' => $language->load('assignments')
+                'data'    => $language->load('assignments'),
             ]);
-
         } catch (ValidationException $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
-                'errors' => $e->errors()
+                'errors'  => $e->errors(),
             ], 422);
         }
     }
@@ -115,7 +113,7 @@ class LanguageController extends Controller
         if (!$language) {
             return response()->json([
                 'success' => false,
-                'message' => 'Language not found'
+                'message' => 'Language not found',
             ], 404);
         }
 
@@ -123,7 +121,7 @@ class LanguageController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Language deleted successfully'
+            'message' => 'Language deleted successfully',
         ]);
     }
 
@@ -137,13 +135,13 @@ class LanguageController extends Controller
         if (!$language) {
             return response()->json([
                 'success' => false,
-                'message' => 'Language not found'
+                'message' => 'Language not found',
             ], 404);
         }
 
         return response()->json([
             'success' => true,
-            'data' => $language->assignments
+            'data'    => $language->assignments,
         ]);
     }
 }

@@ -20,7 +20,7 @@ class Submission extends Model
         'correct_answer',
         'student_id',
         'teacher_id',
-        'feedback'
+        'feedback',
     ];
 
     /**
