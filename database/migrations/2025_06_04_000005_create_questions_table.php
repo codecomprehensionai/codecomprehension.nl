@@ -28,6 +28,8 @@ return new class extends Migration
             $table->text('code')->nullable();
             $table->json('options')->nullable();
             $table->text('answer')->nullable();
+
+            $table->timestamps();
         });
     }
 

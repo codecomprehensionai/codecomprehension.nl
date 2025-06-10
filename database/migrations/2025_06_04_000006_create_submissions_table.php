@@ -16,6 +16,8 @@ return new class extends Migration
             $table->text('answer');
             $table->text('feedback')->nullable();
             $table->boolean('is_correct')->default(false);
+
+            $table->timestamps();
         });
     }
 
