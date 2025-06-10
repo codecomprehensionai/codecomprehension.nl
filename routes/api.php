@@ -2,6 +2,10 @@
 
 use Illuminate\Support\Facades\Route;
 
+Route::prefix('v1')->as('v1:')->group(function (): void {
+    Route::webhooks('llm', 'llm');
+});
+
 // Route::prefix('api')->group(function () {
 //     // User routes
 //     Route::prefix('users')->group(function () {
