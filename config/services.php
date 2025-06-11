@@ -35,7 +35,7 @@ return [
     ],
 
     'canvas' => [
-        'client_id' => env('CANVAS_CLIENT_ID'),
+        'client_id'     => env('CANVAS_CLIENT_ID'),
         'client_secret' => env('CANVAS_CLIENT_SECRET'),
     ],
 ];
