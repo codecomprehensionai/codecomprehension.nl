@@ -1,10 +1,14 @@
 <?php
 
+use App\Http\Controllers\LTI\LtiLaunchController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->as('v1:')->group(function (): void {
     Route::webhooks('webhooks/question', 'question.create');
     Route::webhooks('webhooks/question/update', 'question.update');
+
+    Route::post('oidc', LtiLaunchController::class)->name('oidc.launch');
+    Route::post('oidc/callback', LtiLaunchController::class)->name('oidc.callback');
 });
 
 // Route::prefix('api')->group(function () {
