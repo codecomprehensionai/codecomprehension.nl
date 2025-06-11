@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\LTI;
 
 use App\Models\LtiSession;
-use Illuminate\Http\Request;
 use Firebase\JWT\JWK;
 use Firebase\JWT\JWT;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
 class LtiCallbackController
@@ -30,5 +30,7 @@ class LtiCallbackController
             ->json();
 
         $payload = JWT::decode($validated['id_token'], JWK::parseKeySet($jwks));
+
+        // https://developerdocs.instructure.com/services/canvas/external-tools/lti/file.lti_launch_overview
     }
 }
