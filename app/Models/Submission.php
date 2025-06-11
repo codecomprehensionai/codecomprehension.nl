@@ -4,31 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Submission extends Model
 {
+    /** @use HasFactory<\Database\Factories\SubmissionFactory> */
     use HasFactory;
-
-    /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
-    protected $table = 'submissions';
-
-    /**
-     * The primary key associated with the table.
-     *
-     * @var string
-     */
-    protected $primaryKey = 'id';
-
-    /**
-     * Indicates if the model should be timestamped.
-     *
-     * @var bool
-     */
-    public $timestamps = false;
 
     /**
      * The attributes that are mass assignable.
@@ -37,39 +18,39 @@ class Submission extends Model
      */
     protected $fillable = [
         'answer',
-        'correct_answer',
-        'student_id',
-        'teacher_id',
-        'feedback'
+        'feedback',
+        'is_correct',
     ];
 
     /**
-     * The attributes that should be cast.
+     * Get the group that owns the assignment.
      *
-     * @var array<string, string>
+     * @return BelongsTo<Question, Submission>
      */
-    protected $casts = [
-        'id' => 'integer',
-        'answer' => 'array',
-        'correct_answer' => 'integer',
-        'student_id' => 'integer',
-        'teacher_id' => 'integer',
-        'feedback' => 'string'
-    ];
-
-    /**
-     * Get the student that made the submission.
-     */
-    public function student()
+    public function question(): BelongsTo
     {
-        return $this->belongsTo(Student::class, 'student_id', 'user_id');
+        return $this->belongsTo(Question::class);
     }
 
     /**
-     * Get the teacher that graded the submission.
+     * Get the user who submitted the answer.
+     *
+     * @return BelongsTo<User, Submission>
      */
-    public function teacher()
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(Teacher::class, 'teacher_id', 'user_id');
+        return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'is_correct' => 'boolean',
+        ];
     }
 }

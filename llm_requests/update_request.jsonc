@@ -1,0 +1,53 @@
+// PUT to API/v1/question
+
+{
+    "assignment": {
+        "id": "",
+        "title": "",
+        "description": "",
+    },
+    "questions": [
+        {
+            "id": "",
+            "language": "",
+            "type": "",
+            "level": "",
+            "estimated_answer_duration": "",
+            "topics": [""],
+            "tags": [""],
+            "question": "",
+            "explanation": "",
+            "code": "",
+            "options": [""],
+            "answer": "",
+        },
+    ],
+    "existing_question": {
+        "id": "",
+        "language": "",
+        "type": "",
+        "level": "",
+        "estimated_answer_duration": "",
+        "topics": [""],
+        "tags": [""],
+        "question": "",
+        "explanation": "",
+        "code": "",
+        "options": [""],
+        "answer": "",
+    },
+    "update_question": {
+        "language": "",
+        "type": "",
+        "level": "",
+        "estimated_answer_duration": "",
+        "topics": [""],
+        "tags": [""],
+        "question": "",
+        "explanation": "",
+        "code": "",
+        "options": [""],
+        "answer": "",
+    },
+    "update_question_prompt": "",
+}

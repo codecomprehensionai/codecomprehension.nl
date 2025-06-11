@@ -1,0 +1,56 @@
+#!/usr/bin/env sh
+set -e
+
+octane_server=${OCTANE_SERVER}
+container_mode=${CONTAINER_MODE}
+
+initialize() {
+    echo "CONTAINER_MODE: $container_mode"
+
+    echo
+    echo "--- Decrypt Environment ---"
+    php artisan env:decrypt --force --filename=.env --env=$APP_ENV
+
+    echo
+    echo "--- Optimize ---"
+    php artisan optimize:clear
+    php artisan optimize
+}
+
+if [ "$1" != "" ]; then
+    exec "$@"
+
+elif [ "${container_mode}" = "http" ]; then
+    if [ "${octane_server}" != "frankenphp" ]; then
+        echo "Invalid OCTANE_SERVER supplied."
+        exit 1
+    fi
+
+    initialize
+    exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.frankenphp.conf
+
+elif [ "${container_mode}" = "scheduler" ]; then
+    initialize
+    exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.scheduler.conf
+
+elif [ "${container_mode}" = "horizon" ]; then
+    initialize
+    exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.horizon.conf
+
+elif [ "${container_mode}" = "reverb" ]; then
+    initialize
+    exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.reverb.conf
+
+elif [ "${container_mode}" = "worker" ]; then
+    if [ -z "${WORKER_COMMAND}" ]; then
+        echo "WORKER_COMMAND is undefined."
+        exit 1
+    fi
+
+    initialize
+    exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.worker.conf
+
+else
+    echo "Invalid CONTAINER_MODE supplied."
+    exit 1
+fi

@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Group;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
 class GroupController extends Controller
@@ -18,8 +18,34 @@ class GroupController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $groups
+            'data'    => $groups,
         ]);
+    }
+
+    /**
+     * Create a new group
+     */
+    public function store(Request $request): JsonResponse
+    {
+        try {
+            $validated = $request->validate([
+                'group_name' => 'required|string|max:255',
+            ]);
+
+            $group = Group::create($validated);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Group created successfully',
+                'data'    => $group->load(['assignments', 'students', 'teachers']),
+            ], 201);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors'  => $e->errors(),
+            ], 422);
+        }
     }
 
     /**
@@ -32,41 +58,14 @@ class GroupController extends Controller
         if (!$group) {
             return response()->json([
                 'success' => false,
-                'message' => 'Group not found'
+                'message' => 'Group not found',
             ], 404);
         }
 
         return response()->json([
             'success' => true,
-            'data' => $group
+            'data'    => $group,
         ]);
-    }
-
-    /**
-     * Create a new group
-     */
-    public function store(Request $request): JsonResponse
-    {
-        try {
-            $validated = $request->validate([
-                'group_name' => 'required|string|max:255'
-            ]);
-
-            $group = Group::create($validated);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Group created successfully',
-                'data' => $group->load(['assignments', 'students', 'teachers'])
-            ], 201);
-
-        } catch (ValidationException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation failed',
-                'errors' => $e->errors()
-            ], 422);
-        }
     }
 
     /**
@@ -79,13 +78,13 @@ class GroupController extends Controller
         if (!$group) {
             return response()->json([
                 'success' => false,
-                'message' => 'Group not found'
+                'message' => 'Group not found',
             ], 404);
         }
 
         try {
             $validated = $request->validate([
-                'group_name' => 'sometimes|required|string|max:255'
+                'group_name' => 'sometimes|required|string|max:255',
             ]);
 
             $group->update($validated);
@@ -93,14 +92,13 @@ class GroupController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Group updated successfully',
-                'data' => $group->load(['assignments', 'students', 'teachers'])
+                'data'    => $group->load(['assignments', 'students', 'teachers']),
             ]);
-
         } catch (ValidationException $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
-                'errors' => $e->errors()
+                'errors'  => $e->errors(),
             ], 422);
         }
     }
@@ -115,7 +113,7 @@ class GroupController extends Controller
         if (!$group) {
             return response()->json([
                 'success' => false,
-                'message' => 'Group not found'
+                'message' => 'Group not found',
             ], 404);
         }
 
@@ -123,7 +121,7 @@ class GroupController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Group deleted successfully'
+            'message' => 'Group deleted successfully',
         ]);
     }
 
@@ -137,13 +135,13 @@ class GroupController extends Controller
         if (!$group) {
             return response()->json([
                 'success' => false,
-                'message' => 'Group not found'
+                'message' => 'Group not found',
             ], 404);
         }
 
         return response()->json([
             'success' => true,
-            'data' => $group->assignments
+            'data'    => $group->assignments,
         ]);
     }
 
@@ -157,13 +155,13 @@ class GroupController extends Controller
         if (!$group) {
             return response()->json([
                 'success' => false,
-                'message' => 'Group not found'
+                'message' => 'Group not found',
             ], 404);
         }
 
         return response()->json([
             'success' => true,
-            'data' => $group->students
+            'data'    => $group->students,
         ]);
     }
 
@@ -177,13 +175,13 @@ class GroupController extends Controller
         if (!$group) {
             return response()->json([
                 'success' => false,
-                'message' => 'Group not found'
+                'message' => 'Group not found',
             ], 404);
         }
 
         return response()->json([
             'success' => true,
-            'data' => $group->teachers
+            'data'    => $group->teachers,
         ]);
     }
 }

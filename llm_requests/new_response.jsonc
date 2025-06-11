@@ -1,0 +1,21 @@
+// POST to APP/v1/webhooks/question
+
+{
+    "assignment": {
+        "id": "",
+    },
+    "question": {
+        "language": "",
+        "type": "",
+        "level": "",
+        "estimated_answer_duration": "",
+        "topics": [""],
+        "tags": [""],
+        "question": "",
+        "explanation": "",
+        "code": "",
+        "options": [""],
+        "answer": "",
+    },
+    "summary": "",
+}

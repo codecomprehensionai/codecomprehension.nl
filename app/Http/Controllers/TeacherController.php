@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Teacher;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
 class TeacherController extends Controller
@@ -18,8 +18,34 @@ class TeacherController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $teachers
+            'data'    => $teachers,
         ]);
+    }
+
+    /**
+     * Create a new teacher
+     */
+    public function store(Request $request): JsonResponse
+    {
+        try {
+            $validated = $request->validate([
+                'user_id' => 'required|integer|exists:users,id|unique:teachers,user_id',
+            ]);
+
+            $teacher = Teacher::create($validated);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Teacher created successfully',
+                'data'    => $teacher->load(['user', 'groups', 'submissions']),
+            ], 201);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors'  => $e->errors(),
+            ], 422);
+        }
     }
 
     /**
@@ -32,41 +58,14 @@ class TeacherController extends Controller
         if (!$teacher) {
             return response()->json([
                 'success' => false,
-                'message' => 'Teacher not found'
+                'message' => 'Teacher not found',
             ], 404);
         }
 
         return response()->json([
             'success' => true,
-            'data' => $teacher
+            'data'    => $teacher,
         ]);
-    }
-
-    /**
-     * Create a new teacher
-     */
-    public function store(Request $request): JsonResponse
-    {
-        try {
-            $validated = $request->validate([
-                'user_id' => 'required|integer|exists:users,id|unique:teachers,user_id'
-            ]);
-
-            $teacher = Teacher::create($validated);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Teacher created successfully',
-                'data' => $teacher->load(['user', 'groups', 'submissions'])
-            ], 201);
-
-        } catch (ValidationException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation failed',
-                'errors' => $e->errors()
-            ], 422);
-        }
     }
 
     /**
@@ -79,7 +78,7 @@ class TeacherController extends Controller
         if (!$teacher) {
             return response()->json([
                 'success' => false,
-                'message' => 'Teacher not found'
+                'message' => 'Teacher not found',
             ], 404);
         }
 
@@ -87,7 +86,7 @@ class TeacherController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Teacher deleted successfully'
+            'message' => 'Teacher deleted successfully',
         ]);
     }
 
@@ -101,13 +100,13 @@ class TeacherController extends Controller
         if (!$teacher) {
             return response()->json([
                 'success' => false,
-                'message' => 'Teacher not found'
+                'message' => 'Teacher not found',
             ], 404);
         }
 
         return response()->json([
             'success' => true,
-            'data' => $teacher->groups
+            'data'    => $teacher->groups,
         ]);
     }
 
@@ -121,13 +120,13 @@ class TeacherController extends Controller
         if (!$teacher) {
             return response()->json([
                 'success' => false,
-                'message' => 'Teacher not found'
+                'message' => 'Teacher not found',
             ], 404);
         }
 
         return response()->json([
             'success' => true,
-            'data' => $teacher->submissions
+            'data'    => $teacher->submissions,
         ]);
     }
 }

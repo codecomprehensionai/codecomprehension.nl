@@ -3,14 +3,22 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use App\Enums\UserType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
+    use HasApiTokens;
+
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory;
+
+    use Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -18,6 +26,7 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
+        'type',
         'name',
         'email',
         'password',
@@ -34,6 +43,18 @@ class User extends Authenticatable
     ];
 
     /**
+     * Get the groups this user belongs to.
+     *
+     * @return BelongsToMany<Group, User>
+     */
+    public function groups()
+    {
+        return $this->belongsToMany(Group::class, 'group_users')
+            ->using(GroupUser::class)
+            ->withTimestamps();
+    }
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
@@ -41,24 +62,9 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
+            'type'              => UserType::class,
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'password'          => 'hashed',
         ];
-    }
-
-    /**
-     * Get the student profile associated with the user.
-     */
-    public function student()
-    {
-        return $this->hasOne(Student::class, 'user_id');
-    }
-
-    /**
-     * Get the teacher profile associated with the user.
-     */
-    public function teacher()
-    {
-        return $this->hasOne(Teacher::class, 'user_id');
     }
 }
