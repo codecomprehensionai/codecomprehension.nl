@@ -1,8 +1,10 @@
+// POST to API/v1/question
+
 {
     "assignment": {
         "id": "",
         "title": "",
-        "description": ""
+        "description": "",
     },
     "questions": [
         {
@@ -11,32 +13,22 @@
             "type": "",
             "level": "",
             "estimated_answer_duration": "",
-            "topics": [
-                ""
-            ],
-            "tags": [
-                ""
-            ],
+            "topics": [""],
+            "tags": [""],
             "question": "",
             "explanation": "",
             "code": "",
-            "options": [
-                ""
-            ],
-            "answer": ""
-        }
+            "options": [""],
+            "answer": "",
+        },
     ],
     "new_question_configuration": {
         "language": "",
         "type": "",
         "level": "",
         "estimated_answer_duration": "",
-        "topics": [
-            ""
-        ],
-        "tags": [
-            ""
-        ]
+        "topics": [""],
+        "tags": [""],
     },
-    "new_question_prompt": ""
+    "new_question_prompt": "",
 }

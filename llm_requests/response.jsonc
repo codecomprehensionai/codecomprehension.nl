@@ -1,26 +1,22 @@
+// POST to APP/v1/webhooks/llm/question
+
 {
     "assignment": {
         "id": "",
         "title": "",
-        "description": ""
+        "description": "",
     },
     "new_question": {
         "language": "",
         "type": "",
         "level": "",
         "estimated_answer_duration": "",
-        "topics": [
-            ""
-        ],
-        "tags": [
-            ""
-        ],
+        "topics": [""],
+        "tags": [""],
         "question": "",
         "explanation": "",
         "code": "",
-        "options": [
-            ""
-        ],
-        "answer": ""
-    }
+        "options": [""],
+        "answer": "",
+    },
 }
