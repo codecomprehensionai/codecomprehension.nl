@@ -3,7 +3,8 @@
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->as('v1:')->group(function (): void {
-    Route::webhooks('llm', 'llm');
+    Route::webhooks('webhooks/question', 'question.create');
+    Route::webhooks('webhooks/question/update', 'question.update');
 });
 
 // Route::prefix('api')->group(function () {

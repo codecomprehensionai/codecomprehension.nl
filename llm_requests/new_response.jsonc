@@ -1,4 +1,4 @@
-// POST to APP/v1/webhooks/question/create
+// POST to APP/v1/webhooks/question
 
 {
     "assignment": {
