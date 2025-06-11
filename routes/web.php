@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\StudentDashboardController;
+use App\Http\Controllers\TeacherDashboardController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -34,4 +36,10 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', fn () => Inertia::render('dashboard'))->name('dashboard');
+    
+    // Teacher dashboard
+    Route::get('teacher', [TeacherDashboardController::class, 'index'])->name('teacher.dashboard');
+    
+    // Student dashboard  
+    Route::get('student', [StudentDashboardController::class, 'index'])->name('student.dashboard');
 });
