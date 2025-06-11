@@ -1,12 +1,10 @@
-// POST to APP/v1/webhooks/llm/question
+// POST to APP/v1/webhooks/question/create
 
 {
     "assignment": {
         "id": "",
-        "title": "",
-        "description": "",
     },
-    "new_question": {
+    "question": {
         "language": "",
         "type": "",
         "level": "",
@@ -19,4 +17,5 @@
         "options": [""],
         "answer": "",
     },
+    "summary": "",
 }
