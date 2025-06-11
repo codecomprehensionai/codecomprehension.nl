@@ -4,7 +4,7 @@
     "assignment": {
         "id": "",
         "title": "",
-        "description": "",
+        "description": ""
     },
     "questions": [
         {
@@ -19,8 +19,8 @@
             "explanation": "",
             "code": "",
             "options": [""],
-            "answer": "",
-        },
+            "answer": ""
+        }
     ],
     "existing_question": {
         "id": "",
@@ -34,7 +34,7 @@
         "explanation": "",
         "code": "",
         "options": [""],
-        "answer": "",
+        "answer": ""
     },
     "update_question": {
         "language": "",
@@ -47,7 +47,7 @@
         "explanation": "",
         "code": "",
         "options": [""],
-        "answer": "",
+        "answer": ""
     },
-    "update_question_prompt": "",
+    "update_question_prompt": ""
 }
