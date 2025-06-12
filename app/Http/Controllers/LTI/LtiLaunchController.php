@@ -15,6 +15,7 @@ class LtiLaunchController
         $validated = $request->validate([
             'iss'                => 'required',
             'login_hint'         => 'required',
+            'lti_message_hint'   => 'nullable',
             'target_link_uri'    => 'required|url',
             'client_id'          => 'required',
             'deployment_id'      => 'required',
@@ -23,19 +24,21 @@ class LtiLaunchController
         ]);
 
         $session = LtiSession::create($validated);
+        $baseUrl = 'https://sso.test.canvaslms.com/api/lti/authorize_redirect';
+        $params = [
+            'scope'            => 'openid',
+            'response_type'    => 'id_token',
+            'client_id'        => $session->client_id,
+            'redirect_uri'     => route('auth.callback'),
+            'login_hint'       => $session->login_hint,
+            'lti_message_hint' => $session->lti_message_hint,
+            'state'            => $session->state,
+            'response_mode'    => 'form_post',
+            'nonce'            => $session->nonce,
+            'prompt'           => 'none',
+        ];
 
-        $url = url('https://sso.test.canvaslms.com/api/lti/authorize_redirect', [
-            'scope'         => 'openid',
-            'response_type' => 'id_token',
-            'client_id'     => $session->client_id,
-            'redirect_uri'  => route('v1:oidc.callback'),
-            'login_hint'    => $session->login_hint,
-            'state'         => $session->state,
-            'response_mode' => 'form_post',
-            'nonce'         => $session->nonce,
-            'prompt'        => 'none',
-        ]);
-
+        $url = $baseUrl . '?' . http_build_query($params);
         return redirect($url);
     }
 }

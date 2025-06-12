@@ -15,6 +15,7 @@ class LtiSession extends Model
     protected $fillable = [
         'iss',
         'login_hint',
+        'lti_message_hint',
         'target_link_uri',
         'client_id',
         'deployment_id',
