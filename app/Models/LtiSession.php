@@ -27,6 +27,7 @@ class LtiSession extends Model
         static::creating(function (self $ltiSession) {
             $ltiSession->state = Str::random();
             $ltiSession->nonce = Str::random();
+            $ltiSession->expires_at = now()->addMinutes(10);
         });
     }
 }

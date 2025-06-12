@@ -19,6 +19,13 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->encryptCookies(except: ['appearance', 'sidebar_state']);
 
+
+        // Session bestaat pas na de callback, dus we kunnen de CSRF token niet valideren
+        $middleware->validateCsrfTokens(except: [
+            'auth/oidc',
+            'auth/callback',
+        ]);
+
         $middleware->web(append: [
             HandleAppearance::class,
             HandleInertiaRequests::class,

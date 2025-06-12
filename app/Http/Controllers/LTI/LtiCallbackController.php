@@ -32,5 +32,7 @@ class LtiCallbackController
         $payload = JWT::decode($validated['id_token'], JWK::parseKeySet($jwks));
 
         // https://developerdocs.instructure.com/services/canvas/external-tools/lti/file.lti_launch_overview
+
+        dd($payload);
     }
 }
