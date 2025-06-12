@@ -4,10 +4,11 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\LTI\LtiLaunchController;
 use App\Http\Controllers\LTI\LtiCallbackController;
-
+use Illuminate\Support\Facades\Auth;
 
 
 Route::get('/', fn () => Inertia::render('welcome'))->name('home');
+Route::get('/test', fn () => dd(Auth::user()))->name('test');
 
 Route::middleware('guest')->group(function () {
     Route::post('auth/oidc', LtiLaunchController::class)->name('auth.oidc');
