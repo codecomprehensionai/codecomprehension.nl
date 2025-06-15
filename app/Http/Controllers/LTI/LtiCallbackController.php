@@ -5,6 +5,7 @@ namespace App\Http\Controllers\LTI;
 use App\Data\LtiUserData;
 use App\Models\LtiSession;
 use App\Models\User;
+use Cache;
 use Firebase\JWT\JWK;
 use Firebase\JWT\JWT;
 use Illuminate\Http\Request;
@@ -39,11 +40,12 @@ class LtiCallbackController
 
         $session->update(['used_at' => now()]);
 
-        // TODO: add cache
         // TODO: configure url
-        $jwks = Http::get('https://canvas.test.instructure.com/api/lti/security/jwks')
-            ->throw()
-            ->json();
+        $jwks = Cache::flexible(
+            'cloudflare-access.jwks',
+            [300, 3600],
+            fn() => Http::get('https://canvas.test.instructure.com/api/lti/security/jwks')->throw()->json()
+        );
 
         try {
             $jwt = JWT::decode($validated['id_token'], JWK::parseKeySet($jwks));
