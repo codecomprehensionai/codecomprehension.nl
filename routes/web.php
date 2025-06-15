@@ -1,25 +1,18 @@
 <?php
 
+use App\Http\Controllers\LTI\LtiCallbackController;
+use App\Http\Controllers\LTI\LtiLaunchController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-use App\Http\Controllers\LTI\LtiLaunchController;
-use App\Http\Controllers\LTI\LtiCallbackController;
-use Illuminate\Support\Facades\Auth;
-
-
-Route::get('/', fn () => Inertia::render('welcome'))->name('home');
-Route::get('/test', fn () => dd(Auth::user()))->name('test');
 
 Route::middleware('guest')->group(function () {
-    Route::post('auth/oidc', LtiLaunchController::class)->name('auth.oidc');
+    Route::post('auth/oidc', LtiLaunchController::class)->name('auth.launch');
     Route::post('auth/callback', LtiCallbackController::class)->name('auth.callback');
-    Route::get('auth/login', fn () => 'todo: display error "login through canvas"')->name('auth.login');
-});
-
-Route::middleware('auth')->group(function () {
-    Route::post('auth/logout', fn () => 'todo: handle logout')->name('auth.logout');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', fn () => Inertia::render('dashboard'))->name('dashboard');
 });
+
+Route::get('test', fn () => dd(Auth::user()))->name('test');

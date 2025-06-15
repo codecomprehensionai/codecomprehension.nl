@@ -25,6 +25,7 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
+            'lti_id'            => fake()->unique()->uuid(),
             'name'              => fake()->name(),
             'email'             => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
@@ -32,7 +33,6 @@ class UserFactory extends Factory
             'remember_token'    => Str::random(10),
             'avatar_url'        => fake()->imageUrl(640, 480, 'people', true),
             'locale'            => 'en-GB',
-            'lti_user_id'       => fake()->unique()->uuid(),
         ];
     }
 

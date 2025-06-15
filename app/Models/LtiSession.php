@@ -15,7 +15,7 @@ class LtiSession extends Model
     protected $fillable = [
         'iss',
         'login_hint',
-        'lti_message_hint',
+        'message_hint',
         'target_link_uri',
         'client_id',
         'deployment_id',
@@ -26,9 +26,21 @@ class LtiSession extends Model
     protected static function booted(): void
     {
         static::creating(function (self $ltiSession) {
-            $ltiSession->state = Str::random();
-            $ltiSession->nonce = Str::random();
+            $ltiSession->state = Str::ulid();
+            $ltiSession->nonce = Str::ulid();
             $ltiSession->expires_at = now()->addMinutes(10);
         });
+    }
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'expires_at' => 'datetime',
+        ];
     }
 }

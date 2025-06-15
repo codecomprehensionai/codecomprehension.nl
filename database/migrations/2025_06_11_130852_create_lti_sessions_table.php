@@ -13,14 +13,15 @@ return new class extends Migration
 
             $table->text('iss');
             $table->text('login_hint');
+            $table->text('message_hint')->nullable();
             $table->text('target_link_uri');
             $table->string('client_id');
             $table->string('deployment_id');
             $table->string('canvas_region');
             $table->string('canvas_environment');
 
-            $table->string('state')->unique();
-            $table->string('nonce');
+            $table->ulid('state')->unique();
+            $table->ulid('nonce')->unique();
 
             $table->timestamp('expires_at');
             $table->timestamps();
