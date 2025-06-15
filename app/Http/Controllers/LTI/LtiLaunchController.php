@@ -29,7 +29,7 @@ class LtiLaunchController
             'scope'         => 'openid',
             'response_type' => 'id_token',
             'client_id'     => $session->client_id,
-            'redirect_uri'  => route('auth.callback'),
+            'redirect_uri'  => route('v1:oidc.callback'),
             'login_hint'    => $session->login_hint,
             'message_hint'  => $session->message_hint,
             'state'         => $session->state,

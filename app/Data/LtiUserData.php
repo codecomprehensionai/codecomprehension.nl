@@ -8,7 +8,7 @@ use Spatie\LaravelData\Attributes\Validation\Required;
 use Spatie\LaravelData\Attributes\Validation\Url;
 use Spatie\LaravelData\Data;
 
-class LtiData extends Data
+class LtiUserData extends Data
 {
     public function __construct(
         #[Required]

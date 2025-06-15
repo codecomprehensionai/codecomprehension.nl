@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\LTI;
 
-use App\Data\LtiData;
+use App\Data\LtiUserData;
 use App\Models\LtiSession;
 use App\Models\User;
 use Firebase\JWT\JWK;
@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
+use Throwable;
 
 class LtiCallbackController
 {
@@ -26,32 +27,47 @@ class LtiCallbackController
             'lti_storage_target' => 'nullable',
         ]);
 
-        // TODO: check if session is used correctly and securely
         $session = LtiSession::query()
             ->where('state', $validated['state'])
             ->whereNowOrFuture('expires_at')
-            ->firstOrFail();
+            ->whereNull('used_at')
+            ->first();
+
+        if (!$session) {
+            abort(401, 'Invalid LTI session.');
+        }
+
+        $session->update(['used_at' => now()]);
 
         // TODO: add cache
+        // TODO: configure url
         $jwks = Http::get('https://canvas.test.instructure.com/api/lti/security/jwks')
             ->throw()
             ->json();
 
-        $payload = JWT::decode($validated['id_token'], JWK::parseKeySet($jwks));
-        $ltiData = LtiData::fromJwt($payload);
+        try {
+            $jwt = JWT::decode($validated['id_token'], JWK::parseKeySet($jwks));
 
-        $user = User::firstOrCreate(['lti_id' => $ltiData->ltiId], [
-            'lti_id'     => $ltiData->ltiId,
-            'type'       => $ltiData->type,
-            'name'       => $ltiData->name,
-            'email'      => $ltiData->email,
-            'password'   => Str::password(),
-            'avatar_url' => $ltiData->avatarUrl,
-            'locale'     => $ltiData->locale,
+            // TODO: validate iss and nonce
+
+            $data = LtiUserData::fromJwt($jwt);
+        } catch (Throwable) {
+            abort(401, 'Invalid LTI token.');
+        }
+
+        $user = User::updateOrCreate(['lti_id' => $data->ltiId], [
+            'lti_id'            => $data->ltiId,
+            'type'              => $data->type,
+            'name'              => $data->name,
+            'email'             => $data->email,
+            'email_verified_at' => now(),
+            'password'          => Str::password(),
+            'avatar_url'        => $data->avatarUrl,
+            'locale'            => $data->locale,
         ]);
 
         Auth::login($user);
 
-        return redirect()->route('test'); // TODO: voor nu naar een test pagina
+        return redirect()->route('dashboard');
     }
 }

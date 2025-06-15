@@ -24,6 +24,7 @@ return new class extends Migration
             $table->ulid('nonce')->unique();
 
             $table->timestamp('expires_at');
+            $table->timestamp('used_at')->nullable();
             $table->timestamps();
         });
     }

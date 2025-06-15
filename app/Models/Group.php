@@ -51,7 +51,6 @@ class Group extends Model
      */
     public function teachers(): BelongsToMany
     {
-        // TODO: test
         return $this->users()->where('type', UserType::Teacher);
     }
 
@@ -62,7 +61,6 @@ class Group extends Model
      */
     public function students(): BelongsToMany
     {
-        // TODO: test
         return $this->users()->where('type', UserType::Student);
     }
 }
