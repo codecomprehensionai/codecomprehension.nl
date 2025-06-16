@@ -52,7 +52,7 @@ class LtiCallbackController
 
             $userData = LtiUserData::fromJwt($jwt);
         } catch (Throwable $e) {
-            dd($e);
+            dd($e); // TODO: solve this
 
             abort(401, 'Invalid LTI token.');
         }
