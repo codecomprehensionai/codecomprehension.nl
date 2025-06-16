@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\LTI;
+namespace App\Http\Controllers;
 
 use App\Data\LtiAssignmentData;
 use App\Data\LtiCourseData;
@@ -14,7 +14,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
-use Inertia\Inertia;
 use Throwable;
 
 class LtiCallbackController
@@ -40,7 +39,7 @@ class LtiCallbackController
         $jwks = Cache::flexible(
             'cloudflare-access.jwks',
             [300, 3600],
-            fn() => Http::get("{$endpoint}/api/lti/security/jwks")->throw()->json()
+            fn () => Http::get("{$endpoint}/api/lti/security/jwks")->throw()->json()
         );
 
         try {
@@ -81,7 +80,7 @@ class LtiCallbackController
             'locale'            => $userData->locale,
         ]);
 
-        Auth::login($user, true);
+        Auth::login($user);
 
         return redirect()->route('dashboard');
     }

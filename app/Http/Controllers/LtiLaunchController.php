@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\LTI;
+namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
@@ -31,7 +31,7 @@ class LtiLaunchController
             'scope'            => 'openid',
             'response_type'    => 'id_token',
             'client_id'        => $validated['client_id'],
-            'redirect_uri'     => route('v1:oidc.callback'),
+            'redirect_uri'     => route('oidc.callback'),
             'login_hint'       => $validated['login_hint'],
             'lti_message_hint' => $validated['lti_message_hint'],
             'state'            => $state,

@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
-use Laravel\Sanctum\Sanctum;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -51,12 +50,8 @@ class AppServiceProvider extends ServiceProvider
             'assignment' => Models\Assignment::class,
             'question'   => Models\Question::class,
             'submission' => Models\Submission::class,
-            'token'      => Models\Token::class,
             'user'       => Models\User::class,
         ]);
-
-        /* Sanctum */
-        Sanctum::usePersonalAccessTokenModel(Models\Token::class);
 
         /* Carbon */
         Carbon::macro('inTimezone', function () {
