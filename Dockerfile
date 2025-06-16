@@ -36,7 +36,7 @@ FROM base AS vendor
 WORKDIR /app
 
 # Copy composer files
-COPY composer.json composer.lock auth.json ./
+COPY composer.json composer.lock ./
 
 # Install composer dependencies with cache
 RUN --mount=type=cache,target=/tmp/cache \
