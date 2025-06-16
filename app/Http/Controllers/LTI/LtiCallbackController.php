@@ -5,11 +5,11 @@ namespace App\Http\Controllers\LTI;
 use App\Data\LtiUserData;
 use App\Models\LtiSession;
 use App\Models\User;
-use Cache;
 use Firebase\JWT\JWK;
 use Firebase\JWT\JWT;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Throwable;
@@ -44,7 +44,7 @@ class LtiCallbackController
         $jwks = Cache::flexible(
             'cloudflare-access.jwks',
             [300, 3600],
-            fn() => Http::get('https://canvas.test.instructure.com/api/lti/security/jwks')->throw()->json()
+            fn () => Http::get('https://canvas.test.instructure.com/api/lti/security/jwks')->throw()->json()
         );
 
         try {
