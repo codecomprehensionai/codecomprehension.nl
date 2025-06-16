@@ -40,6 +40,6 @@ class LtiLaunchController
             'prompt'           => 'none',
         ];
 
-        return redirect('https://sso.test.canvaslms.com/api/lti/authorize_redirect?' . http_build_query($params));
+        return redirect('https://sso.test.canvaslms.com/api/lti/authorize_redirect?' . http_build_query($parameters));
     }
 }
