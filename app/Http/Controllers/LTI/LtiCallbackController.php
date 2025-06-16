@@ -31,34 +31,43 @@ class LtiCallbackController
             abort(401, 'Invalid state.');
         }
 
+        $endpoint = config('services.canvas.endpoint');
+
         $jwks = Cache::flexible(
             'cloudflare-access.jwks',
             [300, 3600],
-            // TODO: configure url
-            fn () => Http::get('https://canvas.test.instructure.com/api/lti/security/jwks')->throw()->json()
+            fn() => Http::get("{$endpoint}/api/lti/security/jwks")->throw()->json()
         );
 
         try {
             $jwt = JWT::decode($validated['id_token'], JWK::parseKeySet($jwks));
 
-            // TODO: validate iss and nonce
+            if ($jwt->iss !== $endpoint) {
+                abort(401, 'Invalid issuer.');
+            }
 
-            $data = LtiUserData::fromJwt($jwt);
+            if ($jwt->nonce !== $request->cookie('lti_nonce')) {
+                abort(401, 'Invalid nonce.');
+            }
 
-            dd($jwt, $data);
-        } catch (Throwable) {
+            $userData = LtiUserData::fromJwt($jwt);
+        } catch (Throwable $e) {
+            dd($e);
+
             abort(401, 'Invalid LTI token.');
         }
 
-        $user = User::updateOrCreate(['lti_id' => $data->ltiId], [
-            'type'              => $data->type,
-            'name'              => $data->name,
-            'email'             => $data->email,
+        $user = User::updateOrCreate(['lti_id' => $userData->ltiId], [
+            'type'              => $userData->type,
+            'name'              => $userData->name,
+            'email'             => $userData->email,
             'email_verified_at' => now(),
             'password'          => Str::password(),
-            'avatar_url'        => $data->avatarUrl,
-            'locale'            => $data->locale,
+            'avatar_url'        => $userData->avatarUrl,
+            'locale'            => $userData->locale,
         ]);
+
+        dd($jwt, $user);
 
         Auth::login($user);
 
