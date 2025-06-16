@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\LTI;
 
 use App\Data\LtiUserData;
-use App\Models\LtiSession;
 use App\Models\User;
 use Firebase\JWT\JWK;
 use Firebase\JWT\JWT;
@@ -28,22 +27,14 @@ class LtiCallbackController
             'lti_storage_target' => 'nullable',
         ]);
 
-        $session = LtiSession::query()
-            ->where('state', $validated['state'])
-            ->whereNowOrFuture('expires_at')
-            ->whereNull('used_at')
-            ->first();
-
-        if (!$session) {
-            abort(401, 'Invalid LTI session.');
+        if ($validated['state'] !== $request->cookie('lti_state')) {
+            abort(401, 'Invalid state.');
         }
 
-        $session->update(['used_at' => now()]);
-
-        // TODO: configure url
         $jwks = Cache::flexible(
             'cloudflare-access.jwks',
             [300, 3600],
+            // TODO: configure url
             fn () => Http::get('https://canvas.test.instructure.com/api/lti/security/jwks')->throw()->json()
         );
 
@@ -53,6 +44,8 @@ class LtiCallbackController
             // TODO: validate iss and nonce
 
             $data = LtiUserData::fromJwt($jwt);
+
+            dd($jwt, $data);
         } catch (Throwable) {
             abort(401, 'Invalid LTI token.');
         }

@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers\LTI;
 
-use App\Models\LtiSession;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Str;
 
 class LtiLaunchController
 {
@@ -23,22 +24,24 @@ class LtiLaunchController
             'canvas_environment' => 'required',
         ]);
 
-        $session = LtiSession::create($validated);
+        $state = Str::random();
+        $nonce = Str::random();
 
         $parameters = [
-            'scope'         => 'openid',
-            'response_type' => 'id_token',
-            'client_id'     => $session->client_id,
-            // TODO: 'redirect_uri'  => route('v1:oidc.callback'),
-            'redirect_uri'     => 'http://localhost:8000/api/v1/oidc/callback',
-            'login_hint'       => $session->login_hint,
-            'lti_message_hint' => $session->lti_message_hint,
-            'state'            => (string) $session->state,
+            'scope'            => 'openid',
+            'response_type'    => 'id_token',
+            'client_id'        => $validated['client_id'],
+            'redirect_uri'     => route('v1:oidc.callback'),
+            'login_hint'       => $validated['login_hint'],
+            'lti_message_hint' => $validated['lti_message_hint'],
+            'state'            => $state,
             'response_mode'    => 'form_post',
-            'nonce'            => (string) $session->nonce,
+            'nonce'            => $nonce,
             'prompt'           => 'none',
         ];
 
-        return redirect(url()->query('https://sso.test.canvaslms.com/api/lti/authorize_redirect', $parameters));
+        return redirect(url()->query('https://sso.test.canvaslms.com/api/lti/authorize_redirect', $parameters))
+            ->withCookie(Cookie::make('lti_state', $state, 10, httpOnly: true, sameSite: 'none'))
+            ->withCookie(Cookie::make('lti_nonce', $nonce, 10, httpOnly: true, sameSite: 'none'));
     }
 }
