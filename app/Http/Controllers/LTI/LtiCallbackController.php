@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
+use Inertia\Inertia;
 use Throwable;
 
 class LtiCallbackController
@@ -83,7 +84,7 @@ class LtiCallbackController
         Auth::login($user, true);
 
         // TODO: remove
-        return response(Auth::user());
+        return Inertia::render('dashboard');
 
         return redirect()->route('dashboard');
     }
