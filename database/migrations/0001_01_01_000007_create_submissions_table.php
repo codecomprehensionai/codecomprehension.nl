@@ -8,23 +8,20 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('groups', function (Blueprint $table) {
+        Schema::create('submissions', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->timestamps();
-        });
-
-        Schema::create('group_users', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('group_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
+            $table->string('lti_id')->nullable()->unique();
+            $table->foreignId('question_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
+            $table->text('answer');
+            $table->text('feedback')->nullable();
+            $table->boolean('is_correct')->default(false);
             $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('group_users');
-        Schema::dropIfExists('groups');
+        Schema::dropIfExists('submissions');
     }
 };

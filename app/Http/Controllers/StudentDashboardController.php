@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class StudentDashboardController extends Controller
+class StudentDashboardController
 {
     /**
      * Display the student dashboard with all required data

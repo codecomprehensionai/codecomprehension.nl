@@ -27,7 +27,7 @@ class LtiUserData extends Data
     public static function fromJwt(object $payload): self
     {
         return new self(
-            ltiId: $payload->{'https://purl.imsglobal.org/spec/lti/claim/lti1p1'}->user_id,
+            ltiId: $payload->sub,
             type: UserType::fromRoles($payload->{'https://purl.imsglobal.org/spec/lti/claim/roles'}),
             name: $payload->name,
             email: $payload->email,

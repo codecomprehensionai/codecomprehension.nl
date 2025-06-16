@@ -2,35 +2,18 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-
 use App\Enums\UserType;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasApiTokens;
-
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory;
 
     use Notifiable;
-
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
-    protected $fillable = [
-        'type',
-        'name',
-        'email',
-        'password',
-    ];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -41,18 +24,6 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
-
-    /**
-     * Get the groups this user belongs to.
-     *
-     * @return BelongsToMany<Group, User>
-     */
-    public function groups()
-    {
-        return $this->belongsToMany(Group::class, 'group_users')
-            ->using(GroupUser::class)
-            ->withTimestamps();
-    }
 
     /**
      * Get the attributes that should be cast.

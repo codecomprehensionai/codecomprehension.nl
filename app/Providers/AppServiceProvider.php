@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
-use Laravel\Sanctum\Sanctum;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -35,6 +34,9 @@ class AppServiceProvider extends ServiceProvider
         /* Destructive restrictions are applied in production and staging */
         DB::prohibitDestructiveCommands(app()->environment(['production', 'staging']));
 
+        /* Unguard models */
+        Model::unguard();
+
         /* Eager load relationships */
         Model::automaticallyEagerLoadRelationships();
 
@@ -44,17 +46,12 @@ class AppServiceProvider extends ServiceProvider
 
         /* Define morph aliasses */
         Relation::enforceMorphMap([
+            'course'     => Models\Course::class,
             'assignment' => Models\Assignment::class,
-            'group'      => Models\Group::class,
-            'group_user' => Models\GroupUser::class,
             'question'   => Models\Question::class,
             'submission' => Models\Submission::class,
-            'token'      => Models\Token::class,
             'user'       => Models\User::class,
         ]);
-
-        /* Sanctum */
-        Sanctum::usePersonalAccessTokenModel(Models\Token::class);
 
         /* Carbon */
         Carbon::macro('inTimezone', function () {

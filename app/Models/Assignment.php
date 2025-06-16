@@ -14,39 +14,17 @@ class Assignment extends Model
     use HasFactory;
 
     /**
-     * The attributes that are mass assignable.
+     * The course that the assignment belongs to.
      *
-     * @var array<int, string>
+     * @return BelongsTo<Course, Assignment>
      */
-    protected $fillable = [
-        'title',
-        'description',
-        'published_at',
-        'deadline_at',
-    ];
-
-    /**
-     * Get the group that owns the assignment.
-     *
-     * @return BelongsTo<Group, Assignment>
-     */
-    public function group(): BelongsTo
+    public function course(): BelongsTo
     {
-        return $this->belongsTo(Group::class);
+        return $this->belongsTo(Course::class);
     }
 
     /**
-     * Get the user created the assignment.
-     *
-     * @return BelongsTo<User, Assignment>
-     */
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
-    }
-
-    /**
-     * Get the questions for the assignment.
+     * The questions that belong to the assignment.
      *
      * @return HasMany<Question, Assignment>
      */
@@ -63,8 +41,7 @@ class Assignment extends Model
     protected function casts(): array
     {
         return [
-            'published_at' => 'datetime',
-            'deadline_at'  => 'datetime',
+            'deadline_at' => 'datetime',
         ];
     }
 

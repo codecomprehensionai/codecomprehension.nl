@@ -12,18 +12,7 @@ class Submission extends Model
     use HasFactory;
 
     /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
-    protected $fillable = [
-        'answer',
-        'feedback',
-        'is_correct',
-    ];
-
-    /**
-     * Get the group that owns the assignment.
+     * The question that the submission belongs to.
      *
      * @return BelongsTo<Question, Submission>
      */
@@ -33,7 +22,7 @@ class Submission extends Model
     }
 
     /**
-     * Get the user who submitted the answer.
+     * The user that the submission belongs to.
      *
      * @return BelongsTo<User, Submission>
      */

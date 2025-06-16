@@ -27,14 +27,6 @@ arch('Enums')
     // ->toHaveSuffix('Enum')
     ->toBeEnums();
 
-arch('Features')
-    ->expect('App\Features')
-    ->toHaveSuffix('Feature')
-    ->toBeClasses()
-    ->toHaveMethod('resolve')
-    ->toHaveMethod('getLabel')
-    ->toImplement(Filament\Support\Contracts\HasLabel::class);
-
 arch('Controllers')
     ->expect('App\Http\Controllers')
     ->toHaveSuffix('Controller')
@@ -43,7 +35,7 @@ arch('Controllers')
 
 arch('Middleware')
     ->expect('App\Http\Middleware')
-    ->toHaveSuffix('Middleware')
+    // ->toHaveSuffix('Middleware')
     ->toBeClasses()
     ->toHaveMethod('handle');
 

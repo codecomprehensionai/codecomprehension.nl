@@ -19,7 +19,7 @@ return new class extends Migration
             $table->integer('estimated_answer_duration');
 
             /* Question aidata */
-            $table->string('topic')->nullable();
+            $table->text('topic')->nullable();
             $table->json('tags')->nullable();
 
             /* Question content */
