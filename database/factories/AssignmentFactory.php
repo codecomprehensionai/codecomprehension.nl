@@ -19,7 +19,6 @@ class AssignmentFactory extends Factory
         return [
             'title'        => fake()->sentence(),
             'description'  => fake()->paragraph(),
-            'published_at' => fake()->dateTimeBetween('-1 month', 'now'),
             'deadline_at'  => fake()->dateTimeBetween('now', '+1 month'),
         ];
     }

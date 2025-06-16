@@ -41,7 +41,6 @@ class Assignment extends Model
     protected function casts(): array
     {
         return [
-            'published_at' => 'datetime',
             'deadline_at'  => 'datetime',
         ];
     }
@@ -49,7 +48,7 @@ class Assignment extends Model
     protected function estimatedAnswerDuration(): Attribute
     {
         return Attribute::make(
-            get: fn (): int => $this->questions
+            get: fn(): int => $this->questions
                 ->sum('estimated__answer_duration'),
         );
     }
@@ -57,7 +56,7 @@ class Assignment extends Model
     protected function topics(): Attribute
     {
         return Attribute::make(
-            get: fn (): array => $this->questions
+            get: fn(): array => $this->questions
                 ->pluck('topic')
                 ->filter()
                 ->unique()
@@ -69,7 +68,7 @@ class Assignment extends Model
     protected function tags(): Attribute
     {
         return Attribute::make(
-            get: fn (): array => $this->questions
+            get: fn(): array => $this->questions
                 ->pluck('tags')
                 ->filter()
                 ->flatten()
@@ -82,7 +81,7 @@ class Assignment extends Model
     protected function languages(): Attribute
     {
         return Attribute::make(
-            get: fn (): array => $this->questions
+            get: fn(): array => $this->questions
                 ->pluck('language')
                 ->filter()
                 ->unique()

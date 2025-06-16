@@ -40,6 +40,8 @@ class LtiLaunchController
             'prompt'           => 'none',
         ];
 
+        // TODO: make sure cookies are encrypted
+
         return redirect(url()->query('https://sso.test.canvaslms.com/api/lti/authorize_redirect', $parameters))
             ->withCookie(Cookie::make('lti_state', $state, 10, httpOnly: true, sameSite: 'none'))
             ->withCookie(Cookie::make('lti_nonce', $nonce, 10, httpOnly: true, sameSite: 'none'));
