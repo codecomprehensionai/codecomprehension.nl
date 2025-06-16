@@ -40,6 +40,6 @@ class LtiLaunchController
             'prompt'        => 'none',
         ];
 
-        return redirect(URI::of('https://sso.test.canvaslms.com/api/lti/authorize_redirect')->withQuery($parameters));
+        return redirect(url()->query('https://sso.test.canvaslms.com/api/lti/authorize_redirect', $parameters));
     }
 }
