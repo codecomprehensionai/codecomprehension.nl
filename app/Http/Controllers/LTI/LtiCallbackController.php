@@ -83,9 +83,6 @@ class LtiCallbackController
 
         Auth::login($user, true);
 
-        // TODO: remove
-        return Inertia::render('dashboard');
-
         return redirect()->route('dashboard');
     }
 }
