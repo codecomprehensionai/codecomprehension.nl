@@ -47,9 +47,8 @@ class AppServiceProvider extends ServiceProvider
 
         /* Define morph aliasses */
         Relation::enforceMorphMap([
+            'course'     => Models\Course::class,
             'assignment' => Models\Assignment::class,
-            'group'      => Models\Group::class,
-            'group_user' => Models\GroupUser::class,
             'question'   => Models\Question::class,
             'submission' => Models\Submission::class,
             'token'      => Models\Token::class,

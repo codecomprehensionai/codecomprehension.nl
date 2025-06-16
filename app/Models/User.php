@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Enums\UserType;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -28,18 +27,6 @@ class User extends Authenticatable implements MustVerifyEmail
         'password',
         'remember_token',
     ];
-
-    /**
-     * Get the groups this user belongs to.
-     *
-     * @return BelongsToMany<Group, User>
-     */
-    public function groups()
-    {
-        return $this->belongsToMany(Group::class, 'group_users')
-            ->using(GroupUser::class)
-            ->withTimestamps();
-    }
 
     /**
      * Get the attributes that should be cast.

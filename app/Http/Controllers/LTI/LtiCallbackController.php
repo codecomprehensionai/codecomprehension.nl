@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\LTI;
 
+use App\Data\LtiAssignmentData;
+use App\Data\LtiCourseData;
 use App\Data\LtiUserData;
+use App\Models\Course;
 use App\Models\User;
 use Firebase\JWT\JWK;
 use Firebase\JWT\JWT;
@@ -50,12 +53,21 @@ class LtiCallbackController
                 abort(401, 'Invalid nonce.');
             }
 
+            $courseData = LtiCourseData::fromJwt($jwt);
+            $assignmentData = LtiAssignmentData::fromJwt($jwt);
             $userData = LtiUserData::fromJwt($jwt);
-        } catch (Throwable $e) {
-            dd($e); // TODO: solve this
-
-            abort(401, 'Invalid LTI token.');
+        } catch (Throwable) {
+            abort(401, 'Invalid LTI token. View as Student is not supported.');
         }
+
+        $course = Course::updateOrCreate(['lti_id' => $courseData->ltiId], [
+            'title' => $courseData->title,
+        ]);
+
+        $assignment = $course->assignments()->updateOrCreate(['lti_id' => $assignmentData->ltiId], [
+            'title'       => $assignmentData->title,
+            'description' => $assignmentData->description,
+        ]);
 
         $user = User::updateOrCreate(['lti_id' => $userData->ltiId], [
             'type'              => $userData->type,
@@ -66,8 +78,6 @@ class LtiCallbackController
             'avatar_url'        => $userData->avatarUrl,
             'locale'            => $userData->locale,
         ]);
-
-        dd($jwt, $user);
 
         Auth::login($user);
 

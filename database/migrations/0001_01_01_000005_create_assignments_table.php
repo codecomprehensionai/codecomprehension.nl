@@ -10,15 +10,12 @@ return new class extends Migration
     {
         Schema::create('assignments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('group_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
-            $table->foreignId('user_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
-
+            $table->uuid('lti_id')->unique();
+            $table->foreignId('course_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
             $table->string('title');
             $table->text('description')->nullable();
-
             $table->timestamp('published_at')->nullable();
             $table->timestamp('deadline_at')->nullable();
-
             $table->timestamps();
         });
     }

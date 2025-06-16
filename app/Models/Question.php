@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\QuestionLanguage;
 use App\Enums\QuestionLevel;
 use App\Enums\QuestionType;
+use App\Jobs\QuestionLLMGenerateJob;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -16,26 +17,7 @@ class Question extends Model
     use HasFactory;
 
     /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
-    protected $fillable = [
-        'language',
-        'type',
-        'level',
-        'estimated_answer_duration',
-        'topic',
-        'tags',
-        'question',
-        'explanation',
-        'code',
-        'options',
-        'answer',
-    ];
-
-    /**
-     * Get the group that owns the assignment.
+     * Get the assignment that owns the question.
      *
      * @return BelongsTo<Assignment, Question>
      */

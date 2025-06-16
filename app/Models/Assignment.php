@@ -5,33 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Assignment extends Model
 {
     /** @use HasFactory<\Database\Factories\AssignmentFactory> */
     use HasFactory;
-
-    /**
-     * Get the group that owns the assignment.
-     *
-     * @return BelongsTo<Group, Assignment>
-     */
-    public function group(): BelongsTo
-    {
-        return $this->belongsTo(Group::class);
-    }
-
-    /**
-     * Get the user created the assignment.
-     *
-     * @return BelongsTo<User, Assignment>
-     */
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
-    }
 
     /**
      * Get the questions for the assignment.
