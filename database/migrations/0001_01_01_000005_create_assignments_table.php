@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('assignments', function (Blueprint $table) {
             $table->id();
-            $table->text('lti_id')->unique();
+            $table->string('lti_id')->unique();
             $table->foreignId('course_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
             $table->text('title');
             $table->text('description')->nullable();

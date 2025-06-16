@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('submissions', function (Blueprint $table) {
             $table->id();
-            $table->text('lti_id')->nullable()->unique();
+            $table->string('lti_id')->nullable()->unique();
             $table->foreignId('question_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
             $table->text('answer');

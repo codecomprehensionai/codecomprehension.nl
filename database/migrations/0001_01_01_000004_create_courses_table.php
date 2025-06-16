@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('courses', function (Blueprint $table) {
             $table->id();
-            $table->text('lti_id')->unique();
+            $table->string('lti_id')->unique();
             $table->text('title');
             $table->timestamps();
         });
