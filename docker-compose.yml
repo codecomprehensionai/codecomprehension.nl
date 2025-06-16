@@ -45,10 +45,6 @@ services:
                 echo "--- Run Migrations ---"
                 php /var/www/html/artisan migrate --force
 
-                echo
-                echo "--- Run Seeders ---"
-                php /var/www/html/artisan db:seed --force
-
     app:
         <<: *base
         environment:
