@@ -1,0 +1,90 @@
+name: 'Continuous Integration'
+
+on:
+    pull_request:
+
+jobs:
+    migration:
+        runs-on: ubuntu-latest
+        timeout-minutes: 5
+
+        steps:
+            - name: Checkout Repository
+              uses: actions/checkout@v4
+
+            - name: Analyse Migrations
+              run: |
+                  git fetch origin ${{ github.base_ref }}
+
+                  CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }} ${{ github.sha }} -- database/migrations)
+                  FOUND_MODIFIED=false
+
+                  for file in $CHANGED_FILES; do
+                    if git ls-remote --exit-code --heads origin ${{ github.base_ref }} > /dev/null 2>&1; then
+                      if git cat-file -e origin/${{ github.base_ref }}:$file 2> /dev/null; then
+                        echo "::error file=$file::Existing migration was modified!"
+                        FOUND_MODIFIED=true
+                      else
+                        echo "::notice file=$file::New migration created."
+                      fi
+                    fi
+                  done
+
+                  if [ "$FOUND_MODIFIED" = true ]; then
+                    echo "Error: Existing migration files were modified."
+                    exit 1
+                  fi
+
+    php-84:
+        runs-on: ubuntu-latest
+        timeout-minutes: 5
+
+        container:
+            image: kirschbaumdevelopment/laravel-test-runner:8.4
+
+        services:
+            mysql:
+                image: mysql:8
+                ports:
+                    - 3306:3306
+                env:
+                    MYSQL_ROOT_PASSWORD: password
+                    MYSQL_DATABASE: cc_testing_db
+                options: >-
+                    --health-cmd="mysqladmin ping"
+                    --health-interval=10s
+                    --health-timeout=5s
+                    --health-retries=3
+
+        steps:
+            - name: Checkout Repository
+              uses: actions/checkout@v4
+
+            - name: Install Front-End Dependencies
+              run: npm ci --no-audit
+
+            - name: Install Back-End Dependencies
+              run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+            - name: Build Front-End
+              run: npm run build
+
+            - name: Setup .env
+              run: |
+                  cp .env.ci .env
+                  php artisan key:generate
+
+            - name: Run Migrations
+              run: php artisan migrate --force
+
+            - name: Run Seeders
+              run: php artisan db:seed --force
+
+            - name: Run linter
+              run: composer lint-ci
+
+            - name: Run analysis
+              run: composer analyse-ci
+
+            - name: Run tests
+              run: composer test

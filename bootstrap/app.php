@@ -19,14 +19,14 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->encryptCookies(except: ['appearance', 'sidebar_state']);
 
-    // REMOVE WITH NEW CALLBACK ROUTES //
-    $middleware->validateCsrfTokens(except: [
-        'auth/oidc',
-        'auth/callback',
-    ]);
-    // REMOVE WITH NEW CALLBACK ROUTES //
+        // REMOVE WITH NEW CALLBACK ROUTES //
+        $middleware->validateCsrfTokens(except: [
+            'auth/oidc',
+            'auth/callback',
+        ]);
+        // REMOVE WITH NEW CALLBACK ROUTES //
 
-    $middleware->web(append: [
+        $middleware->web(append: [
             HandleAppearance::class,
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
