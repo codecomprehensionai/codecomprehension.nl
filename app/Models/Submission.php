@@ -12,7 +12,7 @@ class Submission extends Model
     use HasFactory;
 
     /**
-     * Get the question that owns the submission.
+     * The question that the submission belongs to.
      *
      * @return BelongsTo<Question, Submission>
      */
@@ -22,7 +22,7 @@ class Submission extends Model
     }
 
     /**
-     * Get the user who created the submission.
+     * The user that the submission belongs to.
      *
      * @return BelongsTo<User, Submission>
      */

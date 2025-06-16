@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Assignment extends Model
@@ -13,7 +14,17 @@ class Assignment extends Model
     use HasFactory;
 
     /**
-     * Get the questions for the assignment.
+     * The course that the assignment belongs to.
+     *
+     * @return BelongsTo<Course, Assignment>
+     */
+    public function course(): BelongsTo
+    {
+        return $this->belongsTo(Course::class);
+    }
+
+    /**
+     * The questions that belong to the assignment.
      *
      * @return HasMany<Question, Assignment>
      */
