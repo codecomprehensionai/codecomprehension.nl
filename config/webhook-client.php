@@ -7,13 +7,13 @@ return [
              * This package supports multiple webhook receiving endpoints. If you only have
              * one endpoint receiving webhooks, you can use 'default'.
              */
-            'name' => 'question.create',
+            'name' => 'canvas.assignment.create',
 
             /*
              * We expect that every webhook call will be signed using a secret. This secret
              * is used to verify that the payload has not been tampered with.
              */
-            'signing_secret' => env('WEBHOOK_LLM_SECRET'),
+            'signing_secret' => env('WEBHOOK_CANVAS_SECRET'),
 
             /*
              * The name of the header containing the signature.
@@ -56,20 +56,20 @@ return [
              *
              * This should be set to a class that extends Spatie\WebhookClient\Jobs\ProcessWebhookJob.
              */
-            'process_webhook_job' => App\Jobs\WebhookQuestionCreateJob::class,
+            'process_webhook_job' => App\Jobs\WebhookCanvasAssignmentCreateJob::class,
         ],
         [
             /*
              * This package supports multiple webhook receiving endpoints. If you only have
              * one endpoint receiving webhooks, you can use 'default'.
              */
-            'name' => 'question.update',
+            'name' => 'canvas.assignment.update',
 
             /*
              * We expect that every webhook call will be signed using a secret. This secret
              * is used to verify that the payload has not been tampered with.
              */
-            'signing_secret' => env('WEBHOOK_LLM_SECRET'),
+            'signing_secret' => env('WEBHOOK_CANVAS_SECRET'),
 
             /*
              * The name of the header containing the signature.
@@ -112,7 +112,7 @@ return [
              *
              * This should be set to a class that extends Spatie\WebhookClient\Jobs\ProcessWebhookJob.
              */
-            'process_webhook_job' => App\Jobs\WebhookQuestionUpdateJob::class,
+            'process_webhook_job' => App\Jobs\WebhookCanvasAssignmentUpdateJob::class,
         ],
     ],
 

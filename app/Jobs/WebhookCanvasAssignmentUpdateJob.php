@@ -10,7 +10,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Spatie\WebhookClient\Jobs\ProcessWebhookJob;
 
-class WebhookQuestionUpdateJob extends ProcessWebhookJob implements ShouldQueue, ShouldBeUnique
+class WebhookCanvasAssignmentUpdateJob extends ProcessWebhookJob implements ShouldBeUnique, ShouldQueue
 {
     use Dispatchable;
     use InteractsWithQueue;
