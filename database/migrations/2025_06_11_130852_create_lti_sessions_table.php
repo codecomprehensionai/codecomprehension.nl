@@ -10,7 +10,6 @@ return new class extends Migration
     {
         Schema::create('lti_sessions', function (Blueprint $table) {
             $table->id();
-
             $table->text('iss');
             $table->text('login_hint');
             $table->text('lti_message_hint')->nullable();
@@ -19,10 +18,8 @@ return new class extends Migration
             $table->string('deployment_id');
             $table->string('canvas_region');
             $table->string('canvas_environment');
-
             $table->ulid('state')->unique();
             $table->ulid('nonce')->unique();
-
             $table->timestamp('expires_at');
             $table->timestamp('used_at')->nullable();
             $table->timestamps();
