@@ -1,6 +1,5 @@
 <?php
 
-// use App\Models\WebhookCall;
 use Illuminate\Support\Facades\Schedule;
 
 // use Spatie\Health\Commands\DispatchQueueCheckJobsCommand;
@@ -18,5 +17,4 @@ Schedule::onOneServer()->group(function () {
     Schedule::command('activitylog:clean')->daily();
     Schedule::command('auth:clear-resets')->daily();
     Schedule::command('sanctum:prune-expired')->daily();
-    // Schedule::command('model:prune', ['--model' => [WebhookCall::class]])->daily();
 });
