@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Enums\QuestionLanguage;
 use App\Enums\QuestionLevel;
 use App\Enums\QuestionType;
-use App\Jobs\QuestionLLMGenerateJob;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -17,7 +16,7 @@ class Question extends Model
     use HasFactory;
 
     /**
-     * Get the assignment that owns the question.
+     * The assignment that the question belongs to.
      *
      * @return BelongsTo<Assignment, Question>
      */
@@ -27,7 +26,7 @@ class Question extends Model
     }
 
     /**
-     * Get the submissions for this question.
+     * The submissions that belong to the question.
      *
      * @return HasMany<Submission, Question>
      */
