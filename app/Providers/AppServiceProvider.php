@@ -35,6 +35,9 @@ class AppServiceProvider extends ServiceProvider
         /* Destructive restrictions are applied in production and staging */
         DB::prohibitDestructiveCommands(app()->environment(['production', 'staging']));
 
+        /* Unguard models */
+        Model::unguard();
+
         /* Eager load relationships */
         Model::automaticallyEagerLoadRelationships();
 

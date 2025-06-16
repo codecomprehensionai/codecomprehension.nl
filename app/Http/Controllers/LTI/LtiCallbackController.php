@@ -36,7 +36,7 @@ class LtiCallbackController
         $jwks = Cache::flexible(
             'cloudflare-access.jwks',
             [300, 3600],
-            fn() => Http::get("{$endpoint}/api/lti/security/jwks")->throw()->json()
+            fn () => Http::get("{$endpoint}/api/lti/security/jwks")->throw()->json()
         );
 
         try {

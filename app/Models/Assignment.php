@@ -14,18 +14,6 @@ class Assignment extends Model
     use HasFactory;
 
     /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
-    protected $fillable = [
-        'title',
-        'description',
-        'published_at',
-        'deadline_at',
-    ];
-
-    /**
      * Get the group that owns the assignment.
      *
      * @return BelongsTo<Group, Assignment>
