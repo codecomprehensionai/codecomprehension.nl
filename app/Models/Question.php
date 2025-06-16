@@ -15,6 +15,13 @@ class Question extends Model
     /** @use HasFactory<\Database\Factories\QuestionFactory> */
     use HasFactory;
 
+    protected static function booted(): void
+    {
+        static::created(function (Question $question) {
+            QuestionLLMGenerateJob::dispatch($question, 'prompt');
+        });
+    }
+
     /**
      * The assignment that the question belongs to.
      *
