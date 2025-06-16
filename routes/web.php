@@ -7,11 +7,6 @@ use Inertia\Inertia;
 use App\Http\Controllers\LTI\LtiLaunchController;
 use App\Http\Controllers\LTI\LtiCallbackController;
 
-Route::middleware('guest')->group(function () {
-    Route::post('auth/oidc', LtiLaunchController::class)->name('auth.launch');
-    Route::post('auth/callback', LtiCallbackController::class)->name('auth.callback');
-});
-
 Route::get('/', fn() => Inertia::render('welcome'))->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
