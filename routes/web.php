@@ -5,6 +5,13 @@ use App\Http\Controllers\TeacherDashboardController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\LTI\LtiLaunchController;
+use App\Http\Controllers\LTI\LtiCallbackController;
+
+Route::middleware('guest')->group(function () {
+    Route::post('auth/oidc', LtiLaunchController::class)->name('auth.launch');
+    Route::post('auth/callback', LtiCallbackController::class)->name('auth.callback');
+});
 
 Route::get('/', fn () => Inertia::render('welcome'))->name('home');
 
