@@ -5,8 +5,6 @@ set -e
 container_mode=${CONTAINER_MODE}
 
 if [ "${container_mode}" = "http" ]; then
-    # TODO: force return healthy
-    exit 0
     php "${ROOT}/artisan" octane:status
 
 elif [ "${container_mode}" = "scheduler" ]; then
