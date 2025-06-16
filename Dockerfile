@@ -38,9 +38,6 @@ WORKDIR /app
 # Copy composer files
 COPY composer.json composer.lock auth.json ./
 
-# Copy app-modules before install
-COPY app-modules ./app-modules
-
 # Install composer dependencies with cache
 RUN --mount=type=cache,target=/tmp/cache \
     --mount=type=cache,target=/root/.composer/cache \
