@@ -10,10 +10,10 @@ class CanvasApiService
     private string $baseUrl;
     private string $accessToken;
 
-    public function __construct()
+    public function __construct(?string $baseUrl = null, ?string $accessToken = null)
     {
-        $this->baseUrl = rtrim(config('canvas.base_url'), '/');
-        $this->accessToken = config('canvas.access_token');
+        $this->baseUrl = rtrim($baseUrl ?? config('canvas.base_url'), '/');
+        $this->accessToken = $accessToken ?? config('canvas.access_token');
     }
 
     /**
