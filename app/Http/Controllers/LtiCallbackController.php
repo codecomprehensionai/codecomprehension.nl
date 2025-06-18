@@ -82,6 +82,15 @@ class LtiCallbackController
         ]);
 
         Auth::login($user);
-        return redirect()->route('teacher.dashboard');
+        switch ($user->type) {
+            case 'student':
+                return redirect()->route('student.dashboard');
+                break;
+            case 'teacher':
+                return redirect()->route('teacher.dashboard');
+                break;
+            default:
+                abort(403, 'Invalid user type.');
+        }
     }
 }
