@@ -97,8 +97,8 @@ class LtiCallbackController
             'lti_id' => $assignmentData->ltiId,
             'deadline_at' => null, // TODO: extract deadline from JWT if available
         ]);
-      
-        dd($jwt);
+
+        // dd($jwt);
 
         return redirect()->route('dashboard');
     }
