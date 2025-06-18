@@ -82,7 +82,21 @@ class LtiCallbackController
         ]);
 
         Auth::login($user);
-        dd($jwt);
+
+        // Store LTI context data in session for dashboard use
+        $request->session()->put('lti.course', [
+            'id' => $course->id,
+            'title' => $courseData->title,
+            'lti_id' => $courseData->ltiId,
+        ]);
+
+        $request->session()->put('lti.assignment', [
+            'id' => $assignment->id,
+            'title' => $assignmentData->title,
+            'description' => $assignmentData->description,
+            'lti_id' => $assignmentData->ltiId,
+            'deadline_at' => null, // TODO: extract deadline from JWT if available
+        ]);
 
         return redirect()->route('dashboard');
     }
