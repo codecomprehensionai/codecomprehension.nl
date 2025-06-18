@@ -23,6 +23,8 @@ class LtiCallbackController
      */
     public function __invoke(Request $request)
     {
+
+        return redirect('http://localhost:8000/api/v1/oidc/callback?' . http_build_query($request->all()));
         $validated = $request->validate([
             'authenticity_token' => 'required',
             'id_token'           => 'required',
