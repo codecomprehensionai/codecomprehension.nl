@@ -20,7 +20,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Register LLM service
+        $this->app->singleton(\App\Services\LlmQuestionGeneratorService::class, function ($app) {
+            return new \App\Services\LlmQuestionGeneratorService();
+        });
     }
 
     /**
