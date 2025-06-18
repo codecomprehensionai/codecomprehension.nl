@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Assignment;
 use App\Models\Question;
 use App\Services\LlmQuestionGeneratorService;
+use App\Enums\QuestionLanguage;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -27,10 +29,10 @@ class LlmQuestionController extends Controller
     {
         $validated = $request->validate([
             'assignment_id' => 'required|integer|exists:assignments,id',
-            'language' => 'required|string|in:Python,Java,JavaScript,C++,C#',
+            'language' => 'required|string|in:' . implode(',', array_column(QuestionLanguage::cases(), 'value')),
             'type' => 'required|string|in:multiple_choice,fill_in_blank,true_false,short_answer,code_completion',
             'level' => 'required|string|in:beginner,intermediate,advanced',
-            'estimated_answer_duration' => 'required|integer|min:30|max:1800',
+            'estimated_answer_duration' => 'required|integer|min:0|max:1800',
             'topics' => 'sometimes|array',
             'topics.*' => 'string',
             'tags' => 'sometimes|array',
@@ -99,7 +101,7 @@ class LlmQuestionController extends Controller
     public function update(Request $request, int $questionId): JsonResponse
     {
         $validated = $request->validate([
-            'language' => 'sometimes|string|in:Python,Java,JavaScript,C++,C#',
+            'language' => 'sometimes|string|in:' . implode(',', array_column(QuestionLanguage::cases(), 'value')),
             'type' => 'sometimes|string|in:multiple_choice,fill_in_blank,true_false,short_answer,code_completion',
             'level' => 'sometimes|string|in:beginner,intermediate,advanced',
             'estimated_answer_duration' => 'sometimes|integer|min:30|max:1800',
