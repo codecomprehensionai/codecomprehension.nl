@@ -11,6 +11,8 @@ use Inertia\Inertia;
 Route::middleware(['guest'])->group(function () {
     Route::post('api/v1/oidc', LtiLaunchController::class)->name('oidc.launch');
     Route::post('api/v1/oidc/callback', LtiCallbackController::class)->name('oidc.callback');
+
+    Route::get('login', fn () => 'Login page not implemented yet.')->name('login');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
