@@ -39,7 +39,7 @@ class LtiCallbackController
         $jwks = Cache::flexible(
             'cloudflare-access.jwks',
             [300, 3600],
-            fn () => Http::get("{$endpoint}/api/lti/security/jwks")->throw()->json()
+            fn() => Http::get("{$endpoint}/api/lti/security/jwks")->throw()->json()
         );
 
         try {
@@ -66,8 +66,9 @@ class LtiCallbackController
 
         // TODO: get deadline from somewhere
         $assignment = $course->assignments()->updateOrCreate(['lti_id' => $assignmentData->ltiId], [
-            'title'       => $assignmentData->title,
-            'description' => $assignmentData->description,
+            'lti_line_item_endpoint' => $assignmentData->ltiLineItemEndpoint,
+            'title'                  => $assignmentData->title,
+            'description'            => $assignmentData->description,
         ]);
 
         $user = User::updateOrCreate(['lti_id' => $userData->ltiId], [
@@ -82,11 +83,14 @@ class LtiCallbackController
 
         Auth::login($user);
 
-        // Store LTI launch data in session for SubmissionHandler
-        // TODO: store in assignment table
+        /**
+         * This might introduce a bug when a student/teacher opens two tabs
+         * with different courses/assignments. We will need to investigate
+         * this later, but for now, we will just store the last accessed.
+         */
         session([
-            'lti.launch'    => $jwt,
-            'lti.course_id' => $course->id,
+            'course_id'     => $course->id,
+            'assignment_id' => $assignment->id,
         ]);
 
         return redirect()->route('dashboard');

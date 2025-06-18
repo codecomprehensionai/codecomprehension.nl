@@ -2,15 +2,13 @@
 
 namespace App\Data;
 
-use Spatie\LaravelData\Attributes\Validation\Required;
 use Spatie\LaravelData\Data;
 
 class LtiAssignmentData extends Data
 {
     public function __construct(
-        #[Required]
         public string $ltiId,
-        #[Required]
+        public string $ltiLineItemEndpoint,
         public string $title,
         public ?string $description,
     ) {}
@@ -19,6 +17,7 @@ class LtiAssignmentData extends Data
     {
         return new self(
             ltiId: $payload->{'https://purl.imsglobal.org/spec/lti/claim/resource_link'}->id,
+            ltiLineItemEndpoint: $payload->{'https://purl.imsglobal.org/spec/lti-ags/claim/endpoint'}->lineitem,
             title: $payload->{'https://purl.imsglobal.org/spec/lti/claim/resource_link'}->title,
             description: $payload->{'https://purl.imsglobal.org/spec/lti/claim/resource_link'}->description,
         );
