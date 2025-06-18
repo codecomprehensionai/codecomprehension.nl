@@ -16,7 +16,7 @@ class LlmQuestionGeneratorService
     public function __construct()
     {
         $this->baseUrl = rtrim(config('llm.base_url'), '/');
-        $this->timeout = config('llm.timeout', 30);
+        $this->timeout = config('llm.timeout', 100);
     }
 
     /**

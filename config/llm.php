@@ -11,7 +11,7 @@ return [
     */
 
     'base_url' => env('LLM_API_BASE_URL', 'http://localhost:8000'), // TODO: Change for production
-    'timeout' => env('LLM_API_TIMEOUT', 30),
+    'timeout' => env('LLM_API_TIMEOUT', 100),
 
     /*
     |--------------------------------------------------------------------------
