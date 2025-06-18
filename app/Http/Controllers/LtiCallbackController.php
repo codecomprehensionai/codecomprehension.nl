@@ -39,26 +39,26 @@ class LtiCallbackController
         $jwks = Cache::flexible(
             'cloudflare-access.jwks',
             [300, 3600],
-            fn () => Http::get("{$endpoint}/api/lti/security/jwks")->throw()->json()
+            fn() => Http::get("{$endpoint}/api/lti/security/jwks")->throw()->json()
         );
 
-        try {
-            $jwt = JWT::decode($validated['id_token'], JWK::parseKeySet($jwks));
+        // try {
+        $jwt = JWT::decode($validated['id_token'], JWK::parseKeySet($jwks));
+        // } catch (Throwable) {
+        //     abort(401, 'Invalid LTI token. View as Student is not supported.');
+        // }
 
-            if ($jwt->iss !== $endpoint) {
-                abort(401, 'Invalid issuer.');
-            }
-
-            if ($jwt->nonce !== $request->cookie('lti_nonce')) {
-                abort(401, 'Invalid nonce.');
-            }
-
-            $courseData = LtiCourseData::fromJwt($jwt);
-            $assignmentData = LtiAssignmentData::fromJwt($jwt);
-            $userData = LtiUserData::fromJwt($jwt);
-        } catch (Throwable) {
-            abort(401, 'Invalid LTI token. View as Student is not supported.');
+        if ($jwt->iss !== $endpoint) {
+            abort(401, 'Invalid issuer.');
         }
+
+        if ($jwt->nonce !== $request->cookie('lti_nonce')) {
+            abort(401, 'Invalid nonce.');
+        }
+
+        $courseData = LtiCourseData::fromJwt($jwt);
+        $assignmentData = LtiAssignmentData::fromJwt($jwt);
+        $userData = LtiUserData::fromJwt($jwt);
 
         $course = Course::updateOrCreate(['lti_id' => $courseData->ltiId], [
             'title' => $courseData->title,
