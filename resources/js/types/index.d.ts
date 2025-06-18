@@ -37,8 +37,59 @@ export interface User {
     name: string;
     email: string;
     avatar?: string;
-    email_verified_at: string | null;
+}
+
+export interface Course {
+    ltiId: number;
+    title: string;
+}
+
+export interface Submission {
+    id: number;
+    answer: number | string;
+    is_correct: boolean;
+    feedback?: string;
+}
+
+export interface Question {
+    id: number;
+    assignment_id: number;
+    language: string;
+    type: string;
+    level: string;
+    estimated_answer_duration: number;
+    topic: string;
+    tags: string[];
+    question: string;
+    explanation?: string;
+    code: string;
+    options: any[];
+    answer?: string;
+    submissions?: Submission[];
     created_at: string;
     updated_at: string;
-    [key: string]: unknown; // This allows for additional properties...
+}
+
+export interface Assignment {
+  id: number
+  title: string
+  description: string
+  language: string
+  difficulty: string
+  dueDate: string
+  status: "submitted" | "in_progress" | "not_started"
+  score: number | null
+  questions: Question[]
+  timeSpent: string
+  submittedAt?: string
+  progress?: number
+  topics?: string[]
+  estimatedAnswerDuration?: number
+}
+
+export interface PageProps extends InertiaPageProps {
+    auth: {
+      user: User;
+    };
+    [key: string]: any;
 }

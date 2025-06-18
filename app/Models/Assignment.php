@@ -13,6 +13,18 @@ class Assignment extends Model
     /** @use HasFactory<\Database\Factories\AssignmentFactory> */
     use HasFactory;
 
+
+    /**
+     * appends virtual attributes to the model.
+     * @var array<string>
+     */
+    protected $appends = [
+        'topics',
+        'tags',
+        'languages',
+        'estimated_answer_duration'
+    ];
+
     /**
      * The course that the assignment belongs to.
      *
@@ -45,12 +57,10 @@ class Assignment extends Model
         ];
     }
 
-    protected function estimatedAnswerDuration(): Attribute
+    public function getEstimatedAnswerDurationAttribute(): int
     {
-        return Attribute::make(
-            get: fn (): int => $this->questions
-                ->sum('estimated__answer_duration'),
-        );
+        return $this->questions
+            ->sum('estimated_answer_duration');
     }
 
     protected function topics(): Attribute

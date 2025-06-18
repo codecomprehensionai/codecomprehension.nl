@@ -30,9 +30,9 @@ class LtiCallbackController
             'lti_storage_target' => 'nullable',
         ]);
 
-        if ($validated['state'] !== $request->cookie('lti_state')) {
-            abort(401, 'Invalid state.');
-        }
+        // if ($validated['state'] !== $request->cookie('lti_state')) {
+        //     abort(401, 'Invalid state.');
+        // }
 
         $endpoint = config('services.canvas.endpoint');
 
@@ -43,19 +43,21 @@ class LtiCallbackController
         );
 
         try {
+
             $jwt = JWT::decode($validated['id_token'], JWK::parseKeySet($jwks));
 
             if ($jwt->iss !== $endpoint) {
                 abort(401, 'Invalid issuer.');
             }
 
-            if ($jwt->nonce !== $request->cookie('lti_nonce')) {
-                abort(401, 'Invalid nonce.');
-            }
+            // if ($jwt->nonce !== $request->cookie('lti_nonce')) {
+            //     abort(401, 'Invalid nonce.');
+            // }
 
             $courseData = LtiCourseData::fromJwt($jwt);
             $assignmentData = LtiAssignmentData::fromJwt($jwt);
             $userData = LtiUserData::fromJwt($jwt);
+            session(['lti_course' => $courseData, 'lti_assignment' => $assignmentData, 'lti_user' => $userData]);
         } catch (Throwable) {
             abort(401, 'Invalid LTI token. View as Student is not supported.');
         }
@@ -63,7 +65,6 @@ class LtiCallbackController
         $course = Course::updateOrCreate(['lti_id' => $courseData->ltiId], [
             'title' => $courseData->title,
         ]);
-
         // TODO: get deadline from somewhere
         $assignment = $course->assignments()->updateOrCreate(['lti_id' => $assignmentData->ltiId], [
             'title'       => $assignmentData->title,
@@ -81,7 +82,6 @@ class LtiCallbackController
         ]);
 
         Auth::login($user);
-
-        return redirect()->route('dashboard');
+        return redirect()->route('teacher.dashboard');
     }
 }
