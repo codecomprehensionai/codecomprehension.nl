@@ -9,9 +9,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('assignments', function (Blueprint $table) {
-            $table->id();
+            $table->ulid('id')->primary();
             $table->string('lti_id')->unique();
-            $table->foreignId('course_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
+            $table->string('lti_lineitem_endpoint');
+            $table->foreignUlid('course_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
             $table->text('title');
             $table->text('description')->nullable();
             $table->timestamp('deadline_at')->nullable();

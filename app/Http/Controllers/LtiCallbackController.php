@@ -66,7 +66,7 @@ class LtiCallbackController
 
         // TODO: get deadline from somewhere
         $assignment = $course->assignments()->updateOrCreate(['lti_id' => $assignmentData->ltiId], [
-            'lti_line_item_endpoint' => $assignmentData->ltiLineItemEndpoint,
+            'lti_lineitem_endpoint' => $assignmentData->ltiLineitemEndpoint,
             'title'                  => $assignmentData->title,
             'description'            => $assignmentData->description,
         ]);

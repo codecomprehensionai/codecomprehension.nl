@@ -8,7 +8,7 @@ class LtiAssignmentData extends Data
 {
     public function __construct(
         public string $ltiId,
-        public string $ltiLineItemEndpoint,
+        public string $ltiLineitemEndpoint,
         public string $title,
         public ?string $description,
     ) {}
@@ -17,7 +17,7 @@ class LtiAssignmentData extends Data
     {
         return new self(
             ltiId: $payload->{'https://purl.imsglobal.org/spec/lti/claim/resource_link'}->id,
-            ltiLineItemEndpoint: $payload->{'https://purl.imsglobal.org/spec/lti-ags/claim/endpoint'}->lineitem,
+            ltiLineitemEndpoint: $payload->{'https://purl.imsglobal.org/spec/lti-ags/claim/endpoint'}->lineitem,
             title: $payload->{'https://purl.imsglobal.org/spec/lti/claim/resource_link'}->title,
             description: $payload->{'https://purl.imsglobal.org/spec/lti/claim/resource_link'}->description,
         );
