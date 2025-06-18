@@ -16,7 +16,7 @@ Route::middleware(['guest'])->group(function () {
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', fn () => Inertia::render('dashboard'))->name('dashboard');
+    Route::get('dashboard', fn() => Inertia::render('dashboard'))->name('dashboard');
 
     Route::get('teacher', [TeacherDashboardController::class, 'index'])->name('teacher.dashboard');
     Route::get('student', [StudentDashboardController::class, 'index'])->name('student.dashboard');
