@@ -82,6 +82,12 @@ class LtiCallbackController
 
         Auth::login($user);
 
+        // Store LTI launch data in session for SubmissionHandler
+        session([
+            'lti.launch' => $jwt,
+            'lti.course_id' => $course->id,
+        ]);
+
         return redirect()->route('dashboard');
     }
 }

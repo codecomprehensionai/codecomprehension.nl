@@ -38,5 +38,8 @@ return [
         'endpoint'      => env('CANVAS_ENDPOINT'),
         'client_id'     => env('CANVAS_CLIENT_ID'),
         'client_secret' => env('CANVAS_CLIENT_SECRET'),
+        'domain'        => env('CANVAS_DOMAIN'),
+        'token_aud'     => env('CANVAS_TOKEN_AUD'),
+        'scopes'        => env('CANVAS_SCOPES'),
     ],
 ];
