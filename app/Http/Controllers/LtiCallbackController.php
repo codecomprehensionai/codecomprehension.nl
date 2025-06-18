@@ -39,7 +39,7 @@ class LtiCallbackController
         $jwks = Cache::flexible(
             'cloudflare-access.jwks',
             [300, 3600],
-            fn() => Http::get("{$endpoint}/api/lti/security/jwks")->throw()->json()
+            fn () => Http::get("{$endpoint}/api/lti/security/jwks")->throw()->json()
         );
 
         try {
@@ -67,8 +67,8 @@ class LtiCallbackController
         // TODO: get deadline from somewhere
         $assignment = $course->assignments()->updateOrCreate(['lti_id' => $assignmentData->ltiId], [
             'lti_lineitem_endpoint' => $assignmentData->ltiLineitemEndpoint,
-            'title'                  => $assignmentData->title,
-            'description'            => $assignmentData->description,
+            'title'                 => $assignmentData->title,
+            'description'           => $assignmentData->description,
         ]);
 
         $user = User::updateOrCreate(['lti_id' => $userData->ltiId], [

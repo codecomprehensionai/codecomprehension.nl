@@ -13,10 +13,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Question extends Model
 {
-    use HasUlids;
-
     /** @use HasFactory<\Database\Factories\QuestionFactory> */
     use HasFactory;
+
+    use HasUlids;
 
     /**
      * The assignment that the question belongs to.

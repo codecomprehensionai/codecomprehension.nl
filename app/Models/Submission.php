@@ -10,18 +10,24 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Submission extends Model
 {
-    use HasUlids;
-
     /** @use HasFactory<\Database\Factories\SubmissionFactory> */
     use HasFactory;
+
+    use HasUlids;
 
     protected static function booted(): void
     {
         static::created(function (self $submission) {
+            // TODO: dispatch CalculateSubmissionScoreJob, afterwards dispatch SyncSubmisionToCanvasJob
+            // We will do this with a batch job in the future
+
             SyncSubmisionToCanvasJob::dispatch($submission);
         });
 
         static::updated(function (self $submission) {
+            // TODO: dispatch CalculateSubmissionScoreJob, afterwards dispatch SyncSubmisionToCanvasJob
+            // We will do this with a batch job in the future
+
             SyncSubmisionToCanvasJob::dispatch($submission);
         });
     }

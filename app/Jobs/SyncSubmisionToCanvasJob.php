@@ -10,7 +10,6 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Str;
 
 class SyncSubmisionToCanvasJob implements ShouldQueue
 {
@@ -23,26 +22,22 @@ class SyncSubmisionToCanvasJob implements ShouldQueue
 
     public function handle(): void
     {
-        $data = [
-            'answer_blob'  => $this->submission->answer_blob,
-            'line_item_id' => $this->submission->question->assignment->lti_line_item_id,
-            'score_max'    => $this->submission->question->assignment->score_max,
-        ];
-
-        $score = app(CanvasAutoGrader::class)->grade($data['answer_blob']);
+        // TODO: calculate score
+        $scoreMax = random_int(80, 100);
+        $scoreGiven = random_int(0, $scoreMax);
 
         $payload = [
             'timestamp'                                     => now()->toIso8601String(),
             'userId'                                        => $this->submission->user->lti_id,
-            'scoreGiven'                                    => $score,
-            'scoreMaximum'                                  => $data['score_max'],
+            'scoreGiven'                                    => $scoreGiven,
+            'scoreMaximum'                                  => $scoreMax,
             'activityProgress'                              => 'Completed',
             'gradingProgress'                               => 'FullyGraded',
             'comment'                                       => 'Graded by CodeComprehension',
             'https://canvas.instructure.com/lti/submission' => [
-                'new_submission'            => true,
+                'new_submission'            => $this->submission->updated_at->is($this->submission->created_at),
                 'submission_type'           => 'basic_lti_launch',
-                'submission_data'           => route('lti.launch', ['attempt' => $this->submission->id]),
+                'submission_data'           => sprintf('%s/launch?lti_submission_id=%s', config('services.canvas.endpoint'), $this->submission->lti_id),
                 'prioritize_non_tool_grade' => true,
             ],
         ];
