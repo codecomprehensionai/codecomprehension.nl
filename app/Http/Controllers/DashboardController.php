@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class DashboardController extends Controller
+class DashboardController
 {
     /**
      * Display the main dashboard with current course and assignment context
