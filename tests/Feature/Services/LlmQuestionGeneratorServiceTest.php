@@ -70,7 +70,7 @@ test('generate question success with mock', function () {
         'https://test-llm-api.com/question' => Http::response($mockResponse, 200)
     ]);
     
-    // Mock log calls
+    // Mock log calls - expect multiple info logs due to debug logging in testing environment
     Log::shouldReceive('info')->atLeast()->once();
     Log::shouldReceive('error')->never();
     
@@ -107,8 +107,8 @@ test('generate question handles http error', function () {
         'https://test-llm-api.com/question' => Http::response(['error' => 'Internal Server Error'], 500)
     ]);
     
-    Log::shouldReceive('info')->once();
-    Log::shouldReceive('error')->once();
+    Log::shouldReceive('info')->atLeast()->once();
+    Log::shouldReceive('error')->atLeast()->once();
     
     $result = $service->generateQuestion($assignment, $questionParams, $prompt);
     
@@ -206,8 +206,8 @@ test('handles network timeout gracefully', function () {
         throw new \Illuminate\Http\Client\ConnectionException('Connection timeout');
     });
     
-    Log::shouldReceive('info')->once();
-    Log::shouldReceive('error')->once();
+    Log::shouldReceive('info')->atLeast()->once();
+    Log::shouldReceive('error')->atLeast()->once();
     
     $result = $service->generateQuestion($assignment, $questionParams, $prompt);
     
@@ -273,5 +273,64 @@ test('integration: generate question with real LLM service', function () {
     
     // Verify the answer is one of the options
     expect($result->options)->toContain($result->answer);
+    
+})->group('integration');
+
+test('integration: update question with real LLM service', function () {
+    config(['llm.base_url' => 'http://localhost:8000']);
+    config(['llm.timeout' => 90]); // Increase timeout for slow AI processing
+    
+    Http::allowStrayRequests();
+    $service = new LlmQuestionGeneratorService();
+    
+    $assignment = Assignment::factory()->make([
+        'id' => 1,
+        'title' => 'Python Advanced Concepts',
+        'description' => 'Advanced Python programming concepts including decorators and generators'
+    ]);
+    
+    // Create an existing question to update
+    $existingQuestion = Question::factory()->make([
+        'id' => 10,
+        'assignment_id' => $assignment->id,
+        'language' => QuestionLanguage::Python,
+        'type' => QuestionType::MultipleChoice,
+        'level' => QuestionLevel::Beginner,
+        'estimated_answer_duration' => 180,
+        'topics' => ['variables'],
+        'tags' => ['python', 'basics'],
+        'question' => 'What is a variable in Python?',
+        'explanation' => 'A variable is a named reference to a value in memory.',
+        'code' => null,
+        'options' => ['A container for storing data', 'A function', 'A class', 'A module'],
+        'answer' => 'A container for storing data'
+    ]);
+    
+    $updateParams = [
+        'level' => 'intermediate',
+        'topics' => ['decorators'],
+        'tags' => ['python', 'advanced', 'decorators']
+    ];
+    
+    $prompt = 'Update this question to be about Python decorators at intermediate level. Make it more challenging and focused on decorator concepts.';
+    
+    $result = $service->updateQuestion($assignment, $existingQuestion, $updateParams, $prompt);
+    
+    // Verify we got a valid response
+    expect($result)->toBeInstanceOf(QuestionData::class);
+    expect($result->language)->toBe(QuestionLanguage::Python);
+    expect($result->type)->toBe(QuestionType::MultipleChoice);
+    expect($result->level)->toBe(QuestionLevel::Intermediate);
+    expect($result->question)->not->toBeEmpty();
+    expect($result->explanation)->not->toBeEmpty();
+    expect($result->options)->toHaveCount(4);
+    expect($result->answer)->not->toBeEmpty();
+    
+    // Verify the answer is one of the options
+    expect($result->options)->toContain($result->answer);
+    
+    // Verify the question was actually updated (should be different from original)
+    expect($result->question)->not->toBe($existingQuestion->question);
+    expect($result->level)->not->toBe($existingQuestion->level);
     
 })->group('integration');
