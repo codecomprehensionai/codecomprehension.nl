@@ -9,9 +9,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('jwt_keys', function (Blueprint $table) {
-            $table->ulid('id')->primary();
+            $table->id();
             $table->string('name')->nullable()->unique();
-            $table->string('type');
             $table->text('public_key');
             $table->text('private_key')->nullable();
             $table->timestamps();
