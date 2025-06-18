@@ -16,5 +16,4 @@ Schedule::onOneServer()->group(function () {
     /* Cleanup */
     Schedule::command('activitylog:clean')->daily();
     Schedule::command('auth:clear-resets')->daily();
-    Schedule::command('sanctum:prune-expired')->daily();
 });

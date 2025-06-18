@@ -16,26 +16,7 @@ class Question extends Model
     use HasFactory;
 
     /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
-    protected $fillable = [
-        'language',
-        'type',
-        'level',
-        'estimated_answer_duration',
-        'topic',
-        'tags',
-        'question',
-        'explanation',
-        'code',
-        'options',
-        'answer',
-    ];
-
-    /**
-     * Get the group that owns the assignment.
+     * The assignment that the question belongs to.
      *
      * @return BelongsTo<Assignment, Question>
      */
@@ -45,7 +26,7 @@ class Question extends Model
     }
 
     /**
-     * Get the submissions for this question.
+     * The submissions that belong to the question.
      *
      * @return HasMany<Submission, Question>
      */

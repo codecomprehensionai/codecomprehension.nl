@@ -55,14 +55,11 @@ shell: ## Shell into container (usage: make shell http)
 command: ## Exec in container (usage: make command http php artisan about)
 	docker compose ${DC_RUN_ARGS} exec $(if $(word 2, $(MAKECMDGOALS)),$(word 2, $(MAKECMDGOALS)),http) sh -c "$(shell echo '$(wordlist 3, $(words $(MAKECMDGOALS)), $(MAKECMDGOALS))')"
 
-tunnel-production-mysql: ## Tunnel to mysql-production-flowsave-deploy
-	cloudflared access tcp --hostname mysql-production-flowsave-deploy.proculair.net --url 127.0.0.1:13306
+tunnel-production-mysql: ## Tunnel to mysql-production
+	cloudflared access tcp --hostname mysql-production.codecomprehension.nl --url 127.0.0.1:13306
 
-tunnel-production-redis: ## Tunnel to redis-production-flowsave-deploy
-	cloudflared access tcp --hostname redis-production-flowsave-deploy.proculair.net --url 127.0.0.1:16379
-
-tunnel-production-meilisearch: ## Tunnel to meilisearch-production-flowsave-deploy
-	open https://meilisearch-production-flowsave-deploy.proculair.net
+tunnel-production-redis: ## Tunnel to redis-production
+	cloudflared access tcp --hostname redis-production.codecomprehension.nl --url 127.0.0.1:16379
 
 # Dummy targets to prevent make from interpreting arguments as targets
 %:

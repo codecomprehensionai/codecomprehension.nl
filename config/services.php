@@ -33,4 +33,10 @@ return [
             'channel'              => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
+
+    'canvas' => [
+        'endpoint'      => env('CANVAS_ENDPOINT'),
+        'client_id'     => env('CANVAS_CLIENT_ID'),
+        'client_secret' => env('CANVAS_CLIENT_SECRET'),
+    ],
 ];

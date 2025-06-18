@@ -177,5 +177,3 @@ volumes:
         driver: local
     stack-redis:
         driver: local
-    # stack-meilisearch:
-    #     driver: local
