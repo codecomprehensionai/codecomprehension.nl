@@ -29,20 +29,4 @@ class DashboardController
             ],
         ]);
     }
-    
-    /**
-     * Get current course data from LTI session context
-     */
-    private function getCurrentCourseFromSession(Request $request): ?array
-    {
-        return $request->session()->get('lti.course');
-    }
-    
-    /**
-     * Get current assignment data from LTI session context
-     */
-    private function getCurrentAssignmentFromSession(Request $request): ?array
-    {
-        return $request->session()->get('lti.assignment');
-    }
-} 
+
