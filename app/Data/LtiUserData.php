@@ -3,23 +3,15 @@
 namespace App\Data;
 
 use App\Enums\UserType;
-use Spatie\LaravelData\Attributes\Validation\Email;
-use Spatie\LaravelData\Attributes\Validation\Required;
-use Spatie\LaravelData\Attributes\Validation\Url;
 use Spatie\LaravelData\Data;
 
 class LtiUserData extends Data
 {
     public function __construct(
-        #[Required]
         public string $ltiId,
-        #[Required]
         public UserType $type,
-        #[Required]
         public string $name,
-        #[Required, Email]
         public string $email,
-        #[Url]
         public ?string $avatarUrl,
         public ?string $locale,
     ) {}

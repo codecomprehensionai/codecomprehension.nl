@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('courses', function (Blueprint $table) {
-            $table->id();
+            $table->ulid('id')->primary();
             $table->string('lti_id')->unique();
             $table->text('title');
             $table->timestamps();

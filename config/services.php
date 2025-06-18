@@ -38,5 +38,10 @@ return [
         'endpoint'      => env('CANVAS_ENDPOINT'),
         'client_id'     => env('CANVAS_CLIENT_ID'),
         'client_secret' => env('CANVAS_CLIENT_SECRET'),
+        'scopes'        => implode(' ', [
+            'https://purl.imsglobal.org/spec/lti-ags/scope/lineitem',
+            'https://purl.imsglobal.org/spec/lti-ags/scope/score',
+            'https://purl.imsglobal.org/spec/lti-ags/scope/result.readonly',
+        ]),
     ],
 ];

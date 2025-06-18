@@ -66,8 +66,9 @@ class LtiCallbackController
 
         // TODO: get deadline from somewhere
         $assignment = $course->assignments()->updateOrCreate(['lti_id' => $assignmentData->ltiId], [
-            'title'       => $assignmentData->title,
-            'description' => $assignmentData->description,
+            'lti_lineitem_endpoint' => $assignmentData->ltiLineitemEndpoint,
+            'title'                 => $assignmentData->title,
+            'description'           => $assignmentData->description,
         ]);
 
         $user = User::updateOrCreate(['lti_id' => $userData->ltiId], [
@@ -81,6 +82,16 @@ class LtiCallbackController
         ]);
 
         Auth::login($user);
+
+        /**
+         * This might introduce a bug when a student/teacher opens two tabs
+         * with different courses/assignments. We will need to investigate
+         * this later, but for now, we will just store the last accessed.
+         */
+        session([
+            'course_id'     => $course->id,
+            'assignment_id' => $assignment->id,
+        ]);
 
         return redirect()->route('dashboard');
     }

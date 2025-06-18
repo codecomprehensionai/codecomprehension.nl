@@ -4,10 +4,13 @@ namespace App\Models;
 
 use App\Services\Jwt\JwtService;
 use DateTimeInterface;
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 
 class JwtKey extends Model
 {
+    use HasUlids;
+
     protected $hidden = [
         'private_key',
     ];

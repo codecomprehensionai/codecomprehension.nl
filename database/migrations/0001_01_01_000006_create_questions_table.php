@@ -9,8 +9,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('questions', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('assignment_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
+            $table->ulid('id')->primary();
+            $table->foreignUlid('assignment_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
 
             /* Question metadata */
             $table->string('language');
