@@ -38,7 +38,7 @@ class DashboardController
             ],
         ]);
     }
-    
+  
     /**
      * Get current course data from LTI session context
      */

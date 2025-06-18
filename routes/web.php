@@ -6,11 +6,14 @@ use App\Http\Controllers\LtiLaunchController;
 use App\Http\Controllers\StudentDashboardController;
 use App\Http\Controllers\TeacherDashboardController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 Route::middleware(['guest'])->group(function () {
     Route::post('api/v1/oidc', LtiLaunchController::class)->name('oidc.launch');
     Route::post('api/v1/oidc/callback', LtiCallbackController::class)->name('oidc.callback');
+
+    Route::get('login', fn () => Auth::user())->name('login');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
