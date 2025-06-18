@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Canvas;
 
-class AutoGrader
+class CanvasAutoGrader
 {
     public function grade($answer): int
     {
         // TODO: real grading logic
         return random_int(70, 100);
     }
-} 
+}

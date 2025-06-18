@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\CanvasTokenService;
-use App\Services\AutoGrader;
+use App\Services\Canvas\CanvasAutoGrader;
+use App\Services\Canvas\CanvasTokenService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
@@ -19,7 +19,7 @@ class SubmissionHandler
         ]);
 
         // 1) Grade
-        $score = app(AutoGrader::class)->grade($data['answer_blob']);
+        $score = app(CanvasAutoGrader::class)->grade($data['answer_blob']);
 
         // 2) Token
         $token = CanvasTokenService::get();
@@ -27,13 +27,13 @@ class SubmissionHandler
         // 3) Build payload
         $launch = session('lti.launch');          // set in LtiCallbackController
         $payload = [
-            'timestamp'        => now()->toIso8601String(),
-            'userId'           => $launch->sub,   // UUID from launch
-            'scoreGiven'       => $score,
-            'scoreMaximum'     => $data['score_max'],
-            'activityProgress' => 'Completed',
-            'gradingProgress'  => 'FullyGraded',
-            'comment'          => 'Auto-graded by Code Comprehension',
+            'timestamp'                                     => now()->toIso8601String(),
+            'userId'                                        => $launch->sub,   // UUID from launch
+            'scoreGiven'                                    => $score,
+            'scoreMaximum'                                  => $data['score_max'],
+            'activityProgress'                              => 'Completed',
+            'gradingProgress'                               => 'FullyGraded',
+            'comment'                                       => 'Auto-graded by Code Comprehension',
             'https://canvas.instructure.com/lti/submission' => [
                 'new_submission'            => true,
                 'submission_type'           => 'basic_lti_launch',
@@ -44,17 +44,17 @@ class SubmissionHandler
 
         // 4) POST to Canvas
         $url = sprintf(
-            'https://%s/api/lti/courses/%d/line_items/%d/scores',
-            config('services.canvas.domain'),
+            '%s/api/lti/courses/%d/line_items/%d/scores',
+            config('services.canvas.endpoint'),
             session('lti.course_id'),
             $data['line_item_id']
         );
 
         $res = Http::withToken($token)
-                   ->acceptJson()
-                   ->post($url, $payload)
-                   ->throw()
-                   ->json();
+            ->acceptJson()
+            ->post($url, $payload)
+            ->throw()
+            ->json();
 
         return response()->json([
             'ok'        => true,
@@ -62,4 +62,4 @@ class SubmissionHandler
             'resultUrl' => $res['resultUrl'] ?? null,
         ]);
     }
-} 
+}

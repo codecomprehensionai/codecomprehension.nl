@@ -83,8 +83,9 @@ class LtiCallbackController
         Auth::login($user);
 
         // Store LTI launch data in session for SubmissionHandler
+        // TODO: store in assignment table
         session([
-            'lti.launch' => $jwt,
+            'lti.launch'    => $jwt,
             'lti.course_id' => $course->id,
         ]);
 
