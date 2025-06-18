@@ -45,7 +45,8 @@ open http://127.0.0.1:8000
 git clone https://github.com/codecomprehensionai/codecomprehension && cd codecomprehension
 
 # Configure Herd
-herd secure
+herd link codecomprehension
+herd secure codecomprehension
 
 # Install dependencies
 npm install
