@@ -81,6 +81,7 @@ class LtiCallbackController
         ]);
 
         Auth::login($user);
+        dd($jwt);
 
         return redirect()->route('dashboard');
     }
