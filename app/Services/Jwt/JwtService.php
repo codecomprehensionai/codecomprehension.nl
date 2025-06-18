@@ -2,9 +2,7 @@
 
 namespace App\Services\Jwt;
 
-use App\Enums\CryptoKeyType;
 use App\Models\JwtKey;
-use App\Support\CarbonClock;
 use DateInterval;
 use DateTimeImmutable;
 use DateTimeInterface;
@@ -14,7 +12,7 @@ use InvalidArgumentException;
 use Lcobucci\JWT\Encoding\ChainedFormatter;
 use Lcobucci\JWT\Encoding\JoseEncoder;
 use Lcobucci\JWT\Signer;
-use Lcobucci\JWT\Signer\Ecdsa;
+use Lcobucci\JWT\Signer\Ecdsa\Sha256;
 use Lcobucci\JWT\Signer\Key\InMemory;
 use Lcobucci\JWT\Token\Builder;
 use Lcobucci\JWT\Token\Parser;
@@ -31,11 +29,7 @@ class JwtService
 
     public function __construct(protected JwtKey $key)
     {
-        if (CryptoKeyType::JWT !== $this->key->type) {
-            throw new InvalidArgumentException('CryptoJwtService: invalid key type');
-        }
-
-        $this->signer = new Ecdsa\Sha256;
+        $this->signer = new Sha256;
     }
 
     /**
@@ -51,12 +45,12 @@ class JwtService
 
         $resource = openssl_pkey_new($config);
         if (!$resource || !openssl_pkey_export($resource, $privateKey)) {
-            throw new Exception('CryptoJwtService: unable to generate private key');
+            throw new Exception('JwtService: unable to generate private key');
         }
 
         $details = openssl_pkey_get_details($resource);
         if (empty($details['key'])) {
-            throw new Exception('CryptoJwtService: unable to extract public key');
+            throw new Exception('JwtService: unable to extract public key');
         }
 
         return [
@@ -80,7 +74,7 @@ class JwtService
     public function sign(string $sub, string|array $aud, DateTimeInterface $exp, ?DateTimeInterface $nbf = null, ?string $jti = null, ?array $claims = []): string
     {
         if (blank($this->key->private_key)) {
-            throw new InvalidArgumentException('CryptoJwtService: private key is required for signing');
+            throw new InvalidArgumentException('JwtService: private key is required for signing');
         }
 
         $privateKey = InMemory::plainText($this->key->private_key);
@@ -120,7 +114,7 @@ class JwtService
     public function verify(string $input, ?string $expectedIss = null, ?string $expectedSub = null): array
     {
         if (blank($this->key->public_key)) {
-            throw new InvalidArgumentException('CryptoJwtService: public key is required for verification');
+            throw new InvalidArgumentException('JwtService: public key is required for verification');
         }
 
         $publicKey = InMemory::plainText($this->key->public_key);
@@ -129,23 +123,23 @@ class JwtService
         $validator = new Validator;
 
         if (!$validator->validate($token, new SignedWith($this->signer, $publicKey))) {
-            throw new Exception('CryptoJwtService: invalid signature');
+            throw new Exception('JwtService: invalid signature');
         }
 
         if ($expectedIss && !$validator->validate($token, new IssuedBy($expectedIss))) {
-            throw new Exception('CryptoJwtService: invalid issuer');
+            throw new Exception('JwtService: invalid issuer');
         }
 
         if ($expectedSub && !$validator->validate($token, new RelatedTo($expectedSub))) {
-            throw new Exception('CryptoJwtService: invalid subject');
+            throw new Exception('JwtService: invalid subject');
         }
 
         if (!$validator->validate($token, new PermittedFor(config('app.url')))) {
-            throw new Exception('CryptoJwtService: invalid audience');
+            throw new Exception('JwtService: invalid audience');
         }
 
-        if (!$validator->validate($token, new StrictValidAt(new CarbonClock, DateInterval::createFromDateString('60 seconds')))) {
-            throw new Exception('CryptoJwtService: token is not valid at this time');
+        if (!$validator->validate($token, new StrictValidAt(new JwtClock, DateInterval::createFromDateString('60 seconds')))) {
+            throw new Exception('JwtService: token is not valid at this time');
         }
 
         return $token->claims()->all();
