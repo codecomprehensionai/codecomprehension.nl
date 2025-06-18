@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Throwable;
 
@@ -45,6 +46,9 @@ class LtiCallbackController
 
         try {
             $jwt = JWT::decode($validated['id_token'], JWK::parseKeySet($jwks));
+
+            // Log the JWT for debugging
+            Log::debug($jwt);
 
             if ($jwt->iss !== $endpoint) {
                 abort(401, 'Invalid issuer.');
@@ -98,7 +102,12 @@ class LtiCallbackController
             'deadline_at' => null, // TODO: extract deadline from JWT if available
         ]);
 
-        // dd($jwt);
+        // Debug: Log what was stored in session
+        Log::debug('Session data stored:', [
+            'lti.course' => $request->session()->get('lti.course'),
+            'lti.assignment' => $request->session()->get('lti.assignment'),
+            'session_id' => $request->session()->getId(),
+        ]);
 
         return redirect()->route('dashboard');
     }
