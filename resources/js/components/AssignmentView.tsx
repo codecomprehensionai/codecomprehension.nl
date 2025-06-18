@@ -168,7 +168,7 @@ export default function AssignmentView({ assignment, onBack }:
                                                         ? 'bg-red-50 border border-red-200'
                                                         : 'bg-gray-50'
                                                     }`}>
-                                                    <span className="font-mono">{String.fromCharCode(65 + optIndex)})</span> {option}
+                                                    <span className="font-mono">{String.fromCharCode(65 + optIndex)})</span> {option.text}
                                                     {isCorrectOption && <Badge variant="secondary" className="ml-2">Correct</Badge>}
                                                     {isWrongAnswer && <Badge variant="destructive" className="ml-2">Your Answer</Badge>}
                                                 </div>
@@ -271,8 +271,8 @@ export default function AssignmentView({ assignment, onBack }:
                                         : 'bg-white border-gray-200 hover:bg-gray-50'
                                         }`}
                                 >
-                                    <span className="font-mono text-sm mr-3">{String.fromCharCode(65 + index)})</span>
-                                    {option}
+                                    <span className="font-mono text-sm mr-3">{String.fromCharCode(65 + index)}</span>
+                                    {option.text}
                                 </button>
                             ))}
                         </div>

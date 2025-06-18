@@ -51,42 +51,56 @@ export interface Submission {
     feedback?: string;
 }
 
+export interface Option {
+    id: string;
+    text: string;
+    is_correct: boolean;
+}
+
+e
 export interface Question {
-    id: number;
-    assignment_id: number;
+    id: number | string;
+    assignment_id?: number;
     language: string;
-    type: string;
-    level: string;
+    type: 'code_explanation' | 'multiple_choice' | 'fill_in_the_blanks' | 'single_choice' | 'open';
+    level: 'beginner' | 'intermediate' | 'advanced' | 'expert';
     estimated_answer_duration: number;
-    topic: string;
-    tags: string[];
+    question_number?: number;
+    topic?: string;
+    tags?: string[];
     question: string;
     explanation?: string;
     code: string;
-    options: any[];
+    options: Array<Option>;
     answer?: string;
     submissions?: Submission[];
-    created_at: string;
-    updated_at: string;
+    messages?: Array<{
+        role: 'user' | 'assistant';
+        content: string;
+    }>;
+    isChatLoading?: boolean;
+    created_at?: string;
+    updated_at?: string;
 }
 
 export interface Assignment {
-  id: number
-  title: string
-  description: string
-  language: string
-  difficulty: string
-  dueDate: string
-  status: "submitted" | "in_progress" | "not_started"
-  score: number | null
-  questions: Question[]
-  timeSpent: string
-  submittedAt?: string
-  progress?: number
-  topics?: string[]
-  estimatedAnswerDuration?: number
+    id: number;
+    title: string;
+    description: string;
+    language: string;
+    difficulty: string;
+    dueDate: string;
+    status: "submitted" | "in_progress" | "not_started";
+    score: number | null;
+    questions: Question[];
+    timeSpent: string;
+    submittedAt?: string;
+    progress?: number;
+    topics?: string | string[];
+    estimatedAnswerDuration?: number;
+    published_at?: string;
+    deadline_at?: string;
 }
-
 export interface PageProps extends InertiaPageProps {
     auth: {
       user: User;

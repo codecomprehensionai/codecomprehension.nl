@@ -25,7 +25,7 @@ import {
     ArrowRight
 } from 'lucide-react'
 import { Chat } from '@/components/ui/chat'
-import { Assignment } from '@/types'
+import { Assignment, Question, Option } from '@/types'
 
 interface AssignmentCreatorProps {
     assignment: Assignment,
@@ -41,25 +41,6 @@ enum Step {
 interface Message {
     role: 'user' | 'assistant'
     content: string
-}
-
-interface QuestionBlock {
-    id: string
-    language: string
-    type: 'multiple_choice' | 'single_choice' | 'open'
-    level: 'easy' | 'medium' | 'hard'
-    estimatedDuration: number // in minutes
-    questionNumber: number
-    questionText: string
-    codeSnippet: string
-    options: {
-        id: string
-        text: string
-        isCorrect: boolean
-    }[]
-    modelAnswer?: string // For open questions
-    messages: Message[] // Add messages to each question
-    isChatLoading: boolean // Add chat loading state to each question
 }
 
 export default function AssignmentCreator({ assignment, onBack }: AssignmentCreatorProps) {
@@ -87,46 +68,46 @@ export default function AssignmentCreator({ assignment, onBack }: AssignmentCrea
             id: question.id || crypto.randomUUID(),
             language: question.language || 'python',
             type: question.type || 'single_choice',
-            level: question.level || 'medium',
-            estimatedDuration: question.estimated_answer_duration || 15,
-            questionNumber: index + 1,
-            questionText: question.question || '',
-            codeSnippet: question.code || '',
+            level: question.level || 'intermediate',
+            estimated_answer_duration: question.estimated_answer_duration || 15,
+            question_number: index + 1,
+            question: question.question || '',
+            code: question.code || '',
             options: question.options?.map(opt => ({
                 id: opt.id || crypto.randomUUID(),
                 text: opt.text || '',
-                isCorrect: opt.is_correct || false
+                is_correct: opt.is_correct || false
             })) || [
-                    { id: crypto.randomUUID(), text: '', isCorrect: false },
-                    { id: crypto.randomUUID(), text: '', isCorrect: false },
-                    { id: crypto.randomUUID(), text: '', isCorrect: false },
-                    { id: crypto.randomUUID(), text: '', isCorrect: false }
+                    { id: crypto.randomUUID(), text: '', is_correct: false },
+                    { id: crypto.randomUUID(), text: '', is_correct: false },
+                    { id: crypto.randomUUID(), text: '', is_correct: false },
+                    { id: crypto.randomUUID(), text: '', is_correct: false }
                 ],
-            modelAnswer: question.answer || '',
-            messages: [],
+            answer: question.answer || '',
+            messages: question.messages || [],
             isChatLoading: false
-        })) || [] as QuestionBlock[]
+        } as Question)) || [] as Question[]
     })
 
     const addNewQuestion = () => {
-        const newQuestion: QuestionBlock = {
+        const newQuestion: Question = {
             id: crypto.randomUUID(),
             language: 'python',
             type: 'single_choice',
-            level: 'medium',
-            estimatedDuration: 15,
-            questionNumber: generatedContent.questions.length + 1,
-            questionText: '',
-            codeSnippet: '',
+            level: 'intermediate',
+            estimated_answer_duration: 15,
+            question_number: generatedContent.questions.length + 1,
+            question: '',
+            code: '',
             options: [
-                { id: crypto.randomUUID(), text: '', isCorrect: false },
-                { id: crypto.randomUUID(), text: '', isCorrect: false },
-                { id: crypto.randomUUID(), text: '', isCorrect: false },
-                { id: crypto.randomUUID(), text: '', isCorrect: false }
+                { id: crypto.randomUUID(), text: '', is_correct: false },
+                { id: crypto.randomUUID(), text: '', is_correct: false },
+                { id: crypto.randomUUID(), text: '', is_correct: false },
+                { id: crypto.randomUUID(), text: '', is_correct: false }
             ],
-            modelAnswer: '',
-            messages: [], // Initialize empty messages array
-            isChatLoading: false // Initialize chat loading state
+            answer: '',
+            messages: [],
+            isChatLoading: false
         }
 
         setGeneratedContent(prev => ({
@@ -135,30 +116,30 @@ export default function AssignmentCreator({ assignment, onBack }: AssignmentCrea
         }))
     }
 
-    const updateQuestion = (questionId: string, updates: Partial<QuestionBlock>) => {
-        setGeneratedContent(prev => ({
-            ...prev,
-            questions: prev.questions.map(q =>
-                q.id === questionId ? { ...q, ...updates } : q
-            )
-        }))
-    }
+const updateQuestion = (questionId: string | number | null, updates: Partial<Question>) => {
+    setGeneratedContent(prev => ({
+        ...prev,
+        questions: prev.questions.map(q =>
+            q.id === questionId ? { ...q, ...updates } : q
+        )
+    }))
+}
 
-    const addOptionToQuestion = (questionId: string) => {
+    const addOptionToQuestion = (questionId: string | number) => {
         setGeneratedContent(prev => ({
             ...prev,
             questions: prev.questions.map(q =>
                 q.id === questionId
                     ? {
                         ...q,
-                        options: [...q.options, { id: crypto.randomUUID(), text: '', isCorrect: false }]
+                        options: [...q.options, { id: crypto.randomUUID(), text: '', is_correct: false }]
                     }
                     : q
             )
         }))
     }
 
-    const updateQuestionOption = (questionId: string, optionId: string, updates: Partial<typeof generatedContent.questions[0]['options'][0]>) => {
+    const updateQuestionOption = (questionId: string | number, optionId: string, updates: Partial<Option>) => {
         setGeneratedContent(prev => ({
             ...prev,
             questions: prev.questions.map(q =>
@@ -174,17 +155,17 @@ export default function AssignmentCreator({ assignment, onBack }: AssignmentCrea
         }))
     }
 
-    const deleteQuestion = (questionId: string) => {
+    const deleteQuestion = (questionId: string | number) => {
         setGeneratedContent(prev => ({
             ...prev,
             questions: prev.questions.map((q, idx) => ({
                 ...q,
-                questionNumber: idx + 1
+                question_number: idx + 1
             })).filter(q => q.id !== questionId)
         }))
     }
 
-    const deleteQuestionOption = (questionId: string, optionId: string) => {
+    const deleteQuestionOption = (questionId: string | number, optionId: string) => {
         setGeneratedContent(prev => ({
             ...prev,
             questions: prev.questions.map(q =>
@@ -221,7 +202,7 @@ export default function AssignmentCreator({ assignment, onBack }: AssignmentCrea
         }, 3000)
     }
 
-    const handleQuestionChatMessage = async (questionId: string, message: string) => {
+    const handleQuestionChatMessage = async (questionId: string | number, message: string) => {
         // Update the chat loading state for this specific question
         setGeneratedContent(prev => ({
             ...prev,
@@ -237,7 +218,7 @@ export default function AssignmentCreator({ assignment, onBack }: AssignmentCrea
                 q.id === questionId
                     ? {
                         ...q,
-                        messages: [...q.messages, { role: 'user', content: message }]
+                        messages: [...q.messages || [], { role: 'user', content: message }]
                     }
                     : q
             )
@@ -252,7 +233,7 @@ export default function AssignmentCreator({ assignment, onBack }: AssignmentCrea
                         ? {
                             ...q,
                             messages: [
-                                ...q.messages,
+                                ...(q.messages || []),
                                 {
                                     role: 'assistant',
                                     content: 'I understand you want to modify this question. What specific changes would you like to make to the question or code example?'
@@ -334,7 +315,7 @@ export default function AssignmentCreator({ assignment, onBack }: AssignmentCrea
                                 <Card className="flex-1">
                                     <CardContent className="p-6 space-y-4">
                                         <div className="flex justify-between items-start mb-4">
-                                            <h3 className="text-lg font-medium">Question {question.questionNumber}</h3>
+                                            <h3 className="text-lg font-medium">Question {question.question_number}</h3>
                                             <Button
                                                 variant="ghost"
                                                 size="sm"
@@ -379,10 +360,10 @@ export default function AssignmentCreator({ assignment, onBack }: AssignmentCrea
                                                                 updateQuestion(question.id, {
                                                                     type: value as 'multiple_choice' | 'single_choice' | 'open',
                                                                     options: [
-                                                                        { id: crypto.randomUUID(), text: '', isCorrect: false },
-                                                                        { id: crypto.randomUUID(), text: '', isCorrect: false },
-                                                                        { id: crypto.randomUUID(), text: '', isCorrect: false },
-                                                                        { id: crypto.randomUUID(), text: '', isCorrect: false }
+                                                                        { id: crypto.randomUUID(), text: '', is_correct: false },
+                                                                        { id: crypto.randomUUID(), text: '', is_correct: false },
+                                                                        { id: crypto.randomUUID(), text: '', is_correct: false },
+                                                                        { id: crypto.randomUUID(), text: '', is_correct: false }
                                                                     ]
                                                                 })
                                                             } else {
@@ -407,15 +388,16 @@ export default function AssignmentCreator({ assignment, onBack }: AssignmentCrea
                                                 <Label>Difficulty Level</Label>
                                                 <Select
                                                     value={question.level}
-                                                    onValueChange={(value) => updateQuestion(question.id, { level: value as 'easy' | 'medium' | 'hard' })}
+                                                    onValueChange={(value) => updateQuestion(question.id, { level: value as 'beginner' | 'intermediate' | 'advanced' | 'expert' })}
                                                 >
                                                     <SelectTrigger>
                                                         <SelectValue />
                                                     </SelectTrigger>
                                                     <SelectContent>
-                                                        <SelectItem value="easy">Easy</SelectItem>
-                                                        <SelectItem value="medium">Medium</SelectItem>
-                                                        <SelectItem value="hard">Hard</SelectItem>
+                                                        <SelectItem value="beginner">Beginner</SelectItem>
+                                                        <SelectItem value="intermediate">Intermediate</SelectItem>
+                                                        <SelectItem value="advanced">Advanced</SelectItem>
+                                                        <SelectItem value="expert">Expert</SelectItem>
                                                     </SelectContent>
                                                 </Select>
                                             </div>
@@ -424,17 +406,17 @@ export default function AssignmentCreator({ assignment, onBack }: AssignmentCrea
                                                 <Input
                                                     type="number"
                                                     min="1"
-                                                    value={question.estimatedDuration}
-                                                    onChange={(e) => updateQuestion(question.id, { estimatedDuration: parseInt(e.target.value) })}
+                                                    value={question.estimated_answer_duration}
+                                                    onChange={(e) => updateQuestion(question.id, { estimated_answer_duration: parseInt(e.target.value) })}
                                                 />
                                             </div>
                                         </div>
 
                                         <div>
-                                            <Label>Question {question.questionNumber}</Label>
+                                            <Label>Question {question.question_number}</Label>
                                             <Textarea
-                                                value={question.questionText}
-                                                onChange={(e) => updateQuestion(question.id, { questionText: e.target.value })}
+                                                value={question.question}
+                                                onChange={(e) => updateQuestion(question.id, { question: e.target.value })}
                                                 placeholder="Enter your question here..."
                                                 className="mt-1"
                                             />
@@ -443,8 +425,8 @@ export default function AssignmentCreator({ assignment, onBack }: AssignmentCrea
                                         <div>
                                             <Label>Code Snippet</Label>
                                             <Textarea
-                                                value={question.codeSnippet}
-                                                onChange={(e) => updateQuestion(question.id, { codeSnippet: e.target.value })}
+                                                value={question.code}
+                                                onChange={(e) => updateQuestion(question.id, { code: e.target.value })}
                                                 placeholder="Enter code snippet here..."
                                                 className="mt-1 font-mono"
                                                 rows={6}
@@ -455,8 +437,8 @@ export default function AssignmentCreator({ assignment, onBack }: AssignmentCrea
                                             <div>
                                                 <Label>Model Answer / Grading Rubric</Label>
                                                 <Textarea
-                                                    value={question.modelAnswer || ''}
-                                                    onChange={(e) => updateQuestion(question.id, { modelAnswer: e.target.value })}
+                                                    value={question.answer || ''}
+                                                    onChange={(e) => updateQuestion(question.id, { answer: e.target.value })}
                                                     placeholder="Enter the model answer or grading rubric for this open question..."
                                                     className="mt-1"
                                                     rows={6}
@@ -481,22 +463,22 @@ export default function AssignmentCreator({ assignment, onBack }: AssignmentCrea
                                                             {question.type === 'single_choice' ? (
                                                                 <input
                                                                     type="radio"
-                                                                    checked={option.isCorrect}
+                                                                    checked={option.is_correct}
                                                                     onChange={() => {
                                                                         question.options.forEach(opt => {
                                                                             if (opt.id !== option.id) {
-                                                                                updateQuestionOption(question.id, opt.id, { isCorrect: false })
+                                                                                updateQuestionOption(question.id, opt.id, { is_correct: false })
                                                                             }
                                                                         })
-                                                                        updateQuestionOption(question.id, option.id, { isCorrect: true })
+                                                                        updateQuestionOption(question.id, option.id, { is_correct: true })
                                                                     }}
                                                                     className="mr-2"
                                                                 />
                                                             ) : (
                                                                 <input
                                                                     type="checkbox"
-                                                                    checked={option.isCorrect}
-                                                                    onChange={(e) => updateQuestionOption(question.id, option.id, { isCorrect: e.target.checked })}
+                                                                    checked={option.is_correct}
+                                                                    onChange={(e) => updateQuestionOption(question.id, option.id, { is_correct: e.target.checked })}
                                                                     className="mr-2"
                                                                 />
                                                             )}
@@ -527,14 +509,14 @@ export default function AssignmentCreator({ assignment, onBack }: AssignmentCrea
                                 <Card className="w-[400px] flex flex-col">
                                     <CardHeader className="pb-2">
                                         <div className="flex items-center justify-between">
-                                            <CardTitle className="text-sm">Question {question.questionNumber} Assistant</CardTitle>
+                                            <CardTitle className="text-sm">Question {question.question_number} Assistant</CardTitle>
                                             <Badge variant="outline">{question.language}</Badge>
                                         </div>
                                     </CardHeader>
                                     <CardContent className="flex-1 p-4 pt-0">
                                         <div className="h-full">
                                             <Chat
-                                                messages={question.messages}
+                                                messages={question.messages || []}
                                                 onSendMessage={(message) => handleQuestionChatMessage(question.id, message)}
                                                 isLoading={question.isChatLoading}
                                                 allowTextEdit={false}
@@ -563,18 +545,18 @@ export default function AssignmentCreator({ assignment, onBack }: AssignmentCrea
                             className="bg-blue-600 hover:bg-blue-700"
                             disabled={
                                 generatedContent.questions.length === 0 || // No questions
-                                generatedContent.questions.some(q => !q.questionText.trim()) || // Empty question text
-                                generatedContent.questions.some(q => !q.codeSnippet.trim()) || // Empty code snippet
+                                generatedContent.questions.some(q => !q.question.trim()) || // Empty question text
+                                generatedContent.questions.some(q => !q.code.trim()) || // Empty code snippet
                                 generatedContent.questions.some(q =>
                                     q.type !== 'open' && // Only check options for multiple/single choice questions
                                     (
                                         q.options.some(opt => !opt.text.trim()) || // Empty option text
-                                        !q.options.some(opt => opt.isCorrect) // No correct answer selected
+                                        !q.options.some(opt => opt.is_correct) // No correct answer selected
                                     )
                                 ) ||
                                 generatedContent.questions.some(q =>
                                     q.type === 'open' && // Only check model answer for open questions
-                                    (!q.modelAnswer || !q.modelAnswer.trim()) // Empty model answer/grading rubric
+                                    (!q.answer || !q.answer.trim()) // Empty model answer/grading rubric
                                 )
                             }
                         >
@@ -663,18 +645,18 @@ export default function AssignmentCreator({ assignment, onBack }: AssignmentCrea
                                                         <Badge>{question.type}</Badge>
                                                     </div>
                                                 </div>
-                                                <p className="text-sm mb-2">{question.questionText}</p>
-                                                {question.codeSnippet && (
+                                                <p className="text-sm mb-2">{question.question}</p>
+                                                {question.code && (
                                                     <div className="bg-gray-900 text-gray-100 p-3 rounded text-xs font-mono mb-2">
-                                                        <pre>{question.codeSnippet.split('\n').slice(0, 3).join('\n')}
-                                                            {question.codeSnippet.split('\n').length > 3 ? '...' : ''}</pre>
+                                                        <pre>{question.code.split('\n').slice(0, 3).join('\n')}
+                                                            {question.code.split('\n').length > 3 ? '...' : ''}</pre>
                                                     </div>
                                                 )}
                                                 <div className="text-sm text-muted-foreground">
                                                     {question.type === 'open' ? (
                                                         <p>Open question with model answer</p>
                                                     ) : (
-                                                        <p>{question.options.length} options, {question.options.filter(opt => opt.isCorrect).length} correct</p>
+                                                        <p>{question.options.length} options, {question.options.filter(opt => opt.is_correct).length} correct</p>
                                                     )}
                                                 </div>
                                             </div>

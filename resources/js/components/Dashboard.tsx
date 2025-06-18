@@ -38,8 +38,8 @@ export default function Dashboard({ course, assignment }: DashboardProps) {
     const page = usePage<PageProps>();
     const user: User = page.props?.auth?.user;
 
-    //   const [userRole, setUserRole] = useState<UserRole>(user.type)
-    const [userRole, setUserRole] = useState<UserRole>('student')
+      const [userRole, setUserRole] = useState<UserRole>(user.type)
+    // const [userRole, setUserRole] = useState<UserRole>('teacher') // om te testen
 
     const [showTeacherDashboard, setShowTeacherDashboard] = useState(false)
 
