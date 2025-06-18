@@ -14,7 +14,7 @@ class CanvasTokenService
             'services.canvas.token',
             [55 * 60, 60 * 60],
             function () {
-                $endpoint = sprintf('%s/login/oauth2/token', config('services.canvas.endpoint'));
+                $endpoint = config('services.canvas.endpoint') . '/login/oauth2/token';
                 $token = JwtKey::first()->sign(config('services.canvas.client_id'), $endpoint, now()->addMinutes(5));
 
                 return Http::asForm()->post($endpoint, [

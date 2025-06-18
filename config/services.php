@@ -36,6 +36,7 @@ return [
 
     'canvas' => [
         'endpoint'      => env('CANVAS_ENDPOINT'),
+        'issuer'        => env('CANVAS_ISSUER'),
         'client_id'     => env('CANVAS_CLIENT_ID'),
         'client_secret' => env('CANVAS_CLIENT_SECRET'),
         'scopes'        => implode(' ', [

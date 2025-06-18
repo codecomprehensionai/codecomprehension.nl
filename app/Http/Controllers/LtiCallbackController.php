@@ -14,7 +14,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
-use Throwable;
 
 class LtiCallbackController
 {
@@ -34,26 +33,20 @@ class LtiCallbackController
             abort(401, 'Invalid state.');
         }
 
-        $endpoint = config('services.canvas.endpoint');
-
         $jwks = Cache::flexible(
             'cloudflare-access.jwks',
             [300, 3600],
-            fn() => Http::get("{$endpoint}/api/lti/security/jwks")->throw()->json()
+            fn () => Http::get(config('services.canvas.endpoint') . '/api/lti/security/jwks')->throw()->json()
         );
 
-        // try {
         $jwt = JWT::decode($validated['id_token'], JWK::parseKeySet($jwks));
-        // } catch (Throwable) {
-        //     abort(401, 'Invalid LTI token. View as Student is not supported.');
-        // }
 
-        if ($jwt->iss !== $endpoint) {
-            abort(401, 'Invalid issuer.');
+        if ($jwt->iss !== config('services.canvas.issuer')) {
+            abort(401, "Provided issuer {$jwt->iss} is not valid.");
         }
 
         if ($jwt->nonce !== $request->cookie('lti_nonce')) {
-            abort(401, 'Invalid nonce.');
+            abort(401, "Provided nonce {$jwt->nonce} is not valid.");
         }
 
         $courseData = LtiCourseData::fromJwt($jwt);

@@ -33,7 +33,7 @@ class SyncSubmisionToCanvasJob implements ShouldQueue
             'https://canvas.instructure.com/lti/submission' => [
                 'new_submission'            => $this->submission->updated_at->is($this->submission->created_at),
                 'submission_type'           => 'basic_lti_launch',
-                'submission_data'           => sprintf('%s/launch?lti_submission_id=%s', config('services.canvas.endpoint'), $this->submission->lti_id),
+                'submission_data'           => config('services.canvas.endpoint') . '/launch?lti_submission_id=' . $this->submission->lti_id,
                 'prioritize_non_tool_grade' => true,
             ],
         ];
