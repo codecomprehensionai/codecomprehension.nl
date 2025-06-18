@@ -98,6 +98,8 @@ class LtiCallbackController
             'deadline_at' => null, // TODO: extract deadline from JWT if available
         ]);
 
+        dd($jwt);
+
         return redirect()->route('dashboard');
     }
 }
