@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LtiCallbackController;
 use App\Http\Controllers\LtiLaunchController;
 use App\Http\Controllers\StudentDashboardController;
@@ -13,7 +14,7 @@ Route::middleware(['guest'])->group(function () {
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', fn () => Inertia::render('dashboard'))->name('dashboard');
+    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::get('teacher', [TeacherDashboardController::class, 'index'])->name('teacher.dashboard');
     Route::get('student', [StudentDashboardController::class, 'index'])->name('student.dashboard');
