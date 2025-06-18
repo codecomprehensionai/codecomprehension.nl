@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -18,6 +19,14 @@ class DashboardController
         // Get LTI context data from session (set during LTI launch)
         $currentCourse = $this->getCurrentCourseFromSession($request);
         $currentAssignment = $this->getCurrentAssignmentFromSession($request);
+        
+        // Debug: Log what was retrieved from session
+        Log::debug('Dashboard session data retrieved:', [
+            'currentCourse' => $currentCourse,
+            'currentAssignment' => $currentAssignment,
+            'session_id' => $request->session()->getId(),
+            'all_session_data' => $request->session()->all(),
+        ]);
         
         return Inertia::render('dashboard', [
             'currentCourse' => $currentCourse,
