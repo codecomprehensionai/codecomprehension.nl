@@ -16,6 +16,8 @@ return new class extends Migration
             $table->text('title');
             $table->text('description')->nullable();
             $table->timestamp('deadline_at')->nullable();
+            $table->string('score_max')->nullable(); // TODO: remove nullable
+            $table->string('score')->nullable();
             $table->timestamps();
         });
     }
