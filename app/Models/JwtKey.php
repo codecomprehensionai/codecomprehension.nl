@@ -24,11 +24,6 @@ class JwtKey extends Model
         });
     }
 
-    protected function service(): JwtService
-    {
-        return new JwtService($this);
-    }
-
     /**
      * Ensures that the token:
      * - is issued by this app (issuer = config('app.url'))
@@ -60,6 +55,11 @@ class JwtKey extends Model
     public function verify(string $input, ?string $expectedIss = null, ?string $expectedSub = null): array
     {
         return $this->service()->verify($input, $expectedIss, $expectedSub);
+    }
+
+    protected function service(): JwtService
+    {
+        return new JwtService($this);
     }
 
     protected function casts(): array

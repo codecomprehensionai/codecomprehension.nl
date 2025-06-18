@@ -8,10 +8,10 @@ class JwksController
 {
     public function __invoke()
     {
-        if (JwtKey::count() === 0) {
+        if (0 === JwtKey::count()) {
             JwtKey::create();
         }
-        
+
         $keys = JwtKey::get()->map(function (JwtKey $key): array {
             $resource = openssl_pkey_get_public($key->public_key);
             $details = openssl_pkey_get_details($resource);
