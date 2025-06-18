@@ -23,7 +23,6 @@ class LtiCallbackController
      */
     public function __invoke(Request $request)
     {
-
         $validated = $request->validate([
             'authenticity_token' => 'required',
             'id_token'           => 'required',
@@ -40,7 +39,7 @@ class LtiCallbackController
         $jwks = Cache::flexible(
             'cloudflare-access.jwks',
             [300, 3600],
-            fn () => Http::get("{$endpoint}/api/lti/security/jwks")->throw()->json()
+            fn() => Http::get("{$endpoint}/api/lti/security/jwks")->throw()->json()
         );
 
         try {
@@ -82,23 +81,6 @@ class LtiCallbackController
         ]);
 
         Auth::login($user);
-
-        // Store LTI context data in session for dashboard use
-        $request->session()->put('lti.course', [
-            'id' => $course->id,
-            'title' => $courseData->title,
-            'lti_id' => $courseData->ltiId,
-        ]);
-
-        $request->session()->put('lti.assignment', [
-            'id' => $assignment->id,
-            'title' => $assignmentData->title,
-            'description' => $assignmentData->description,
-            'lti_id' => $assignmentData->ltiId,
-            'deadline_at' => null, // TODO: extract deadline from JWT if available
-        ]);
-
-        // dd($jwt);
 
         return redirect()->route('dashboard');
     }
