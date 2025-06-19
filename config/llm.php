@@ -15,6 +15,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | JWT Authentication Configuration
+    |--------------------------------------------------------------------------
+    |
+    | JWT settings for authenticating with the LLM API
+    |
+    */
+
+    'jwt_secret' => env('LLM_JWT_SECRET'),
+    'jwt_algorithm' => env('LLM_JWT_ALGORITHM', 'HS256'),
+    'jwt_expiration_minutes' => env('LLM_JWT_EXPIRATION_MINUTES', 60),
+
+    /*
+    |--------------------------------------------------------------------------
     | Default Question Parameters
     |--------------------------------------------------------------------------
     |

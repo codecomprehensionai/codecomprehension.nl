@@ -7,16 +7,29 @@ use App\Models\Assignment;
 use App\Models\Question;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 
 class LlmQuestionGeneratorService
 {
     private string $baseUrl;
     private int $timeout;
+    private string $jwtSecret;
+    private string $jwtAlgorithm;
+    private int $jwtExpirationMinutes;
 
     public function __construct()
     {
         $this->baseUrl = rtrim(config('llm.base_url'), '/');
         $this->timeout = config('llm.timeout', 100);
+        $this->jwtSecret = config('llm.jwt_secret');
+        $this->jwtAlgorithm = config('llm.jwt_algorithm', 'HS256');
+        $this->jwtExpirationMinutes = config('llm.jwt_expiration_minutes', 60);
+        
+        if (empty($this->jwtSecret)) {
+            throw new \Exception('LLM JWT secret is not configured');
+        }
     }
 
     /**
@@ -133,7 +146,12 @@ class LlmQuestionGeneratorService
     public function isAvailable(): bool
     {
         try {
+            $jwt = $this->generateJWT();
+
             $response = Http::timeout(5)
+                ->withHeaders([
+                    'Authorization' => "Bearer {$jwt}"
+                ])
                 ->get("{$this->baseUrl}/health");
 
             $isAvailable = $response->successful();
@@ -161,10 +179,13 @@ class LlmQuestionGeneratorService
     private function makeRequest(string $method, string $endpoint, array $data): ?array
     {
         try {
+            $jwt = $this->generateJWT();
+
             $response = Http::timeout($this->timeout)
                 ->withHeaders([
                     'Content-Type' => 'application/json',
-                    'Accept' => 'application/json'
+                    'Accept' => 'application/json',
+                    'Authorization' => "Bearer {$jwt}"
                 ])
                 ->$method("{$this->baseUrl}{$endpoint}", $data);
 
@@ -310,7 +331,7 @@ class LlmQuestionGeneratorService
             $language = strtolower($questionData['language']);
             $type = strtolower($questionData['type']);
             $level = strtolower($questionData['level']);
-            
+
             // Handle type variations
             if ($type === 'fill_in_blank') {
                 $type = 'fill_in_the_blanks';
@@ -389,5 +410,49 @@ class LlmQuestionGeneratorService
         
         // If no pattern matches, assume it's already in seconds or return default
         return is_numeric($duration) ? (int)$duration : 180;
+    }
+
+    /**
+     * Generate JWT token for LLM API authentication
+     */
+    private function generateJWT(): string
+    {
+        $cacheKey = 'llm_jwt_token';
+        
+        // Check if we have a cached valid token
+        $cachedToken = Cache::get($cacheKey);
+        if ($cachedToken && $this->isTokenValid($cachedToken)) {
+            return $cachedToken;
+        }
+
+        $payload = [
+            'iss' => config('app.name'), // Issuer
+            'aud' => 'llm-api', // Audience
+            'iat' => time(), // Issued at
+            'exp' => time() + ($this->jwtExpirationMinutes * 60), // Expiration
+            'sub' => 'question-generator', // Subject
+            'jti' => uniqid(), // JWT ID
+        ];
+
+        $token = JWT::encode($payload, $this->jwtSecret, $this->jwtAlgorithm);
+
+        // Cache token for slightly less than its expiration time
+        $cacheSeconds = ($this->jwtExpirationMinutes * 60) - 300; // 5 minutes before expiration
+        Cache::put($cacheKey, $token, $cacheSeconds);
+
+        return $token;
+    }
+
+    /**
+     * Validate if JWT token is still valid
+     */
+    private function isTokenValid(string $token): bool
+    {
+        try {
+            $decoded = JWT::decode($token, new Key($this->jwtSecret, $this->jwtAlgorithm));
+            return $decoded->exp > time();
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 }
