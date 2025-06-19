@@ -25,11 +25,9 @@ class StudentDashboardController
             });
         }
 
-
         return Inertia::render('app/DashboardPage', [
-            'course' => $course,
+            'course'     => $course,
             'assignment' => $assignment,
         ]);
     }
-
 }
