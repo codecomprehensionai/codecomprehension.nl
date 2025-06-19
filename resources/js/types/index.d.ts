@@ -54,33 +54,35 @@ export interface Submission {
 export interface Option {
     id: string;
     text: string;
-    is_correct: boolean;
+    is_correct?: boolean;
 }
 
-e
 export interface Question {
     id: number | string;
     assignment_id?: number;
-    language: string;
-    type: 'code_explanation' | 'multiple_choice' | 'fill_in_the_blanks' | 'single_choice' | 'open';
     level: 'beginner' | 'intermediate' | 'advanced' | 'expert';
-    estimated_answer_duration: number;
-    question_number?: number;
+    type: 'code_explanation' | 'multiple_choice' | 'fill_in_the_blanks' | 'single_choice' | 'open';
+    language: string;
     topic?: string;
     tags?: string[];
+    estimated_answer_duration: number;
+    question_number?: number;
     question: string;
     explanation?: string;
+    answer?: string;
     code: string;
     options: Array<Option>;
-    answer?: string;
-    submissions?: Submission[];
+    created_at?: string;
+    updated_at?: string;
+}
+
+export interface QuestionBlock {
+    question: Question;
     messages?: Array<{
         role: 'user' | 'assistant';
         content: string;
     }>;
     isChatLoading?: boolean;
-    created_at?: string;
-    updated_at?: string;
 }
 
 export interface Assignment {

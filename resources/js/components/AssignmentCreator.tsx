@@ -1,5 +1,5 @@
 'use client'
-
+import { useForm } from '@inertiajs/react'
 import { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -25,12 +25,13 @@ import {
     ArrowRight
 } from 'lucide-react'
 import { Chat } from '@/components/ui/chat'
-import { Assignment, Question, Option } from '@/types'
+import { Assignment, QuestionBlock, Option, Question } from '@/types'
 
 interface AssignmentCreatorProps {
     assignment: Assignment,
     onBack: () => void
 }
+
 
 enum Step {
     Setup = 1,
@@ -54,87 +55,93 @@ export default function AssignmentCreator({ assignment, onBack }: AssignmentCrea
         return date.toISOString().slice(0, 16) // Format: "YYYY-MM-DDThh:mm"
     }
 
-    const [formData, setFormData] = useState({
-        title: assignment.title || '',
-        description: assignment.description || '',
-        publishDate: getDefaultDateTime(true),
-        dueDate: getDefaultDateTime(false),
-        topics: assignment.topics || '',
-        estimatedTime: assignment.estimatedAnswerDuration || '-'
+    const dueDate = assignment.dueDate;
+    const title = assignment.title || "Untitled Assignment";
+    const description = assignment.description || "No description provided.";
+
+    const { data: formData, setData: setFormData, post, errors } = useForm({
+        questions: [],
     })
 
     const [generatedContent, setGeneratedContent] = useState({
         questions: assignment.questions?.map((question, index) => ({
-            id: question.id || crypto.randomUUID(),
-            language: question.language || 'python',
-            type: question.type || 'single_choice',
-            level: question.level || 'intermediate',
-            estimated_answer_duration: question.estimated_answer_duration || 15,
-            question_number: index + 1,
-            question: question.question || '',
-            code: question.code || '',
-            options: question.options?.map(opt => ({
-                id: opt.id || crypto.randomUUID(),
-                text: opt.text || '',
-                is_correct: opt.is_correct || false
-            })) || [
+            question: {
+                id: question.id || crypto.randomUUID(),
+                language: question.language || 'python',
+                type: question.type || 'single_choice',
+                level: question.level || 'intermediate',
+                estimated_answer_duration: question.estimated_answer_duration || 15,
+                question_number: index + 1,
+                question: question.question || '',
+                code: question.code || '',
+                options: question.options?.map(opt => ({
+                    id: opt.id || crypto.randomUUID(),
+                    text: opt.text || '',
+                    is_correct: opt.is_correct || false
+                })) || [
+                        { id: crypto.randomUUID(), text: '', is_correct: false },
+                        { id: crypto.randomUUID(), text: '', is_correct: false },
+                        { id: crypto.randomUUID(), text: '', is_correct: false },
+                        { id: crypto.randomUUID(), text: '', is_correct: false }
+                    ],
+                answer: question.answer || '',
+            },
+            messages: [],
+            isChatLoading: false
+        } as QuestionBlock)) || [] as QuestionBlock[]
+    })
+
+    const addNewQuestion = () => {
+        const newQuestionBlock: QuestionBlock = {
+            question: {
+                id: crypto.randomUUID(),
+                language: 'python',
+                type: 'single_choice',
+                level: 'intermediate',
+                estimated_answer_duration: 15,
+                question_number: generatedContent.questions.length + 1,
+                question: '',
+                code: '',
+                options: [
                     { id: crypto.randomUUID(), text: '', is_correct: false },
                     { id: crypto.randomUUID(), text: '', is_correct: false },
                     { id: crypto.randomUUID(), text: '', is_correct: false },
                     { id: crypto.randomUUID(), text: '', is_correct: false }
                 ],
-            answer: question.answer || '',
-            messages: question.messages || [],
-            isChatLoading: false
-        } as Question)) || [] as Question[]
-    })
-
-    const addNewQuestion = () => {
-        const newQuestion: Question = {
-            id: crypto.randomUUID(),
-            language: 'python',
-            type: 'single_choice',
-            level: 'intermediate',
-            estimated_answer_duration: 15,
-            question_number: generatedContent.questions.length + 1,
-            question: '',
-            code: '',
-            options: [
-                { id: crypto.randomUUID(), text: '', is_correct: false },
-                { id: crypto.randomUUID(), text: '', is_correct: false },
-                { id: crypto.randomUUID(), text: '', is_correct: false },
-                { id: crypto.randomUUID(), text: '', is_correct: false }
-            ],
-            answer: '',
+                answer: '',
+            },
             messages: [],
             isChatLoading: false
         }
 
         setGeneratedContent(prev => ({
             ...prev,
-            questions: [...prev.questions, newQuestion]
+            questions: [...prev.questions, newQuestionBlock]
         }))
     }
 
-const updateQuestion = (questionId: string | number | null, updates: Partial<Question>) => {
-    setGeneratedContent(prev => ({
-        ...prev,
-        questions: prev.questions.map(q =>
-            q.id === questionId ? { ...q, ...updates } : q
-        )
-    }))
-}
+    const updateQuestion = (questionId: string | number | null, updates: Partial<Question>) => {
+        setGeneratedContent(prev => ({
+            ...prev,
+            questions: prev.questions.map(qb =>
+                qb.question.id === questionId ? { ...qb, question: { ...qb.question, ...updates } } : qb
+            )
+        }))
+    }
 
     const addOptionToQuestion = (questionId: string | number) => {
         setGeneratedContent(prev => ({
             ...prev,
-            questions: prev.questions.map(q =>
-                q.id === questionId
+            questions: prev.questions.map(qb =>
+                qb.question.id === questionId
                     ? {
-                        ...q,
-                        options: [...q.options, { id: crypto.randomUUID(), text: '', is_correct: false }]
+                        ...qb,
+                        question: {
+                            ...qb.question,
+                            options: [...qb.question.options, { id: crypto.randomUUID(), text: '', is_correct: false }]
+                        }
                     }
-                    : q
+                    : qb
             )
         }))
     }
@@ -142,15 +149,18 @@ const updateQuestion = (questionId: string | number | null, updates: Partial<Que
     const updateQuestionOption = (questionId: string | number, optionId: string, updates: Partial<Option>) => {
         setGeneratedContent(prev => ({
             ...prev,
-            questions: prev.questions.map(q =>
-                q.id === questionId
+            questions: prev.questions.map(qb =>
+                qb.question.id === questionId
                     ? {
-                        ...q,
-                        options: q.options.map(opt =>
-                            opt.id === optionId ? { ...opt, ...updates } : opt
-                        )
+                        ...qb,
+                        question: {
+                            ...qb.question,
+                            options: qb.question.options.map(opt =>
+                                opt.id === optionId ? { ...opt, ...updates } : opt
+                            )
+                        }
                     }
-                    : q
+                    : qb
             )
         }))
     }
@@ -158,23 +168,26 @@ const updateQuestion = (questionId: string | number | null, updates: Partial<Que
     const deleteQuestion = (questionId: string | number) => {
         setGeneratedContent(prev => ({
             ...prev,
-            questions: prev.questions.map((q, idx) => ({
-                ...q,
-                question_number: idx + 1
-            })).filter(q => q.id !== questionId)
+            questions: prev.questions.map((qb, idx) => ({
+                ...qb,
+                question: { ...qb.question, question_number: idx + 1 }
+            })).filter(qb => qb.question.id !== questionId)
         }))
     }
 
     const deleteQuestionOption = (questionId: string | number, optionId: string) => {
         setGeneratedContent(prev => ({
             ...prev,
-            questions: prev.questions.map(q =>
-                q.id === questionId
+            questions: prev.questions.map(qb =>
+                qb.question.id === questionId
                     ? {
-                        ...q,
-                        options: q.options.filter(opt => opt.id !== optionId)
+                        ...qb,
+                        question: {
+                            ...qb.question,
+                            options: qb.question.options.filter(opt => opt.id !== optionId)
+                        }
                     }
-                    : q
+                    : qb
             )
         }))
     }
@@ -206,21 +219,21 @@ const updateQuestion = (questionId: string | number | null, updates: Partial<Que
         // Update the chat loading state for this specific question
         setGeneratedContent(prev => ({
             ...prev,
-            questions: prev.questions.map(q =>
-                q.id === questionId ? { ...q, isChatLoading: true } : q
+            questions: prev.questions.map(qb =>
+                qb.question.id === questionId ? { ...qb, isChatLoading: true } : qb
             )
         }))
 
         // Add user message to this question's chat
         setGeneratedContent(prev => ({
             ...prev,
-            questions: prev.questions.map(q =>
-                q.id === questionId
+            questions: prev.questions.map(qb =>
+                qb.question.id === questionId
                     ? {
-                        ...q,
-                        messages: [...q.messages || [], { role: 'user', content: message }]
+                        ...qb,
+                        messages: [...(qb.messages || []), { role: 'user', content: message }]
                     }
-                    : q
+                    : qb
             )
         }))
 
@@ -228,12 +241,12 @@ const updateQuestion = (questionId: string | number | null, updates: Partial<Que
         setTimeout(() => {
             setGeneratedContent(prev => ({
                 ...prev,
-                questions: prev.questions.map(q =>
-                    q.id === questionId
+                questions: prev.questions.map(qb =>
+                    qb.question.id === questionId
                         ? {
-                            ...q,
+                            ...qb,
                             messages: [
-                                ...(q.messages || []),
+                                ...(qb.messages || []),
                                 {
                                     role: 'assistant',
                                     content: 'I understand you want to modify this question. What specific changes would you like to make to the question or code example?'
@@ -241,17 +254,15 @@ const updateQuestion = (questionId: string | number | null, updates: Partial<Que
                             ],
                             isChatLoading: false
                         }
-                        : q
+                        : qb
                 )
             }))
         }, 1000)
     }
 
     const handlePublish = () => {
-        // Simulate publishing
-        setTimeout(() => {
-            onBack()
-        }, 1000)
+        console.log(generatedContent.questions.map(q => q.question));
+        // post('/assignments');
     }
 
     return (
@@ -289,12 +300,12 @@ const updateQuestion = (questionId: string | number | null, updates: Partial<Que
                         <CardContent className="p-6 space-y-4">
                             <div className="flex justify-between items-start">
                                 <div>
-                                    <h2 className="text-2xl font-bold">{formData.title || "Untitled Assignment"}</h2>
-                                    <p className="text-muted-foreground mt-1">{formData.description}</p>
+                                    <h2 className="text-2xl font-bold">{title || "Untitled Assignment"}</h2>
+                                    <p className="text-muted-foreground mt-1">{description}</p>
                                 </div>
                                 <div className="text-right">
                                     <p className="text-sm text-muted-foreground">Due Date</p>
-                                    <p className="font-medium">{new Date(formData.dueDate).toLocaleDateString('en-GB', {
+                                    <p className="font-medium">{new Date(dueDate).toLocaleDateString('en-GB', {
                                         day: '2-digit',
                                         month: '2-digit',
                                         year: 'numeric',
@@ -309,18 +320,18 @@ const updateQuestion = (questionId: string | number | null, updates: Partial<Que
 
                     {/* Questions Column */}
                     <div className="space-y-8">
-                        {generatedContent.questions.map((question) => (
-                            <div key={question.id} className="flex gap-6">
+                        {generatedContent.questions.map((questionBlock) => (
+                            <div key={questionBlock.question.id} className="flex gap-6">
                                 {/* Question Content */}
                                 <Card className="flex-1">
                                     <CardContent className="p-6 space-y-4">
                                         <div className="flex justify-between items-start mb-4">
-                                            <h3 className="text-lg font-medium">Question {question.question_number}</h3>
+                                            <h3 className="text-lg font-medium">Question {questionBlock.question.question_number}</h3>
                                             <Button
                                                 variant="ghost"
                                                 size="sm"
                                                 className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                                                onClick={() => deleteQuestion(question.id)}
+                                                onClick={() => deleteQuestion(questionBlock.question.id)}
                                             >
                                                 <Trash2 className="h-4 w-4" />
                                             </Button>
@@ -329,8 +340,8 @@ const updateQuestion = (questionId: string | number | null, updates: Partial<Que
                                             <div>
                                                 <Label>Language</Label>
                                                 <Select
-                                                    value={question.language}
-                                                    onValueChange={(value) => updateQuestion(question.id, { language: value })}
+                                                    value={questionBlock.question.language}
+                                                    onValueChange={(value) => updateQuestion(questionBlock.question.id, { language: value })}
                                                 >
                                                     <SelectTrigger>
                                                         <SelectValue />
@@ -346,18 +357,18 @@ const updateQuestion = (questionId: string | number | null, updates: Partial<Que
                                             <div>
                                                 <Label>Question Type</Label>
                                                 <Select
-                                                    value={question.type}
+                                                    value={questionBlock.question.type}
                                                     onValueChange={(value) => {
                                                         // Reset options array if switching to open question
                                                         if (value === 'open') {
-                                                            updateQuestion(question.id, {
+                                                            updateQuestion(questionBlock.question.id, {
                                                                 type: value as 'multiple_choice' | 'single_choice' | 'open',
                                                                 options: []
                                                             })
                                                         } else {
                                                             // If switching from open to choice question, initialize with 4 empty options
-                                                            if (question.type === 'open') {
-                                                                updateQuestion(question.id, {
+                                                            if (questionBlock.question.type === 'open') {
+                                                                updateQuestion(questionBlock.question.id, {
                                                                     type: value as 'multiple_choice' | 'single_choice' | 'open',
                                                                     options: [
                                                                         { id: crypto.randomUUID(), text: '', is_correct: false },
@@ -367,7 +378,7 @@ const updateQuestion = (questionId: string | number | null, updates: Partial<Que
                                                                     ]
                                                                 })
                                                             } else {
-                                                                updateQuestion(question.id, {
+                                                                updateQuestion(questionBlock.question.id, {
                                                                     type: value as 'multiple_choice' | 'single_choice' | 'open'
                                                                 })
                                                             }
@@ -387,8 +398,8 @@ const updateQuestion = (questionId: string | number | null, updates: Partial<Que
                                             <div>
                                                 <Label>Difficulty Level</Label>
                                                 <Select
-                                                    value={question.level}
-                                                    onValueChange={(value) => updateQuestion(question.id, { level: value as 'beginner' | 'intermediate' | 'advanced' | 'expert' })}
+                                                    value={questionBlock.question.level}
+                                                    onValueChange={(value) => updateQuestion(questionBlock.question.id, { level: value as 'beginner' | 'intermediate' | 'advanced' | 'expert' })}
                                                 >
                                                     <SelectTrigger>
                                                         <SelectValue />
@@ -406,17 +417,17 @@ const updateQuestion = (questionId: string | number | null, updates: Partial<Que
                                                 <Input
                                                     type="number"
                                                     min="1"
-                                                    value={question.estimated_answer_duration}
-                                                    onChange={(e) => updateQuestion(question.id, { estimated_answer_duration: parseInt(e.target.value) })}
+                                                    value={questionBlock.question.estimated_answer_duration}
+                                                    onChange={(e) => updateQuestion(questionBlock.question.id, { estimated_answer_duration: parseInt(e.target.value) })}
                                                 />
                                             </div>
                                         </div>
 
                                         <div>
-                                            <Label>Question {question.question_number}</Label>
+                                            <Label>Question {questionBlock.question.question_number}</Label>
                                             <Textarea
-                                                value={question.question}
-                                                onChange={(e) => updateQuestion(question.id, { question: e.target.value })}
+                                                value={questionBlock.question.question}
+                                                onChange={(e) => updateQuestion(questionBlock.question.id, { question: e.target.value })}
                                                 placeholder="Enter your question here..."
                                                 className="mt-1"
                                             />
@@ -425,20 +436,20 @@ const updateQuestion = (questionId: string | number | null, updates: Partial<Que
                                         <div>
                                             <Label>Code Snippet</Label>
                                             <Textarea
-                                                value={question.code}
-                                                onChange={(e) => updateQuestion(question.id, { code: e.target.value })}
+                                                value={questionBlock.question.code}
+                                                onChange={(e) => updateQuestion(questionBlock.question.id, { code: e.target.value })}
                                                 placeholder="Enter code snippet here..."
                                                 className="mt-1 font-mono"
                                                 rows={6}
                                             />
                                         </div>
 
-                                        {question.type === 'open' ? (
+                                        {questionBlock.question.type === 'open' ? (
                                             <div>
                                                 <Label>Model Answer / Grading Rubric</Label>
                                                 <Textarea
-                                                    value={question.answer || ''}
-                                                    onChange={(e) => updateQuestion(question.id, { answer: e.target.value })}
+                                                    value={questionBlock.question.answer || ''}
+                                                    onChange={(e) => updateQuestion(questionBlock.question.id, { answer: e.target.value })}
                                                     placeholder="Enter the model answer or grading rubric for this open question..."
                                                     className="mt-1"
                                                     rows={6}
@@ -449,28 +460,28 @@ const updateQuestion = (questionId: string | number | null, updates: Partial<Que
                                                 <div className="flex items-center justify-between">
                                                     <Label>Answer Options</Label>
                                                     <Button
-                                                        onClick={() => addOptionToQuestion(question.id)}
+                                                        onClick={() => addOptionToQuestion(questionBlock.question.id)}
                                                         variant="outline"
                                                         size="sm"
-                                                        disabled={question.options.length >= 6}
+                                                        disabled={questionBlock.question.options.length >= 6}
                                                     >
                                                         Add Option
                                                     </Button>
                                                 </div>
-                                                {question.options.map((option, optIndex) => (
+                                                {questionBlock.question.options.map((option, optIndex) => (
                                                     <div key={option.id} className="flex items-center space-x-2">
                                                         <div className="flex-none">
-                                                            {question.type === 'single_choice' ? (
+                                                            {questionBlock.question.type === 'single_choice' ? (
                                                                 <input
                                                                     type="radio"
                                                                     checked={option.is_correct}
                                                                     onChange={() => {
-                                                                        question.options.forEach(opt => {
+                                                                        questionBlock.question.options.forEach(opt => {
                                                                             if (opt.id !== option.id) {
-                                                                                updateQuestionOption(question.id, opt.id, { is_correct: false })
+                                                                                updateQuestionOption(questionBlock.question.id, opt.id, { is_correct: false })
                                                                             }
                                                                         })
-                                                                        updateQuestionOption(question.id, option.id, { is_correct: true })
+                                                                        updateQuestionOption(questionBlock.question.id, option.id, { is_correct: true })
                                                                     }}
                                                                     className="mr-2"
                                                                 />
@@ -478,14 +489,14 @@ const updateQuestion = (questionId: string | number | null, updates: Partial<Que
                                                                 <input
                                                                     type="checkbox"
                                                                     checked={option.is_correct}
-                                                                    onChange={(e) => updateQuestionOption(question.id, option.id, { is_correct: e.target.checked })}
+                                                                    onChange={(e) => updateQuestionOption(questionBlock.question.id, option.id, { is_correct: e.target.checked })}
                                                                     className="mr-2"
                                                                 />
                                                             )}
                                                         </div>
                                                         <Input
                                                             value={option.text}
-                                                            onChange={(e) => updateQuestionOption(question.id, option.id, { text: e.target.value })}
+                                                            onChange={(e) => updateQuestionOption(questionBlock.question.id, option.id, { text: e.target.value })}
                                                             placeholder={`Option ${optIndex + 1}`}
                                                             className="flex-1"
                                                         />
@@ -493,8 +504,8 @@ const updateQuestion = (questionId: string | number | null, updates: Partial<Que
                                                             variant="ghost"
                                                             size="sm"
                                                             className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                                                            onClick={() => deleteQuestionOption(question.id, option.id)}
-                                                            disabled={question.options.length <= 2}
+                                                            onClick={() => deleteQuestionOption(questionBlock.question.id, option.id)}
+                                                            disabled={questionBlock.question.options.length <= 2}
                                                         >
                                                             <X className="h-4 w-4" />
                                                         </Button>
@@ -509,16 +520,16 @@ const updateQuestion = (questionId: string | number | null, updates: Partial<Que
                                 <Card className="w-[400px] flex flex-col">
                                     <CardHeader className="pb-2">
                                         <div className="flex items-center justify-between">
-                                            <CardTitle className="text-sm">Question {question.question_number} Assistant</CardTitle>
-                                            <Badge variant="outline">{question.language}</Badge>
+                                            <CardTitle className="text-sm">Question {questionBlock.question.question_number} Assistant</CardTitle>
+                                            <Badge variant="outline">{questionBlock.question.language}</Badge>
                                         </div>
                                     </CardHeader>
                                     <CardContent className="flex-1 p-4 pt-0">
                                         <div className="h-full">
                                             <Chat
-                                                messages={question.messages || []}
-                                                onSendMessage={(message) => handleQuestionChatMessage(question.id, message)}
-                                                isLoading={question.isChatLoading}
+                                                messages={questionBlock.messages || []}
+                                                onSendMessage={(message) => handleQuestionChatMessage(questionBlock.question.id, message)}
+                                                isLoading={questionBlock.isChatLoading}
                                                 allowTextEdit={false}
                                                 editableText=""
                                                 onTextEdit={undefined}
@@ -545,18 +556,18 @@ const updateQuestion = (questionId: string | number | null, updates: Partial<Que
                             className="bg-blue-600 hover:bg-blue-700"
                             disabled={
                                 generatedContent.questions.length === 0 || // No questions
-                                generatedContent.questions.some(q => !q.question.trim()) || // Empty question text
-                                generatedContent.questions.some(q => !q.code.trim()) || // Empty code snippet
-                                generatedContent.questions.some(q =>
-                                    q.type !== 'open' && // Only check options for multiple/single choice questions
+                                generatedContent.questions.some(qb => !qb.question.question.trim()) || // Empty question text
+                                generatedContent.questions.some(qb => !qb.question.code.trim()) || // Empty code snippet
+                                generatedContent.questions.some(qb =>
+                                    qb.question.type !== 'open' && // Only check options for multiple/single choice questions
                                     (
-                                        q.options.some(opt => !opt.text.trim()) || // Empty option text
-                                        !q.options.some(opt => opt.is_correct) // No correct answer selected
+                                        qb.question.options.some(opt => !opt.text.trim()) || // Empty option text
+                                        !qb.question.options.some(opt => opt.is_correct) // No correct answer selected
                                     )
                                 ) ||
-                                generatedContent.questions.some(q =>
-                                    q.type === 'open' && // Only check model answer for open questions
-                                    (!q.answer || !q.answer.trim()) // Empty model answer/grading rubric
+                                generatedContent.questions.some(qb =>
+                                    qb.question.type === 'open' && // Only check model answer for open questions
+                                    (!qb.question.answer || !qb.question.answer.trim()) // Empty model answer/grading rubric
                                 )
                             }
                         >
@@ -588,26 +599,15 @@ const updateQuestion = (questionId: string | number | null, updates: Partial<Que
                                         <div className="grid grid-cols-2 gap-4 text-sm">
                                             <div>
                                                 <span className="text-muted-foreground">Title:</span>
-                                                <p className="font-medium">{formData.title}</p>
+                                                <p className="font-medium">{title}</p>
                                             </div>
                                             <div>
                                                 <span className="text-muted-foreground">Status:</span>
                                                 <p className="font-medium">Draft</p>
                                             </div>
                                             <div>
-                                                <span className="text-muted-foreground">Opens:</span>
-                                                <p className="font-medium">{new Date(formData.publishDate).toLocaleDateString('en-GB', {
-                                                    day: '2-digit',
-                                                    month: '2-digit',
-                                                    year: 'numeric',
-                                                    hour: '2-digit',
-                                                    minute: '2-digit',
-                                                    hour12: false
-                                                })}</p>
-                                            </div>
-                                            <div>
                                                 <span className="text-muted-foreground">Due:</span>
-                                                <p className="font-medium">{new Date(formData.dueDate).toLocaleDateString('en-GB', {
+                                                <p className="font-medium">{new Date(dueDate).toLocaleDateString('en-GB', {
                                                     day: '2-digit',
                                                     month: '2-digit',
                                                     year: 'numeric',
@@ -617,16 +617,10 @@ const updateQuestion = (questionId: string | number | null, updates: Partial<Que
                                                 })}</p>
                                             </div>
                                         </div>
-                                        {formData.description && (
+                                        {description && (
                                             <div className="text-sm">
                                                 <span className="text-muted-foreground block">Description:</span>
-                                                <p className="font-medium">{formData.description}</p>
-                                            </div>
-                                        )}
-                                        {formData.topics && (
-                                            <div className="text-sm">
-                                                <span className="text-muted-foreground block">Topics:</span>
-                                                <p className="font-medium">{formData.topics}</p>
+                                                <p className="font-medium">{description}</p>
                                             </div>
                                         )}
                                     </div>
@@ -635,28 +629,28 @@ const updateQuestion = (questionId: string | number | null, updates: Partial<Que
                                 <div>
                                     <h3 className="font-medium mb-4">Questions Summary:</h3>
                                     <div className="space-y-4">
-                                        {generatedContent.questions.map((question, index) => (
-                                            <div key={question.id} className="border rounded-lg p-4">
+                                        {generatedContent.questions.map((questionBlock, index) => (
+                                            <div key={questionBlock.question.id} className="border rounded-lg p-4">
                                                 <div className="flex items-center justify-between mb-2">
                                                     <h4 className="font-medium">Question {index + 1}</h4>
                                                     <div className="flex items-center space-x-2">
-                                                        <Badge variant="outline">{question.language}</Badge>
-                                                        <Badge variant="secondary">{question.level}</Badge>
-                                                        <Badge>{question.type}</Badge>
+                                                        <Badge variant="outline">{questionBlock.question.language}</Badge>
+                                                        <Badge variant="secondary">{questionBlock.question.level}</Badge>
+                                                        <Badge>{questionBlock.question.type}</Badge>
                                                     </div>
                                                 </div>
-                                                <p className="text-sm mb-2">{question.question}</p>
-                                                {question.code && (
+                                                <p className="text-sm mb-2">{questionBlock.question.question}</p>
+                                                {questionBlock.question.code && (
                                                     <div className="bg-gray-900 text-gray-100 p-3 rounded text-xs font-mono mb-2">
-                                                        <pre>{question.code.split('\n').slice(0, 3).join('\n')}
-                                                            {question.code.split('\n').length > 3 ? '...' : ''}</pre>
+                                                        <pre>{questionBlock.question.code.split('\n').slice(0, 3).join('\n')}
+                                                            {questionBlock.question.code.split('\n').length > 3 ? '...' : ''}</pre>
                                                     </div>
                                                 )}
                                                 <div className="text-sm text-muted-foreground">
-                                                    {question.type === 'open' ? (
+                                                    {questionBlock.question.type === 'open' ? (
                                                         <p>Open question with model answer</p>
                                                     ) : (
-                                                        <p>{question.options.length} options, {question.options.filter(opt => opt.is_correct).length} correct</p>
+                                                        <p>{questionBlock.question.options.length} options, {questionBlock.question.options.filter(opt => opt.is_correct).length} correct</p>
                                                     )}
                                                 </div>
                                             </div>

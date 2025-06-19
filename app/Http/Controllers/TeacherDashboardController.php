@@ -25,4 +25,23 @@ class TeacherDashboardController
             'assignment' => $assignment,
         ]);
     }
+
+
+
+    public function updateAssignmentQuestions(Request $request, $assignmentId)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+        ]);
+
+        $assignment = Assignment::where('lti_id', $assignmentId)->firstOrFail();
+        $assignment->update($validated);
+
+        return redirect()->route('teacher.dashboard')->with('success', 'Assignment updated successfully.');
+    }
+
+
+
+
 }

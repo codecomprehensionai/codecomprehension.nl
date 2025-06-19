@@ -52,7 +52,7 @@ export default function Dashboard({ currentCourse, currentAssignment, user }: Da
                             </div>
                         )}
                     </div>
-                    
+
                     {/* Assignment Card */}
                     <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
                         {currentAssignment ? (
@@ -80,12 +80,12 @@ export default function Dashboard({ currentCourse, currentAssignment, user }: Da
                             </div>
                         )}
                     </div>
-                    
+
                     {/* Third card with Submit Assignment button */}
                     <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
                         <div className="p-4 h-full flex flex-col justify-center items-center">
                             <h3 className="text-lg font-semibold text-foreground mb-4">Quick Actions</h3>
-                            <button 
+                            <button
                                 className="px-6 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                 disabled
                             >

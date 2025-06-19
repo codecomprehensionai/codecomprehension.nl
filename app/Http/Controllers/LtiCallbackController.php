@@ -57,7 +57,6 @@ class LtiCallbackController
             $courseData = LtiCourseData::fromJwt($jwt);
             $assignmentData = LtiAssignmentData::fromJwt($jwt);
             $userData = LtiUserData::fromJwt($jwt);
-            session(['lti_course' => $courseData, 'lti_assignment' => $assignmentData, 'lti_user' => $userData]);
         } catch (Throwable) {
             abort(401, 'Invalid LTI token. View as Student is not supported.');
         }
@@ -71,6 +70,8 @@ class LtiCallbackController
             'description' => $assignmentData->description,
         ]);
 
+        session(['lti_course' => $course, 'lti_assignment' => $assignmentData, 'lti_user' => $userData]);
+
         $user = User::updateOrCreate(['lti_id' => $userData->ltiId], [
             'type'              => $userData->type,
             'name'              => $userData->name,
@@ -82,6 +83,7 @@ class LtiCallbackController
         ]);
 
         Auth::login($user);
+
         switch ($user->type) {
             case 'student':
                 return redirect()->route('student.dashboard');
