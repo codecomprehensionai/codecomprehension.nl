@@ -16,9 +16,14 @@ class LlmQuestionGeneratorService
     public function __construct()
     {
         $this->baseUrl = rtrim(config('llm.base_url'), '/');
-        $this->timeout = config('llm.timeout', 100);
+        $this->timeout = config('llm.timeout', 300); // Increased to 5 minutes for AI processing
     }
 
+    /**
+     * Generate a JWT token for authenticating with the LLM API.
+     *
+     * @return string
+     */
     public function getJWT()
     {
         $endpoint = config('llm.base_url');
@@ -26,24 +31,66 @@ class LlmQuestionGeneratorService
         return $token;
     }
 
+    /**
+     * Generate a new question using the LLM API.
+     *
+     * @param Assignment $assignment
+     * @param array $params
+     * @param string $prompt
+     * @param array $existing
+     * @return QuestionData|null
+     */
     public function generateQuestion(Assignment $assignment, array $params, string $prompt, array $existing = []): ?QuestionData
     {
+        \Log::info("LlmQuestionGeneratorService generateQuestion started", [
+            'assignment_id' => $assignment->id,
+            'params' => $params,
+            'prompt' => $prompt,
+        ]);
+        
         $data = $this->buildRequest($assignment, $existing, $params, $prompt);
-        $jwt = $this->getJWT();
-        Http::withToken($jwt);
+        \Log::info("LlmQuestionGeneratorService built request data", ['data' => $data]);
+        
         $response = $this->request('POST', '/question', $data);
-        return $response ? $this->parse($response) : null;
+        \Log::info("LlmQuestionGeneratorService got response", ['response' => $response]);
+        
+        if ($response) {
+            $parsed = $this->parse($response);
+            \Log::info("LlmQuestionGeneratorService parsed response", ['parsed' => $parsed]);
+            return $parsed;
+        } else {
+            \Log::warning("LlmQuestionGeneratorService generateQuestion: response is null", [
+                'assignment_id' => $assignment->id,
+                'params' => $params,
+                'prompt' => $prompt,
+                'existing' => $existing,
+            ]);
+            return null;
+        }
     }
 
+    /**
+     * Update an existing question using the LLM API.
+     *
+     * @param Assignment $assignment
+     * @param Question $question
+     * @param array $params
+     * @param string $prompt
+     * @param array $context
+     * @return QuestionData|null
+     */
     public function updateQuestion(Assignment $assignment, Question $question, array $params, string $prompt, array $context = []): ?QuestionData
     {
         $data = $this->buildUpdateRequest($assignment, $question, $context, $params, $prompt);
-        $jwt = $this->getJWT();
-        Http::withToken($jwt);
         $response = $this->request('PUT', '/question', $data);
         return $response ? $this->parse($response) : null;
     }
 
+    /**
+     * Check if the LLM API is available.
+     *
+     * @return bool
+     */
     public function isAvailable(): bool
     {
         try {
@@ -55,10 +102,22 @@ class LlmQuestionGeneratorService
         }
     }
 
+    /**
+     * Make an HTTP request to the LLM API.
+     *
+     * @param string $method
+     * @param string $endpoint
+     * @param array $data
+     * @return array|null
+     */
     private function request(string $method, string $endpoint, array $data): ?array
     {
         try {
-            $response = Http::timeout($this->timeout)->$method("{$this->baseUrl}{$endpoint}", $data);
+            $jwt = $this->getJWT();
+            $http = Http::timeout($this->timeout)->withToken($jwt);
+
+            $response = $http->$method("{$this->baseUrl}{$endpoint}", $data);
+
             if (!$response->successful()) {
                 throw new \Exception("Request failed with status {$response->status()}: " . $response->body());
             }
@@ -75,6 +134,15 @@ class LlmQuestionGeneratorService
         }
     }
 
+    /**
+     * Build the request payload for generating a new question.
+     *
+     * @param Assignment $assignment
+     * @param array $existing
+     * @param array $params
+     * @param string $prompt
+     * @return array
+     */
     private function buildRequest(Assignment $assignment, array $existing, array $params, string $prompt): array
     {
         return [
@@ -84,7 +152,7 @@ class LlmQuestionGeneratorService
                 'language' => ucfirst($params['language'] ?? 'python'),
                 'type' => $params['type'] ?? 'multiple_choice',
                 'level' => $params['level'] ?? 'beginner',
-                'estimated_answer_duration' => $params['estimated_answer_duration'] ?? 3,
+                'estimated_answer_duration' => $this->formatDuration($params['estimated_answer_duration'] ?? 3),
                 'topics' => $params['topics'] ?? [],
                 'tags' => $params['tags'] ?? [],
             ],
@@ -92,6 +160,16 @@ class LlmQuestionGeneratorService
         ];
     }
 
+    /**
+     * Build the request payload for updating an existing question.
+     *
+     * @param Assignment $assignment
+     * @param Question $question
+     * @param array $context
+     * @param array $params
+     * @param string $prompt
+     * @return array
+     */
     private function buildUpdateRequest(Assignment $assignment, Question $question, array $context, array $params, string $prompt): array
     {
         return [
@@ -103,11 +181,23 @@ class LlmQuestionGeneratorService
         ];
     }
 
+    /**
+     * Format an array of questions for the LLM API.
+     *
+     * @param array $questions
+     * @return array
+     */
     private function formatQuestions(array $questions): array
     {
         return collect($questions)->map(fn($q) => $q instanceof Question ? $this->formatQuestion($q) : $q)->toArray();
     }
 
+    /**
+     * Format a single question for the LLM API.
+     *
+     * @param Question $q
+     * @return array
+     */
     private function formatQuestion(Question $q): array
     {
         return [
@@ -115,7 +205,7 @@ class LlmQuestionGeneratorService
             'language' => ucfirst($q->language->value),
             'type' => $q->type->value,
             'level' => $q->level->value,
-            'estimated_answer_duration' => $q->estimated_answer_duration,
+            'estimated_answer_duration' => $this->formatDuration($q->estimated_answer_duration),
             'topics' => $q->topic ? [$q->topic] : [],
             'tags' => $q->tags ?? [],
             'question' => $q->question,
@@ -126,6 +216,12 @@ class LlmQuestionGeneratorService
         ];
     }
 
+    /**
+     * Parse the response from the LLM API into a QuestionData object.
+     *
+     * @param array $response
+     * @return QuestionData|null
+     */
     private function parse(array $response): ?QuestionData
     {
         if (isset($response['success']) && !$response['success'])
@@ -142,7 +238,7 @@ class LlmQuestionGeneratorService
                 language: \App\Enums\QuestionLanguage::from(strtolower($data['language'])),
                 type: \App\Enums\QuestionType::from($type),
                 level: \App\Enums\QuestionLevel::from(strtolower($data['level'])),
-                estimatedAnswerDuration: $data['estimated_answer_duration'],
+                estimatedAnswerDuration: $this->parseDuration($data['estimated_answer_duration']),
                 topic: $data['topics'][0] ?? null,
                 tags: $data['tags'] ?? [],
                 question: $data['question'],
@@ -151,7 +247,7 @@ class LlmQuestionGeneratorService
                 options: $data['options'] ?? null,
                 answer: $data['answer'] ?? null,
             );
-        } catch (\Exception) {
+        } catch (\Exception $e) {
             \Log::error("LlmQuestionGeneratorService parse error: " . $e->getMessage(), [
                 'response' => $response,
                 'exception' => $e,
@@ -159,4 +255,33 @@ class LlmQuestionGeneratorService
             return null;
         }
     }
+
+    /**
+     * Format duration as string for LLM API.
+     *
+     * @param int $minutes
+     * @return string
+     */
+    private function formatDuration(int $minutes): string
+    {
+        return $minutes . ' minutes';
+    }
+
+    /**
+     * Parse duration string from LLM API back to integer.
+     *
+     * @param string $duration
+     * @return int
+     */
+    private function parseDuration(string $duration): int
+    {
+        // Extract the number from strings like "3 minutes", "180 seconds", etc.
+        if (preg_match('/(\d+)/', $duration, $matches)) {
+            return (int) $matches[1];
+        }
+
+        // Fallback to 3 minutes if parsing fails
+        return 3;
+    }
 }
+
