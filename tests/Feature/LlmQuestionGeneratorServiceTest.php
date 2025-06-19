@@ -12,6 +12,9 @@ uses(RefreshDatabase::class);
 it('can call generateQuestion', function () {
     // Allow requests to production LLM service
     Http::allowStrayRequests();
+    
+    // Override LLM timeout for this test
+    config(['llm.timeout' => 300]); // 5 minutes
 
     $course = Course::create([
         'lti_id' => 'test_course_123',
