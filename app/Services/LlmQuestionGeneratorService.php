@@ -47,13 +47,13 @@ class LlmQuestionGeneratorService
             'params' => $params,
             'prompt' => $prompt,
         ]);
-        
+
         $data = $this->buildRequest($assignment, $existing, $params, $prompt);
         \Log::info("LlmQuestionGeneratorService built request data", ['data' => $data]);
-        
+
         $response = $this->request('POST', '/question', $data);
         \Log::info("LlmQuestionGeneratorService got response", ['response' => $response]);
-        
+
         if ($response) {
             $parsed = $this->parse($response);
             \Log::info("LlmQuestionGeneratorService parsed response", ['parsed' => $parsed]);
@@ -172,11 +172,17 @@ class LlmQuestionGeneratorService
      */
     private function buildUpdateRequest(Assignment $assignment, Question $question, array $context, array $params, string $prompt): array
     {
+        // Format the update parameters to ensure correct data types
+        $formattedParams = $params;
+        if (isset($formattedParams['estimated_answer_duration'])) {
+            $formattedParams['estimated_answer_duration'] = $this->formatDuration($formattedParams['estimated_answer_duration']);
+        }
+
         return [
             'assignment' => ['id' => (string) $assignment->id, 'title' => $assignment->title, 'description' => $assignment->description ?? ''],
             'questions' => $this->formatQuestions($context),
             'existing_question' => $this->formatQuestion($question),
-            'update_question' => $params,
+            'update_question' => $formattedParams,
             'update_question_prompt' => $prompt,
         ];
     }
