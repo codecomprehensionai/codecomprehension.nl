@@ -46,8 +46,10 @@ class LlmQuestionGeneratorService
     public function isAvailable(): bool
     {
         try {
-            return Http::timeout(5)->get("{$this->baseUrl}/health")->successful();
+            return Http::get("{$this->baseUrl}/health")->successful();
         } catch (\Exception) {
+            // Log the exception for debugging purposes
+            \Log::error("LlmQuestionGeneratorService health check failed.");
             return false;
         }
     }
@@ -58,6 +60,13 @@ class LlmQuestionGeneratorService
             $response = Http::timeout($this->timeout)->$method("{$this->baseUrl}{$endpoint}", $data);
             return $response->successful() ? $response->json() : null;
         } catch (\Exception) {
+            // Log the exception for debugging purposes
+            \Log::error("LlmQuestionGeneratorService request error: " . $e->getMessage(), [
+                'method' => $method,
+                'endpoint' => $endpoint,
+                'data' => $data,
+                'exception' => $e,
+            ]);
             return null;
         }
     }
@@ -69,7 +78,7 @@ class LlmQuestionGeneratorService
             'questions' => $this->formatQuestions($existing),
             'new_question' => [
                 'language' => ucfirst($params['language'] ?? 'python'),
-                'type' => $this->normalizeType($params['type'] ?? 'multiple_choice'),
+                'type' => $params['type'] ?? 'multiple_choice',
                 'level' => $params['level'] ?? 'beginner',
                 'estimated_answer_duration' => $params['estimated_answer_duration'] ?? 3,
                 'topics' => $params['topics'] ?? [],
@@ -100,7 +109,7 @@ class LlmQuestionGeneratorService
         return [
             'id' => (string) $q->id,
             'language' => ucfirst($q->language->value),
-            'type' => $this->normalizeType($q->type->value),
+            'type' => $q->type->value,
             'level' => $q->level->value,
             'estimated_answer_duration' => $q->estimated_answer_duration,
             'topics' => $q->topic ? [$q->topic] : [],
@@ -122,7 +131,6 @@ class LlmQuestionGeneratorService
 
         try {
             $type = strtolower($data['type']);
-            if ($type === 'fill_in_blank') $type = 'fill_in_the_blanks';
 
             return new QuestionData(
                 language: \App\Enums\QuestionLanguage::from(strtolower($data['language'])),
@@ -138,12 +146,11 @@ class LlmQuestionGeneratorService
                 answer: $data['answer'] ?? null,
             );
         } catch (\Exception) {
+            \Log::error("LlmQuestionGeneratorService parse error: " . $e->getMessage(), [
+                'response' => $response,
+                'exception' => $e,
+            ]);
             return null;
         }
-    }
-
-    private function normalizeType(string $type): string
-    {
-        return ['fill_in_the_blanks' => 'fill_in_blank'][$type] ?? $type;
     }
 }
