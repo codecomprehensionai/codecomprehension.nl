@@ -31,5 +31,6 @@ it('can call generateQuestion', function () {
     $service = new LlmQuestionGeneratorService();
     $result = $service->generateQuestion($assignment, [], 'test prompt');
     
-    expect($result)->toBeNull();
+    logger()->info('Generated question result:', ['result' => $result]);
+    expect($result)->not->toBeNull();
 });
