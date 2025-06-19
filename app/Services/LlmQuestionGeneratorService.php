@@ -81,9 +81,34 @@ class LlmQuestionGeneratorService
      */
     public function updateQuestion(Assignment $assignment, Question $question, array $params, string $prompt, array $context = []): ?QuestionData
     {
+        \Log::info("LlmQuestionGeneratorService updateQuestion started", [
+            'assignment_id' => $assignment->id,
+            'question_id' => $question->id,
+            'params' => $params,
+            'prompt' => $prompt,
+            'context_count' => count($context),
+        ]);
+
         $data = $this->buildUpdateRequest($assignment, $question, $context, $params, $prompt);
+        \Log::info("LlmQuestionGeneratorService built update request data", ['data' => $data]);
+
         $response = $this->request('PUT', '/question', $data);
-        return $response ? $this->parse($response) : null;
+        \Log::info("LlmQuestionGeneratorService got update response", ['response' => $response]);
+
+        if ($response) {
+            $parsed = $this->parse($response);
+            \Log::info("LlmQuestionGeneratorService parsed update response", ['parsed' => $parsed]);
+            return $parsed;
+        } else {
+            \Log::warning("LlmQuestionGeneratorService updateQuestion: response is null", [
+                'assignment_id' => $assignment->id,
+                'question_id' => $question->id,
+                'params' => $params,
+                'prompt' => $prompt,
+                'context' => $context,
+            ]);
+            return null;
+        }
     }
 
     /**
