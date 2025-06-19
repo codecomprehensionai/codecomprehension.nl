@@ -19,7 +19,8 @@ class LlmQuestionGeneratorService
         $this->timeout = config('llm.timeout', 100);
     }
 
-    public function getJWT() {
+    public function getJWT()
+    {
         $endpoint = config('llm.base_url');
         $token = JwtKey::first()->sign(config('services.canvas.client_id'), $endpoint, now()->addMinutes(5));
         return $token;
@@ -58,8 +59,11 @@ class LlmQuestionGeneratorService
     {
         try {
             $response = Http::timeout($this->timeout)->$method("{$this->baseUrl}{$endpoint}", $data);
-            return $response->successful() ? $response->json() : null;
-        } catch (\Exception) {
+            if (!$response->successful()) {
+                throw new \Exception("Request failed with status {$response->status()}: " . $response->body());
+            }
+            return $response->json();
+        } catch (\Exception $e) {
             // Log the exception for debugging purposes
             \Log::error("LlmQuestionGeneratorService request error: " . $e->getMessage(), [
                 'method' => $method,
@@ -124,10 +128,12 @@ class LlmQuestionGeneratorService
 
     private function parse(array $response): ?QuestionData
     {
-        if (isset($response['success']) && !$response['success']) return null;
-        
+        if (isset($response['success']) && !$response['success'])
+            return null;
+
         $data = $response['data']['question'] ?? $response['question'] ?? null;
-        if (!$data) return null;
+        if (!$data)
+            return null;
 
         try {
             $type = strtolower($data['type']);
