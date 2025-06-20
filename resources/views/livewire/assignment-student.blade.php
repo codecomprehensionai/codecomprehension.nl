@@ -1,3 +1,5 @@
 <div>
-    {{-- A good traveler has no fixed plans and is not intent upon arriving. --}}
+    @foreach ($this->assignment->questions as $question)
+        <x-assignment.question :$question />
+    @endforeach
 </div>

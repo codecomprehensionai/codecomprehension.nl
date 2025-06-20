@@ -17,6 +17,8 @@
     </head>
 
     <body class="font-sans antialiased">
+        {{-- TODO: menubar, show logo (left), show user (right) --}}
+
        {{ $slot }}
     </body>
 </html>
