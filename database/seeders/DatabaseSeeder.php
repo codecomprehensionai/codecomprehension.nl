@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             ],
             'development', 'local' => [
                 UserSeeder::class,
+                QuestionSeeder::class,
             ],
             default => throw new Exception('Invalid environment value!'),
         });
