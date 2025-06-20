@@ -6,7 +6,7 @@ enum QuestionType: string
 {
     case CodeExplanation = 'code_explanation';
     case MultipleChoice = 'multiple_choice';
-    case FillInTheBlanks = 'fill_in_the_blanks';
+    case FillInTheBlanks = 'fill_in_blank';
 
     public function getDescription(): string
     {
