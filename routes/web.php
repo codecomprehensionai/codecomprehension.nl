@@ -4,10 +4,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\JwksController;
 use App\Http\Controllers\LtiCallbackController;
 use App\Http\Controllers\LtiLaunchController;
-use App\Http\Controllers\StudentDashboardController;
-use App\Http\Controllers\TeacherDashboardController;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 Route::get('api/v1/jwks', JwksController::class)->name('oidc.jwks');
 Route::get('api/v1/oidc/jwks', JwksController::class); /* Legacy */
@@ -20,8 +17,6 @@ Route::middleware(['guest'])->group(function () {
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', fn () => Inertia::render('dashboard'))->name('dashboard');
-
-    Route::get('teacher', [TeacherDashboardController::class, 'index'])->name('teacher.dashboard');
-    Route::get('student', [StudentDashboardController::class, 'index'])->name('student.dashboard');
+    Route::get('{assignment}', [DashboardController::class, 'student'])->name('dashboard.student');
+    Route::get('{assignment}/teacher', [DashboardController::class, 'teacher'])->name('dashboard.teacher');
 });

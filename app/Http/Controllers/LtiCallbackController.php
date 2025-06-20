@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Data\LtiAssignmentData;
 use App\Data\LtiCourseData;
 use App\Data\LtiUserData;
+use App\Enums\UserType;
 use App\Models\Course;
 use App\Models\User;
 use Firebase\JWT\JWK;
@@ -39,7 +40,7 @@ class LtiCallbackController
         $jwks = Cache::flexible(
             'cloudflare-access.jwks',
             [300, 3600],
-            fn() => Http::get(config('services.canvas.endpoint') . '/api/lti/security/jwks')->throw()->json()
+            fn () => Http::get(config('services.canvas.endpoint') . '/api/lti/security/jwks')->throw()->json()
         );
 
         $jwt = JWT::decode($validated['id_token'], JWK::parseKeySet($jwks));
@@ -81,17 +82,10 @@ class LtiCallbackController
 
         Auth::login($user);
 
-        /**
-         * TODO: check
-         * This might introduce a bug when a student/teacher opens two tabs
-         * with different courses/assignments. We will need to investigate
-         * this later, but for now, we will just store the last accessed.
-         */
-        session([
-            'course_id'     => $course->id,
-            'assignment_id' => $assignment->id,
-        ]);
+        if (UserType::Teacher === $user->type) {
+            return to_route('dashboard.teacher', $assignment);
+        }
 
-        return redirect()->route('dashboard');
+        return to_route('dashboard.student', $assignment);
     }
 }
