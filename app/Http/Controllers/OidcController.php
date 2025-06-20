@@ -17,12 +17,48 @@ use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 
-class LtiCallbackController
+class OidcController
 {
+    public function launch(Request $request)
+    {
+        $validated = $request->validate([
+            'iss'                => 'required',
+            'login_hint'         => 'required',
+            'lti_message_hint'   => 'nullable',
+            'target_link_uri'    => 'required|url',
+            'client_id'          => 'required',
+            'deployment_id'      => 'required',
+            'canvas_region'      => 'required',
+            'canvas_environment' => 'required',
+        ]);
+
+        $state = Str::random();
+        $nonce = Str::random();
+
+        $parameters = [
+            'scope'            => 'openid',
+            'response_type'    => 'id_token',
+            'client_id'        => $validated['client_id'],
+            'redirect_uri'     => route('oidc.callback'),
+            'login_hint'       => $validated['login_hint'],
+            'lti_message_hint' => $validated['lti_message_hint'],
+            'state'            => $state,
+            'response_mode'    => 'form_post',
+            'nonce'            => $nonce,
+            'prompt'           => 'none',
+        ];
+
+        // TODO: make sure cookies are encrypted
+
+        return redirect(url()->query('https://sso.test.canvaslms.com/api/lti/authorize_redirect', $parameters))
+            ->withCookie(Cookie::make('lti_state', $state, 10, httpOnly: true, sameSite: 'none'))
+            ->withCookie(Cookie::make('lti_nonce', $nonce, 10, httpOnly: true, sameSite: 'none'));
+    }
+
     /**
      * https://developerdocs.instructure.com/services/canvas/external-tools/lti/file.lti_launch_overview
      */
-    public function __invoke(Request $request)
+    public function callback(Request $request)
     {
         $validated = $request->validate([
             'authenticity_token' => 'required',
@@ -40,7 +76,7 @@ class LtiCallbackController
         $jwks = Cache::flexible(
             'cloudflare-access.jwks',
             [300, 3600],
-            fn() => Http::get(config('services.canvas.endpoint') . '/api/lti/security/jwks')->throw()->json()
+            fn () => Http::get(config('services.canvas.endpoint') . '/api/lti/security/jwks')->throw()->json()
         );
 
         $jwt = JWT::decode($validated['id_token'], JWK::parseKeySet($jwks));

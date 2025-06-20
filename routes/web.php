@@ -2,17 +2,17 @@
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\JwksController;
-use App\Http\Controllers\LtiCallbackController;
-use App\Http\Controllers\LtiLaunchController;
+use App\Http\Controllers\OidcController;
+use App\Http\Controllers\WelcomeController;
 use Illuminate\Support\Facades\Route;
+
+Route::get('/', [WelcomeController::class, 'login'])->name('login');
 
 Route::get('api/v1/jwks', JwksController::class)->name('oidc.jwks');
 Route::get('api/v1/oidc/jwks', JwksController::class); /* Legacy */
 
-// TODO: Route::get('/', [DashboardController::class, 'login'])->name('login');
-
-Route::post('api/v1/oidc', LtiLaunchController::class)->name('oidc.launch');
-Route::post('api/v1/oidc/callback', LtiCallbackController::class)->name('oidc.callback');
+Route::post('api/v1/oidc', [OidcController::class, 'launch'])->name('oidc.launch');
+Route::post('api/v1/oidc/callback', [OidcController::class, 'callback'])->name('oidc.callback');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('{assignment}', [DashboardController::class, 'student'])->name('dashboard.student');
