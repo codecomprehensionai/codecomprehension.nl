@@ -13,16 +13,16 @@ class Assignment extends Model
     /** @use HasFactory<\Database\Factories\AssignmentFactory> */
     use HasFactory;
 
-
     /**
      * appends virtual attributes to the model.
+     *
      * @var array<string>
      */
     protected $appends = [
         'topics',
         'tags',
         'languages',
-        'estimated_answer_duration'
+        'estimated_answer_duration',
     ];
 
     /**
@@ -45,6 +45,12 @@ class Assignment extends Model
         return $this->hasMany(Question::class);
     }
 
+    public function getEstimatedAnswerDurationAttribute(): int
+    {
+        return $this->questions
+            ->sum('estimated_answer_duration');
+    }
+
     /**
      * Get the attributes that should be cast.
      *
@@ -55,12 +61,6 @@ class Assignment extends Model
         return [
             'deadline_at' => 'datetime',
         ];
-    }
-
-    public function getEstimatedAnswerDurationAttribute(): int
-    {
-        return $this->questions
-            ->sum('estimated_answer_duration');
     }
 
     protected function topics(): Attribute
