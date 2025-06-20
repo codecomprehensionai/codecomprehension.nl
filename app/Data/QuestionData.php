@@ -26,6 +26,5 @@ class QuestionData extends Data
         public ?string $code = null,
         public ?array $options = null,
         public ?string $answer = null,
-    ) {
-    }
+    ) {}
 }
