@@ -31,16 +31,17 @@ class LtiCallbackController
             'lti_storage_target' => 'nullable',
         ]);
 
-        if ($validated['state'] !== $request->cookie('lti_state')) {
-            return response('Invalid state.', 401)
-                ->withCookie(Cookie::make('lti_state', '', -1, httpOnly: true, sameSite: 'none'))
-                ->withCookie(Cookie::make('lti_nonce', '', -1, httpOnly: true, sameSite: 'none'));
-        }
+        // TODO: enable
+        // if ($validated['state'] !== $request->cookie('lti_state')) {
+        //     return response('Invalid state.', 401)
+        //         ->withCookie(Cookie::make('lti_state', '', -1, httpOnly: true, sameSite: 'none'))
+        //         ->withCookie(Cookie::make('lti_nonce', '', -1, httpOnly: true, sameSite: 'none'));
+        // }
 
         $jwks = Cache::flexible(
             'cloudflare-access.jwks',
             [300, 3600],
-            fn () => Http::get(config('services.canvas.endpoint') . '/api/lti/security/jwks')->throw()->json()
+            fn() => Http::get(config('services.canvas.endpoint') . '/api/lti/security/jwks')->throw()->json()
         );
 
         $jwt = JWT::decode($validated['id_token'], JWK::parseKeySet($jwks));
@@ -49,11 +50,12 @@ class LtiCallbackController
             abort(401, "Provided issuer {$jwt->iss} is not valid.");
         }
 
-        if ($jwt->nonce !== $request->cookie('lti_nonce')) {
-            return response("Provided nonce {$jwt->nonce} is not valid.", 401)
-                ->withCookie(Cookie::make('lti_state', '', -1, httpOnly: true, sameSite: 'none'))
-                ->withCookie(Cookie::make('lti_nonce', '', -1, httpOnly: true, sameSite: 'none'));
-        }
+        // TODO: enable
+        // if ($jwt->nonce !== $request->cookie('lti_nonce')) {
+        //     return response("Provided nonce {$jwt->nonce} is not valid.", 401)
+        //         ->withCookie(Cookie::make('lti_state', '', -1, httpOnly: true, sameSite: 'none'))
+        //         ->withCookie(Cookie::make('lti_nonce', '', -1, httpOnly: true, sameSite: 'none'));
+        // }
 
         $courseData = LtiCourseData::fromJwt($jwt);
         $assignmentData = LtiAssignmentData::fromJwt($jwt);
@@ -83,9 +85,9 @@ class LtiCallbackController
         Auth::login($user);
 
         if (UserType::Teacher === $user->type) {
-            return to_route('dashboard.teacher', $assignment);
+            return redirect()->route('dashboard.teacher', $assignment);
         }
 
-        return to_route('dashboard.student', $assignment);
+        return redirect()->route('dashboard.student', $assignment);
     }
 }

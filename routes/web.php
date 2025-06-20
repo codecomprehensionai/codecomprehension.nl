@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('api/v1/jwks', JwksController::class)->name('oidc.jwks');
 Route::get('api/v1/oidc/jwks', JwksController::class); /* Legacy */
 
-Route::get('/', [DashboardController::class, 'login'])->name('login');
+// TODO: Route::get('/', [DashboardController::class, 'login'])->name('login');
 
 Route::middleware(['guest'])->group(function () {
     Route::post('api/v1/oidc', LtiLaunchController::class)->name('oidc.launch');
