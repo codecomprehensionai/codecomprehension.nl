@@ -31,12 +31,11 @@ class LtiCallbackController
             'lti_storage_target' => 'nullable',
         ]);
 
-        // TODO: enable
-        // if ($validated['state'] !== $request->cookie('lti_state')) {
-        //     return response('Invalid state.', 401)
-        //         ->withCookie(Cookie::make('lti_state', '', -1, httpOnly: true, sameSite: 'none'))
-        //         ->withCookie(Cookie::make('lti_nonce', '', -1, httpOnly: true, sameSite: 'none'));
-        // }
+        if ($validated['state'] !== $request->cookie('lti_state')) {
+            return response('Invalid state.', 401)
+                ->withCookie(Cookie::make('lti_state', '', -1, httpOnly: true, sameSite: 'none'))
+                ->withCookie(Cookie::make('lti_nonce', '', -1, httpOnly: true, sameSite: 'none'));
+        }
 
         $jwks = Cache::flexible(
             'cloudflare-access.jwks',
@@ -50,12 +49,11 @@ class LtiCallbackController
             abort(401, "Provided issuer {$jwt->iss} is not valid.");
         }
 
-        // TODO: enable
-        // if ($jwt->nonce !== $request->cookie('lti_nonce')) {
-        //     return response("Provided nonce {$jwt->nonce} is not valid.", 401)
-        //         ->withCookie(Cookie::make('lti_state', '', -1, httpOnly: true, sameSite: 'none'))
-        //         ->withCookie(Cookie::make('lti_nonce', '', -1, httpOnly: true, sameSite: 'none'));
-        // }
+        if ($jwt->nonce !== $request->cookie('lti_nonce')) {
+            return response("Provided nonce {$jwt->nonce} is not valid.", 401)
+                ->withCookie(Cookie::make('lti_state', '', -1, httpOnly: true, sameSite: 'none'))
+                ->withCookie(Cookie::make('lti_nonce', '', -1, httpOnly: true, sameSite: 'none'));
+        }
 
         $courseData = LtiCourseData::fromJwt($jwt);
         $assignmentData = LtiAssignmentData::fromJwt($jwt);
