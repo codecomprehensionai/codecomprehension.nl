@@ -24,6 +24,17 @@ class CalculateSubmissionScoreJob implements ShouldQueue
         $scoreMax = random_int(80, 100);
         $score = random_int(0, $scoreMax);
 
+        //TODO: Multiple choice questions
+
+        // open ended:
+        // if quesiton_type code_explanation:
+
+        //llm request:
+
+        //parse response
+
+
+
         $this->submission->updateQuietly([
             'score_max' => $scoreMax,
             'score'     => $score,
