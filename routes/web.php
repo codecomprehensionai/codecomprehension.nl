@@ -8,11 +8,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [WelcomeController::class, 'login'])->name('login');
 
-Route::get('api/v1/jwks', JwksController::class)->name('oidc.jwks');
-Route::get('api/v1/oidc/jwks', JwksController::class); /* Legacy */
-
 Route::post('api/v1/oidc', [OidcController::class, 'launch'])->name('oidc.launch');
 Route::post('api/v1/oidc/callback', [OidcController::class, 'callback'])->name('oidc.callback');
+Route::get('api/v1/jwks', JwksController::class)->name('oidc.jwks');
+Route::get('api/v1/oidc/jwks', JwksController::class); /* Legacy */
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('{assignment}', [DashboardController::class, 'student'])->name('dashboard.student');
