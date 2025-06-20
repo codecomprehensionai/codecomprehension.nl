@@ -76,7 +76,7 @@ class OidcController
         $jwks = Cache::flexible(
             'cloudflare-access.jwks',
             [300, 3600],
-            fn () => Http::get(config('services.canvas.endpoint') . '/api/lti/security/jwks')->throw()->json()
+            fn() => Http::get(config('services.canvas.endpoint') . '/api/lti/security/jwks')->throw()->json()
         );
 
         $jwt = JWT::decode($validated['id_token'], JWK::parseKeySet($jwks));
@@ -118,10 +118,9 @@ class OidcController
 
         Auth::login($user);
 
-        if (UserType::Teacher === $user->type) {
-            return redirect()->route('dashboard.teacher', $assignment);
-        }
-
-        return redirect()->route('dashboard.student', $assignment);
+        return match ($user->type) {
+            UserType::Teacher => redirect()->route('assignment.teacher', $assignment),
+            UserType::Student => redirect()->route('assignment.student', $assignment),
+        };
     }
 }
