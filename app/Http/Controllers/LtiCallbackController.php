@@ -12,6 +12,7 @@ use Firebase\JWT\JWT;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 
@@ -30,13 +31,15 @@ class LtiCallbackController
         ]);
 
         if ($validated['state'] !== $request->cookie('lti_state')) {
-            abort(401, 'Invalid state.');
+            return response('Invalid state.', 401)
+                ->withCookie(Cookie::make('lti_state', '', -1, httpOnly: true, sameSite: 'none'))
+                ->withCookie(Cookie::make('lti_nonce', '', -1, httpOnly: true, sameSite: 'none'));
         }
 
         $jwks = Cache::flexible(
             'cloudflare-access.jwks',
             [300, 3600],
-            fn () => Http::get(config('services.canvas.endpoint') . '/api/lti/security/jwks')->throw()->json()
+            fn() => Http::get(config('services.canvas.endpoint') . '/api/lti/security/jwks')->throw()->json()
         );
 
         $jwt = JWT::decode($validated['id_token'], JWK::parseKeySet($jwks));
@@ -46,7 +49,9 @@ class LtiCallbackController
         }
 
         if ($jwt->nonce !== $request->cookie('lti_nonce')) {
-            abort(401, "Provided nonce {$jwt->nonce} is not valid.");
+            return response("Provided nonce {$jwt->nonce} is not valid.", 401)
+                ->withCookie(Cookie::make('lti_state', '', -1, httpOnly: true, sameSite: 'none'))
+                ->withCookie(Cookie::make('lti_nonce', '', -1, httpOnly: true, sameSite: 'none'));
         }
 
         $courseData = LtiCourseData::fromJwt($jwt);
@@ -77,6 +82,7 @@ class LtiCallbackController
         Auth::login($user);
 
         /**
+         * TODO: check
          * This might introduce a bug when a student/teacher opens two tabs
          * with different courses/assignments. We will need to investigate
          * this later, but for now, we will just store the last accessed.
