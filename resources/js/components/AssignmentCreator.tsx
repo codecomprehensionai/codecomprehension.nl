@@ -25,7 +25,7 @@ import {
     ArrowRight
 } from 'lucide-react'
 import { Chat } from '@/components/ui/chat'
-import { Assignment, QuestionBlock, Option, Question } from '@/types'
+import { Assignment, QuestionBlock, Option, Question, AssignmentDTO } from '@/types'
 
 interface AssignmentCreatorProps {
     assignment: Assignment,
@@ -55,14 +55,6 @@ export default function AssignmentCreator({ assignment, onBack }: AssignmentCrea
         return date.toISOString().slice(0, 16) // Format: "YYYY-MM-DDThh:mm"
     }
 
-    const dueDate = assignment.dueDate;
-    const title = assignment.title || "Untitled Assignment";
-    const description = assignment.description || "No description provided.";
-
-    const { data: formData, setData: setFormData, post, errors } = useForm({
-        questions: [],
-    })
-
     const [generatedContent, setGeneratedContent] = useState({
         questions: assignment.questions?.map((question, index) => ({
             question: {
@@ -85,11 +77,32 @@ export default function AssignmentCreator({ assignment, onBack }: AssignmentCrea
                         { id: crypto.randomUUID(), text: '', is_correct: false }
                     ],
                 answer: question.answer || '',
-            },
+            } as Question,
             messages: [],
             isChatLoading: false
         } as QuestionBlock)) || [] as QuestionBlock[]
     })
+
+    const dueDate = assignment.dueDate;
+    const title = assignment.title || "Untitled Assignment";
+    const description = assignment.description || "No description provided.";
+
+    const { data: formData, setData: setFormData, put, errors } = useForm({
+        questions: assignment.questions?.map(question => ({
+            id: question.id,
+            language: question.language,
+            type: question.type,
+            level: question.level,
+            question: question.question,
+            code: question.code,
+            options: question.options?.map(opt => ({
+                id: opt.id,
+                text: opt.text,
+            })) || [],
+            answer: question.answer,
+        })) || []
+    });
+
 
     const addNewQuestion = () => {
         const newQuestionBlock: QuestionBlock = {
@@ -261,8 +274,27 @@ export default function AssignmentCreator({ assignment, onBack }: AssignmentCrea
     }
 
     const handlePublish = () => {
-        console.log(generatedContent.questions.map(q => q.question));
-        // post('/assignments');
+
+        console.log(generatedContent)
+        const questionsData = generatedContent.questions.map(q => ({
+            id: q.question.id,
+            language: q.question.language,
+            type: q.question.type,
+            level: q.question.level,
+            question: q.question.question,
+            code: q.question.code,
+            options: q.question.options.map(opt => ({
+                id: opt.id,
+                text: opt.text,
+                is_correct: opt.is_correct
+            })),
+            answer: q.question.answer,
+        }));
+        setFormData('questions', []);
+        console.log('Submitting assignment data:', formData);
+        // setFormData('questions', questionsData);
+
+        put(`/assignments/${assignment.id}`);
     }
 
     return (

@@ -35,7 +35,7 @@ class TeacherDashboardController
             'description' => 'nullable|string',
         ]);
 
-        $assignment = Assignment::where('lti_id', $assignmentId)->firstOrFail();
+        $assignment = Question::where('lti_id', $assignmentId)->firstOrFail();
         $assignment->update($validated);
 
         return redirect()->route('teacher.dashboard')->with('success', 'Assignment updated successfully.');

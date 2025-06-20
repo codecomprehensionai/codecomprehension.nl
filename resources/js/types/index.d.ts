@@ -103,6 +103,10 @@ export interface Assignment {
     published_at?: string;
     deadline_at?: string;
 }
+
+export interface AssignmentDTO {
+    questions: Question[];
+}
 export interface PageProps extends InertiaPageProps {
     auth: {
       user: User;
