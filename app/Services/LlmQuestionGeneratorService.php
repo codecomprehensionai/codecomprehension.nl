@@ -29,23 +29,23 @@ class LlmQuestionGeneratorService
     public function getJWT()
     {
         $endpoint = config('llm.base_url');
-        $token = JwtKey::first()->sign(config('services.canvas.client_id'), $endpoint, now()->addMinutes(5));
-
+        // $token = JwtKey::first()->sign(config('services.canvas.client_id'), $endpoint, now()->addMinutes(5));
+        $token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiIsImtpZCI6IjAxank2aGdlbWRzN2c5dzNhdzAzdzhmOXk2In0.eyJpc3MiOiJodHRwczovL2NvZGVjb21wcmVoZW5zaW9uLm5sIiwic3ViIjoiMTA0NDAwMDAwMDAwMDAwMzQwIiwiYXVkIjoiaHR0cHM6Ly9sbG0uY29kZWNvbXByZWhlbnNpb24ubmwiLCJleHAiOjE3NTA3NjM4MTksIm5iZiI6MTc1MDY3NzQxOSwiaWF0IjoxNzUwNjc3NDE5LCJqdGkiOiIwMWp5ZTgyeDNyMjduYmNycXk5ZmVmcmM4eCJ9.MyuXQKxTF_vrGG_T01ln9VO5gYJ6rV14LY_si17ilL7BU5YCOQyY7UBH0IFmseWv3sDJXhKHY-faNvobvUXi2Q";
         return $token;
     }
 
     /**
      * Generate a new question using the LLM API.
      */
-    public function generateQuestion(Assignment $assignment, array $params, string $prompt, array $existing = []): ?QuestionData
+    public function generateQuestion(Assignment $assignment, QuestionData $questionData, string $prompt, array $existing = []): ?QuestionData
     {
         Log::info('LlmQuestionGeneratorService generateQuestion started', [
             'assignment_id' => $assignment->id,
-            'params' => $params,
+            'question_data' => $questionData->toArray(),
             'prompt' => $prompt,
         ]);
 
-        $data = $this->buildRequest($assignment, $existing, $params, $prompt);
+        $data = $this->buildRequest($assignment, $existing, $questionData, $prompt);
         Log::info('LlmQuestionGeneratorService built request data', ['data' => $data]);
 
         $response = $this->request('POST', '/question', $data);
@@ -59,7 +59,7 @@ class LlmQuestionGeneratorService
         }
         Log::warning('LlmQuestionGeneratorService generateQuestion: response is null', [
             'assignment_id' => $assignment->id,
-            'params' => $params,
+            'question_data' => $questionData->toArray(),
             'prompt' => $prompt,
             'existing' => $existing,
         ]);
@@ -70,17 +70,17 @@ class LlmQuestionGeneratorService
     /**
      * Update an existing question using the LLM API.
      */
-    public function updateQuestion(Assignment $assignment, Question $question, array $params, string $prompt, array $context = []): ?QuestionData
+    public function updateQuestion(Assignment $assignment, Question $question, QuestionData $updateData, string $prompt, array $context = []): ?QuestionData
     {
         Log::info('LlmQuestionGeneratorService updateQuestion started', [
             'assignment_id' => $assignment->id,
             'question_id' => $question->id,
-            'params' => $params,
+            'update_data' => $updateData->toArray(),
             'prompt' => $prompt,
             'context_count' => count($context),
         ]);
 
-        $data = $this->buildUpdateRequest($assignment, $question, $context, $params, $prompt);
+        $data = $this->buildUpdateRequest($assignment, $question, $context, $updateData, $prompt);
         Log::info('LlmQuestionGeneratorService built update request data', ['data' => $data]);
 
         $response = $this->request('PUT', '/question', $data);
@@ -95,7 +95,7 @@ class LlmQuestionGeneratorService
         Log::warning('LlmQuestionGeneratorService updateQuestion: response is null', [
             'assignment_id' => $assignment->id,
             'question_id' => $question->id,
-            'params' => $params,
+            'update_data' => $updateData->toArray(),
             'prompt' => $prompt,
             'context' => $context,
         ]);
@@ -150,18 +150,18 @@ class LlmQuestionGeneratorService
     /**
      * Build the request payload for generating a new question.
      */
-    private function buildRequest(Assignment $assignment, array $existing, array $params, string $prompt): array
+    private function buildRequest(Assignment $assignment, array $existing, QuestionData $questionData, string $prompt): array
     {
         return [
             'assignment' => ['id' => (string) $assignment->id, 'title' => $assignment->title, 'description' => $assignment->description ?? ''],
             'questions' => $this->formatQuestions($existing),
             'new_question' => [
-                'language' => ucfirst($params['language'] ?? 'python'),
-                'type' => $params['type'] ?? 'multiple_choice',
-                'level' => $params['level'] ?? 'beginner',
-                'estimated_answer_duration' => $this->formatDuration($params['estimated_answer_duration'] ?? 3),
-                'topics' => $params['topics'] ?? [],
-                'tags' => $params['tags'] ?? [],
+                'language' => ucfirst($questionData->language->value),
+                'type' => $questionData->type->value,
+                'level' => $questionData->level->value,
+                'estimated_answer_duration' => $this->formatDuration($questionData->estimatedAnswerDuration),
+                'topics' => $questionData->topic ? [$questionData->topic] : [],
+                'tags' => $questionData->tags ?? [],
             ],
             'new_question_prompt' => $prompt,
         ];
@@ -170,19 +170,20 @@ class LlmQuestionGeneratorService
     /**
      * Build the request payload for updating an existing question.
      */
-    private function buildUpdateRequest(Assignment $assignment, Question $question, array $context, array $params, string $prompt): array
+    private function buildUpdateRequest(Assignment $assignment, Question $question, array $context, QuestionData $updateData, string $prompt): array
     {
-        // Format the update parameters to ensure correct data types
-        $formattedParams = $params;
-        if (isset($formattedParams['estimated_answer_duration'])) {
-            $formattedParams['estimated_answer_duration'] = $this->formatDuration($formattedParams['estimated_answer_duration']);
-        }
-
         return [
             'assignment' => ['id' => (string) $assignment->id, 'title' => $assignment->title, 'description' => $assignment->description ?? ''],
             'questions' => $this->formatQuestions($context),
             'existing_question' => $this->formatQuestion($question),
-            'update_question' => $formattedParams,
+            'update_question' => [
+                'language' => ucfirst($updateData->language->value),
+                'type' => $updateData->type->value,
+                'level' => $updateData->level->value,
+                'estimated_answer_duration' => $this->formatDuration($updateData->estimatedAnswerDuration),
+                'topics' => $updateData->topic ? [$updateData->topic] : [],
+                'tags' => $updateData->tags ?? [],
+            ],
             'update_question_prompt' => $prompt,
         ];
     }
