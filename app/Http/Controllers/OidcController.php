@@ -8,6 +8,8 @@ use App\Data\LtiUserData;
 use App\Enums\UserType;
 use App\Models\Course;
 use App\Models\User;
+use App\Models\Assignment;
+use App\Models\Question;
 use Firebase\JWT\JWK;
 use Firebase\JWT\JWT;
 use Illuminate\Http\Request;
