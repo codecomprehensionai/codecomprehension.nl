@@ -17,7 +17,7 @@ class LlmQuestionGeneratorService
 
     public function __construct()
     {
-        $this->baseUrl = rtrim(config('llm.base_url'), '/');
+        $this->baseUrl = config('llm.base_url');
         $this->timeout = config('llm.timeout', 300); // Increased to 5 minutes for AI processing
     }
 
@@ -41,8 +41,8 @@ class LlmQuestionGeneratorService
     {
         Log::info('LlmQuestionGeneratorService generateQuestion started', [
             'assignment_id' => $assignment->id,
-            'params'        => $params,
-            'prompt'        => $prompt,
+            'params' => $params,
+            'prompt' => $prompt,
         ]);
 
         $data = $this->buildRequest($assignment, $existing, $params, $prompt);
@@ -59,9 +59,9 @@ class LlmQuestionGeneratorService
         }
         Log::warning('LlmQuestionGeneratorService generateQuestion: response is null', [
             'assignment_id' => $assignment->id,
-            'params'        => $params,
-            'prompt'        => $prompt,
-            'existing'      => $existing,
+            'params' => $params,
+            'prompt' => $prompt,
+            'existing' => $existing,
         ]);
 
         return null;
@@ -74,9 +74,9 @@ class LlmQuestionGeneratorService
     {
         Log::info('LlmQuestionGeneratorService updateQuestion started', [
             'assignment_id' => $assignment->id,
-            'question_id'   => $question->id,
-            'params'        => $params,
-            'prompt'        => $prompt,
+            'question_id' => $question->id,
+            'params' => $params,
+            'prompt' => $prompt,
             'context_count' => count($context),
         ]);
 
@@ -94,10 +94,10 @@ class LlmQuestionGeneratorService
         }
         Log::warning('LlmQuestionGeneratorService updateQuestion: response is null', [
             'assignment_id' => $assignment->id,
-            'question_id'   => $question->id,
-            'params'        => $params,
-            'prompt'        => $prompt,
-            'context'       => $context,
+            'question_id' => $question->id,
+            'params' => $params,
+            'prompt' => $prompt,
+            'context' => $context,
         ]);
 
         return null;
@@ -137,9 +137,9 @@ class LlmQuestionGeneratorService
         } catch (Exception $e) {
             // Log the exception for debugging purposes
             Log::error('LlmQuestionGeneratorService request error: ' . $e->getMessage(), [
-                'method'    => $method,
-                'endpoint'  => $endpoint,
-                'data'      => $data,
+                'method' => $method,
+                'endpoint' => $endpoint,
+                'data' => $data,
                 'exception' => $e,
             ]);
 
@@ -153,15 +153,15 @@ class LlmQuestionGeneratorService
     private function buildRequest(Assignment $assignment, array $existing, array $params, string $prompt): array
     {
         return [
-            'assignment'   => ['id' => (string) $assignment->id, 'title' => $assignment->title, 'description' => $assignment->description ?? ''],
-            'questions'    => $this->formatQuestions($existing),
+            'assignment' => ['id' => (string) $assignment->id, 'title' => $assignment->title, 'description' => $assignment->description ?? ''],
+            'questions' => $this->formatQuestions($existing),
             'new_question' => [
-                'language'                  => ucfirst($params['language'] ?? 'python'),
-                'type'                      => $params['type'] ?? 'multiple_choice',
-                'level'                     => $params['level'] ?? 'beginner',
+                'language' => ucfirst($params['language'] ?? 'python'),
+                'type' => $params['type'] ?? 'multiple_choice',
+                'level' => $params['level'] ?? 'beginner',
                 'estimated_answer_duration' => $this->formatDuration($params['estimated_answer_duration'] ?? 3),
-                'topics'                    => $params['topics'] ?? [],
-                'tags'                      => $params['tags'] ?? [],
+                'topics' => $params['topics'] ?? [],
+                'tags' => $params['tags'] ?? [],
             ],
             'new_question_prompt' => $prompt,
         ];
@@ -179,10 +179,10 @@ class LlmQuestionGeneratorService
         }
 
         return [
-            'assignment'             => ['id' => (string) $assignment->id, 'title' => $assignment->title, 'description' => $assignment->description ?? ''],
-            'questions'              => $this->formatQuestions($context),
-            'existing_question'      => $this->formatQuestion($question),
-            'update_question'        => $formattedParams,
+            'assignment' => ['id' => (string) $assignment->id, 'title' => $assignment->title, 'description' => $assignment->description ?? ''],
+            'questions' => $this->formatQuestions($context),
+            'existing_question' => $this->formatQuestion($question),
+            'update_question' => $formattedParams,
             'update_question_prompt' => $prompt,
         ];
     }
@@ -192,7 +192,7 @@ class LlmQuestionGeneratorService
      */
     private function formatQuestions(array $questions): array
     {
-        return collect($questions)->map(fn ($q) => $q instanceof Question ? $this->formatQuestion($q) : $q)->toArray();
+        return collect($questions)->map(fn($q) => $q instanceof Question ? $this->formatQuestion($q) : $q)->toArray();
     }
 
     /**
@@ -201,18 +201,18 @@ class LlmQuestionGeneratorService
     private function formatQuestion(Question $q): array
     {
         return [
-            'id'                        => (string) $q->id,
-            'language'                  => ucfirst($q->language->value),
-            'type'                      => $q->type->value,
-            'level'                     => $q->level->value,
+            'id' => (string) $q->id,
+            'language' => ucfirst($q->language->value),
+            'type' => $q->type->value,
+            'level' => $q->level->value,
             'estimated_answer_duration' => $this->formatDuration($q->estimated_answer_duration),
-            'topics'                    => $q->topic ? [$q->topic] : [],
-            'tags'                      => $q->tags ?? [],
-            'question'                  => $q->question,
-            'explanation'               => $q->explanation ?? '',
-            'code'                      => $q->code ?? '',
-            'options'                   => $q->options ?? [],
-            'answer'                    => $q->answer ?? '',
+            'topics' => $q->topic ? [$q->topic] : [],
+            'tags' => $q->tags ?? [],
+            'question' => $q->question,
+            'explanation' => $q->explanation ?? '',
+            'code' => $q->code ?? '',
+            'options' => $q->options ?? [],
+            'answer' => $q->answer ?? '',
         ];
     }
 
@@ -248,7 +248,7 @@ class LlmQuestionGeneratorService
             );
         } catch (Exception $e) {
             Log::error('LlmQuestionGeneratorService parse error: ' . $e->getMessage(), [
-                'response'  => $response,
+                'response' => $response,
                 'exception' => $e,
             ]);
 
