@@ -15,16 +15,12 @@
         @endif
 
         <x-question-answer-box :question="$question" />
-
-        {{-- Save button --}}
-        <div class="flex justify-between items-center mt-4">
-            <button
-                type="button"
-                class="bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-            >
-                Save Answer
-            </button>
-        </div>
+        <button wire:click="nextQuestion" class="mt-4 btn btn-primary">
+            Next
+        </button>
+        <button wire:click="previousQuestion" class="mt-4 btn btn-secondary" @if($index === 0) disabled @endif>
+            Previous
+        </button>
     </div>
 </x-card>
 

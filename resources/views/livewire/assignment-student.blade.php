@@ -5,8 +5,8 @@
         @php
             $question = $assignment->questions[$index] ?? null;
         @endphp
-            <x-assignment.code :$question />
-            <x-assignment.answer-box :$question />
+        <x-assignment.code :$question />
+        <x-assignment.answer-box :$question :$index :assignment="$assignment" wire:previousQuestion="previousQuestion"
+            wire:nextQuestion="nextQuestion" />
     </div>
 </div>
-
