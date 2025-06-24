@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\QuestionLanguage;
 use App\Enums\QuestionLevel;
 use App\Enums\QuestionType;
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -14,13 +15,7 @@ class Question extends Model
 {
     /** @use HasFactory<\Database\Factories\QuestionFactory> */
     use HasFactory;
-
-    protected static function booted(): void
-    {
-        static::created(function (Question $question) {
-            QuestionLLMGenerateJob::dispatch($question, 'prompt');
-        });
-    }
+    use HasUlids;
 
     /**
      * The assignment that the question belongs to.

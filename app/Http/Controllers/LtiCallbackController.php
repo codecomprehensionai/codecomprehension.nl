@@ -12,9 +12,9 @@ use Firebase\JWT\JWT;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
-use Throwable;
 
 class LtiCallbackController
 {
@@ -31,34 +31,32 @@ class LtiCallbackController
         ]);
 
         if ($validated['state'] !== $request->cookie('lti_state')) {
-            abort(401, 'Invalid state.');
+            return response('Invalid state.', 401)
+                ->withCookie(Cookie::make('lti_state', '', -1, httpOnly: true, sameSite: 'none'))
+                ->withCookie(Cookie::make('lti_nonce', '', -1, httpOnly: true, sameSite: 'none'));
         }
-
-        $endpoint = config('services.canvas.endpoint');
 
         $jwks = Cache::flexible(
             'cloudflare-access.jwks',
             [300, 3600],
-            fn () => Http::get("{$endpoint}/api/lti/security/jwks")->throw()->json()
+            fn() => Http::get(config('services.canvas.endpoint') . '/api/lti/security/jwks')->throw()->json()
         );
 
-        try {
-            $jwt = JWT::decode($validated['id_token'], JWK::parseKeySet($jwks));
+        $jwt = JWT::decode($validated['id_token'], JWK::parseKeySet($jwks));
 
-            if ($jwt->iss !== $endpoint) {
-                abort(401, 'Invalid issuer.');
-            }
-
-            if ($jwt->nonce !== $request->cookie('lti_nonce')) {
-                abort(401, 'Invalid nonce.');
-            }
-
-            $courseData = LtiCourseData::fromJwt($jwt);
-            $assignmentData = LtiAssignmentData::fromJwt($jwt);
-            $userData = LtiUserData::fromJwt($jwt);
-        } catch (Throwable) {
-            abort(401, 'Invalid LTI token. View as Student is not supported.');
+        if ($jwt->iss !== config('services.canvas.issuer')) {
+            abort(401, "Provided issuer {$jwt->iss} is not valid.");
         }
+
+        if ($jwt->nonce !== $request->cookie('lti_nonce')) {
+            return response("Provided nonce {$jwt->nonce} is not valid.", 401)
+                ->withCookie(Cookie::make('lti_state', '', -1, httpOnly: true, sameSite: 'none'))
+                ->withCookie(Cookie::make('lti_nonce', '', -1, httpOnly: true, sameSite: 'none'));
+        }
+
+        $courseData = LtiCourseData::fromJwt($jwt);
+        $assignmentData = LtiAssignmentData::fromJwt($jwt);
+        $userData = LtiUserData::fromJwt($jwt);
 
         $course = Course::updateOrCreate(['lti_id' => $courseData->ltiId], [
             'title' => $courseData->title,
@@ -66,8 +64,9 @@ class LtiCallbackController
 
         // TODO: get deadline from somewhere
         $assignment = $course->assignments()->updateOrCreate(['lti_id' => $assignmentData->ltiId], [
-            'title'       => $assignmentData->title,
-            'description' => $assignmentData->description,
+            'lti_lineitem_endpoint' => $assignmentData->ltiLineitemEndpoint,
+            'title'                 => $assignmentData->title,
+            'description'           => $assignmentData->description,
         ]);
 
         $user = User::updateOrCreate(['lti_id' => $userData->ltiId], [
@@ -81,6 +80,17 @@ class LtiCallbackController
         ]);
 
         Auth::login($user);
+
+        /**
+         * TODO: check
+         * This might introduce a bug when a student/teacher opens two tabs
+         * with different courses/assignments. We will need to investigate
+         * this later, but for now, we will just store the last accessed.
+         */
+        session([
+            'course_id'     => $course->id,
+            'assignment_id' => $assignment->id,
+        ]);
 
         return redirect()->route('dashboard');
     }

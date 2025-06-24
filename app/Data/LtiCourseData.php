@@ -2,15 +2,12 @@
 
 namespace App\Data;
 
-use Spatie\LaravelData\Attributes\Validation\Required;
 use Spatie\LaravelData\Data;
 
 class LtiCourseData extends Data
 {
     public function __construct(
-        #[Required]
         public string $ltiId,
-        #[Required]
         public string $title,
     ) {}
 

@@ -8,16 +8,17 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('courses', function (Blueprint $table) {
+        Schema::create('jwt_keys', function (Blueprint $table) {
             $table->ulid('id')->primary();
-            $table->string('lti_id')->unique();
-            $table->text('title');
+            $table->string('name')->nullable()->unique();
+            $table->text('public_key');
+            $table->text('private_key')->nullable();
             $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('courses');
+        Schema::dropIfExists('jwt_keys');
     }
 };
