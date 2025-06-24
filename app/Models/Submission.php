@@ -10,6 +10,35 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Bus;
 
+/**
+ * 
+ *
+ * @property string $id
+ * @property string|null $lti_id
+ * @property string $question_id
+ * @property string $user_id
+ * @property string $answer
+ * @property string|null $feedback
+ * @property bool $is_correct
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Question $question
+ * @property-read \App\Models\User $user
+ * @method static \Database\Factories\SubmissionFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Submission newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Submission newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Submission query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Submission whereAnswer($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Submission whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Submission whereFeedback($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Submission whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Submission whereIsCorrect($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Submission whereLtiId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Submission whereQuestionId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Submission whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Submission whereUserId($value)
+ * @mixin \Eloquent
+ */
 class Submission extends Model
 {
     /** @use HasFactory<\Database\Factories\SubmissionFactory> */

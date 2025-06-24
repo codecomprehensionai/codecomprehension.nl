@@ -2,20 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use App\Data\LtiAssignmentData;
-use App\Data\LtiCourseData;
-use App\Data\LtiUserData;
-use App\Enums\UserType;
-use App\Models\Course;
 use App\Models\User;
 use Firebase\JWT\JWK;
 use Firebase\JWT\JWT;
+use App\Models\Course;
+use App\Enums\UserType;
+use App\Models\Question;
+use App\Data\LtiUserData;
+use App\Data\LtiCourseData;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Data\LtiAssignmentData;
+use PhpParser\Node\Expr\Assign;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Cookie;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Str;
 
 class OidcController
 {
@@ -106,6 +108,11 @@ class OidcController
             'description'           => $assignmentData->description,
         ]);
 
+        $assignment->questions()->delete();
+        Question::factory()->count(5)->create([
+            'assignment_id' => $assignment->id,
+        ]);
+
         $user = User::updateOrCreate(['lti_id' => $userData->ltiId], [
             'type'              => $userData->type,
             'name'              => $userData->name,
@@ -117,7 +124,7 @@ class OidcController
         ]);
 
         Auth::login($user);
-
+        return redirect()->route('assignment.student', $assignment);
         return match ($user->type) {
             UserType::Teacher => redirect()->route('assignment.teacher', $assignment),
             UserType::Student => redirect()->route('assignment.student', $assignment),
