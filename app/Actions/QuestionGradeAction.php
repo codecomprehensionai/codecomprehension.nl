@@ -4,18 +4,30 @@ declare(strict_types=1);
 
 namespace App\Actions;
 
+use App\Data\AssignmentData;
 use App\Data\QuestionData;
+use App\Data\SubmissionData;
 use App\Models\Assignment;
 use App\Models\JwtKey;
 use App\Models\Question;
+use App\Models\Submission;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 
-// TODO: build this class
 final readonly class QuestionGradeAction
 {
-    public function handle(Assignment $assignment, QuestionData $existingQuestionData, QuestionData $updateQuestionData, string $updateQuestionPrompt = ''): QuestionData
+    public function handle(Submission $submission): SubmissionData
     {
+        $submissionData = SubmissionData::from($submission);
+
+        /** @var Question $question */
+        $question = $submission->question;
+        $questionData = QuestionData::from($question);
+
+        /** @var Assignment $assignment */
+        $assignment = $question->assignment;
+        $assignmentData = AssignmentData::from($assignment);
+
         $sub = Auth::id() ?? 'anonymous';
         $aud = 'https://llm.codecomprehension.nl';
         $token = JwtKey::first()->sign($sub, $aud, now()->addDay());
@@ -24,21 +36,13 @@ final readonly class QuestionGradeAction
             ->connectTimeout(3)
             ->timeout(120)
             ->throw()
-            ->put('https://llm.codecomprehension.nl/question', [
-                'assignment' => [
-                    'id'          => $assignment->id,
-                    'title'       => $assignment->title,
-                    'description' => $assignment->description,
-                ],
-                'questions' => $assignment->questions
-                    ->map(fn (Question $question): array => QuestionData::from($question)->toArray())
-                    ->toArray(),
-                'existing_question'      => $existingQuestionData->toArray(),
-                'update_question'        => $updateQuestionData->toArray(),
-                'update_question_prompt' => $updateQuestionPrompt,
+            ->put('https://llm.codecomprehension.nl/grade', [
+                'assignment' => $assignmentData->toArray(),
+                'question'   => $questionData->toArray(),
+                'submission' => $submissionData->toArray(),
             ])
             ->json('data');
 
-        return QuestionData::from($response['question']);
+        return SubmissionData::from($response['submission']);
     }
 }

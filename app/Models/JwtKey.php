@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Services\Jwt\JwtService;
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 
@@ -27,10 +28,23 @@ class JwtKey extends Model
     }
 
     /**
-     * Ensures that the token:>
-     * return $this->service()->sign($sub, $aud, $exp, $nbf, $jti, $claims);
-     * }
-     * /**
+     * Ensures that the token:
+     * - is issued by this app (issuer = config('app.url'))
+     * - has a required subject
+     * - has a required audience
+     * - has a required expiration
+     * - has an optional not-before time
+     * - has a custom token jti or an auto-generated one
+     * - has optional additional claims
+     *
+     * @throws InvalidArgumentException if private key is blank
+     */
+    public function sign(string $sub, string|array $aud, DateTimeInterface $exp, ?DateTimeInterface $nbf = null, ?string $jti = null, ?array $claims = []): string
+    {
+        return $this->service()->sign($sub, $aud, $exp, $nbf, $jti, $claims);
+    }
+
+    /**
      * Verifies that the token:
      * - is signed by the current key
      * - is issued by the expected issuer (if provided)

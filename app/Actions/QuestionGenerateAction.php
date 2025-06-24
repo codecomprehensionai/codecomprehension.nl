@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Actions;
 
+use App\Data\AssignmentData;
 use App\Data\QuestionData;
 use App\Models\Assignment;
 use App\Models\JwtKey;
@@ -15,6 +16,8 @@ final readonly class QuestionGenerateAction
 {
     public function handle(Assignment $assignment, QuestionData $newQuestionData, string $newQuestionPrompt = ''): QuestionData
     {
+        $assignmentData = AssignmentData::from($assignment);
+
         $sub = Auth::id() ?? 'anonymous';
         $aud = 'https://llm.codecomprehension.nl';
         $token = JwtKey::first()->sign($sub, $aud, now()->addDay());
@@ -24,12 +27,8 @@ final readonly class QuestionGenerateAction
             ->timeout(120)
             ->throw()
             ->post('https://llm.codecomprehension.nl/question', [
-                'assignment' => [
-                    'id'          => $assignment->id,
-                    'title'       => $assignment->title,
-                    'description' => $assignment->description,
-                ],
-                'questions' => $assignment->questions
+                'assignment' => $assignmentData->toArray(),
+                'questions'  => $assignment->questions
                     ->map(fn (Question $question): array => QuestionData::from($question)->toArray())
                     ->toArray(),
                 'new_question'        => $newQuestionData->toArray(),
