@@ -6,6 +6,10 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <meta name="application-name" content="{{ config('app.name') }}">
 
+        <link rel="icon" href="/favicon.ico" sizes="any">
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
         <title>{{ config('app.name', 'Laravel') }}</title>
 
         <style>
@@ -18,7 +22,7 @@
         @vite('resources/css/app.css')
     </head>
 
-    <body class="antialiased">
+    <body class="antialiased m-4">
         {{ $slot }}
 
         @filamentScripts

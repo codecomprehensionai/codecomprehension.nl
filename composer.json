@@ -10,6 +10,7 @@
     "license": "proprietary",
     "require": {
         "php": "^8.2",
+        "filament/actions": "^4.0",
         "filament/forms": "^4.0",
         "filament/schemas": "^4.0",
         "firebase/php-jwt": "^6.11",

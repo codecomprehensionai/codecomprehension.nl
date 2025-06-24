@@ -4,8 +4,11 @@ namespace App\Livewire;
 
 use App\Models\Assignment;
 use Filament\Forms\Components\MarkdownEditor;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Contracts\HasSchemas;
 use Filament\Schemas\Schema;
 use Livewire\Component;
@@ -25,11 +28,42 @@ class AssignmentTeacher extends Component implements HasSchemas
     public function form(Schema $schema): Schema
     {
         return $schema
+            ->record($this->assignment)
             ->components([
-                TextInput::make('title')
-                    ->required(),
-                MarkdownEditor::make('content'),
-                // ...
+                Section::make(config('app.name'))
+                    ->description($this->assignment->title),
+
+                Repeater::make('questions')
+                    ->relationship()
+                    ->columns(2)
+                    ->minItems(1)
+                    ->maxItems(25)
+                    ->addActionLabel(__('Add Question'))
+                    ->schema([
+                        TextInput::make('name')->required(),
+                        Select::make('role')
+                            ->options([
+                                'member' => 'Member',
+                                'administrator' => 'Administrator',
+                                'owner' => 'Owner',
+                            ])
+                            ->required(),
+                    ])
+
+                // TODO: (generate actions) ->extraItemActions([
+                //     Action::make('sendEmail')
+                //         ->icon(Heroicon::Envelope)
+                //         ->action(function (array $arguments, Repeater $component): void {
+                //             $itemData = $component->getItemState($arguments['item']);
+
+                //             Mail::to($itemData['email'])
+                //                 ->send(
+                //                     // ...
+                //                 );
+                //         }),
+                // ])
+
+                // TODO: (show title) ->itemLabel(fn(array $state): ?string => $state['name'] ?? null),
             ])
             ->statePath('data');
     }
