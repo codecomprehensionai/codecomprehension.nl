@@ -11,20 +11,19 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Bus;
 
 /**
- * 
+ * @property string                          $id
+ * @property null|string                     $lti_id
+ * @property string                          $question_id
+ * @property string                          $user_id
+ * @property string                          $answer
+ * @property null|string                     $feedback
+ * @property bool                            $is_correct
+ * @property null|\Illuminate\Support\Carbon $created_at
+ * @property null|\Illuminate\Support\Carbon $updated_at
+ * @property \App\Models\Question            $question
+ * @property \App\Models\User                $user
  *
- * @property string $id
- * @property string|null $lti_id
- * @property string $question_id
- * @property string $user_id
- * @property string $answer
- * @property string|null $feedback
- * @property bool $is_correct
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Question $question
- * @property-read \App\Models\User $user
- * @method static \Database\Factories\SubmissionFactory factory($count = null, $state = [])
+ * @method static \Database\Factories\SubmissionFactory                    factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Submission newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Submission newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Submission query()
@@ -37,6 +36,7 @@ use Illuminate\Support\Facades\Bus;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Submission whereQuestionId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Submission whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Submission whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 class Submission extends Model

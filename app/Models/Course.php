@@ -7,15 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * 
+ * @property string                                                                $id
+ * @property string                                                                $lti_id
+ * @property string                                                                $title
+ * @property null|\Illuminate\Support\Carbon                                       $created_at
+ * @property null|\Illuminate\Support\Carbon                                       $updated_at
+ * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\Assignment> $assignments
+ * @property null|int                                                              $assignments_count
  *
- * @property string $id
- * @property string $lti_id
- * @property string $title
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Assignment> $assignments
- * @property-read int|null $assignments_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Course newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Course newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Course query()
@@ -24,6 +23,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Course whereLtiId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Course whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Course whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class Course extends Model

@@ -4,8 +4,8 @@ namespace App\Livewire;
 
 use App\Models\Assignment;
 use App\Models\Submission;
-use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Component;
 
 class AssignmentResults extends Component
 {
@@ -38,6 +38,11 @@ class AssignmentResults extends Component
         if ($this->submissions->isNotEmpty()) {
             $this->calculateResults();
         }
+    }
+
+    public function render()
+    {
+        return view('livewire.assignment-results')->layout('components.layouts.app');
     }
 
     private function calculateResults()
@@ -84,16 +89,11 @@ class AssignmentResults extends Component
         if ($this->score >= 90) {
             $this->feedback = "Outstanding work! You've demonstrated excellent code comprehension skills.";
         } elseif ($this->score >= 75) {
-            $this->feedback = "Great job! You have a solid understanding of the concepts.";
+            $this->feedback = 'Great job! You have a solid understanding of the concepts.';
         } elseif ($this->score >= 60) {
-            $this->feedback = "Good effort! Consider reviewing the areas where you had difficulty.";
+            $this->feedback = 'Good effort! Consider reviewing the areas where you had difficulty.';
         } else {
-            $this->feedback = "Keep practicing! Review the concepts and try similar exercises.";
+            $this->feedback = 'Keep practicing! Review the concepts and try similar exercises.';
         }
-    }
-
-    public function render()
-    {
-        return view('livewire.assignment-results')->layout('components.layouts.app');
     }
 }

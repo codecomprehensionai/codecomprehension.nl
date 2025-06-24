@@ -3,19 +3,17 @@
 namespace App\Models;
 
 use App\Services\Jwt\JwtService;
-use DateTimeInterface;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * 
+ * @property string                          $id
+ * @property null|string                     $name
+ * @property mixed                           $public_key
+ * @property null|mixed                      $private_key
+ * @property null|\Illuminate\Support\Carbon $created_at
+ * @property null|\Illuminate\Support\Carbon $updated_at
  *
- * @property string $id
- * @property string|null $name
- * @property mixed $public_key
- * @property mixed|null $private_key
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
  * @method static \Illuminate\Database\Eloquent\Builder<static>|JwtKey newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|JwtKey newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|JwtKey query()
@@ -25,6 +23,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|JwtKey wherePrivateKey($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|JwtKey wherePublicKey($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|JwtKey whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class JwtKey extends Model
@@ -49,10 +48,9 @@ class JwtKey extends Model
 
     /**
      * Ensures that the token:>
-        return $this->service()->sign($sub, $aud, $exp, $nbf, $jti, $claims);
-    }
-
-    /**
+     * return $this->service()->sign($sub, $aud, $exp, $nbf, $jti, $claims);
+     * }
+     * /**
      * Verifies that the token:
      * - is signed by the current key
      * - is issued by the expected issuer (if provided)

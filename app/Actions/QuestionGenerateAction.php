@@ -30,7 +30,7 @@ final readonly class QuestionGenerateAction
                     'description' => $assignment->description,
                 ],
                 'questions' => $assignment->questions
-                    ->map(fn(Question $question): array => QuestionData::from($question)->toArray())
+                    ->map(fn (Question $question): array => QuestionData::from($question)->toArray())
                     ->toArray(),
                 'new_question'        => $newQuestionData->toArray(),
                 'new_question_prompt' => $newQuestionPrompt,

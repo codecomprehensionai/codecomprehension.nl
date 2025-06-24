@@ -18,16 +18,14 @@ class AssignmentStudent extends Component
     public function nextQuestion()
     {
         if ($this->index < count($this->assignment->questions) - 1) {
-            $this->index++;
+            ++$this->index;
         }
     }
 
     public function previousQuestion()
     {
         if ($this->index > 0) {
-            $this->index--;
+            --$this->index;
         }
     }
-
-
 }
