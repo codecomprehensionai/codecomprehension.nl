@@ -16,17 +16,10 @@ return new class extends Migration
             $table->string('language');
             $table->string('type');
             $table->string('level');
-            $table->integer('estimated_answer_duration');
-
-            /* Question aidata */
-            $table->text('topic')->nullable();
-            $table->json('tags')->nullable();
+            $table->float('score_max');
 
             /* Question content */
-            $table->text('question')->nullable();
-            $table->text('explanation')->nullable();
-            $table->text('code')->nullable();
-            $table->json('options')->nullable();
+            $table->text('question')->nullable(); // TODO: maybe remove nullable
             $table->text('answer')->nullable();
 
             $table->timestamps();

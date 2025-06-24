@@ -3,7 +3,6 @@
 namespace App\Livewire;
 
 use App\Models\Assignment;
-use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -43,12 +42,12 @@ class AssignmentTeacher extends Component implements HasSchemas
                         TextInput::make('name')->required(),
                         Select::make('role')
                             ->options([
-                                'member' => 'Member',
+                                'member'        => 'Member',
                                 'administrator' => 'Administrator',
-                                'owner' => 'Owner',
+                                'owner'         => 'Owner',
                             ])
                             ->required(),
-                    ])
+                    ]),
 
                 // TODO: (generate actions) ->extraItemActions([
                 //     Action::make('sendEmail')

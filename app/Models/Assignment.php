@@ -74,51 +74,6 @@ class Assignment extends Model
         return $this->hasMany(Question::class);
     }
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'deadline_at' => 'datetime',
-        ];
-    }
-
-    protected function estimatedAnswerDuration(): Attribute
-    {
-        return Attribute::make(
-            get: fn (): int => $this->questions
-                ->sum('estimated__answer_duration'),
-        );
-    }
-
-    protected function topics(): Attribute
-    {
-        return Attribute::make(
-            get: fn (): array => $this->questions
-                ->pluck('topic')
-                ->filter()
-                ->unique()
-                ->values()
-                ->toArray(),
-        );
-    }
-
-    protected function tags(): Attribute
-    {
-        return Attribute::make(
-            get: fn (): array => $this->questions
-                ->pluck('tags')
-                ->filter()
-                ->flatten()
-                ->unique()
-                ->values()
-                ->toArray(),
-        );
-    }
-
     protected function languages(): Attribute
     {
         return Attribute::make(

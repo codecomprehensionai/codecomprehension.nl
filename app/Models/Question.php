@@ -91,8 +91,6 @@ class Question extends Model
             'language' => QuestionLanguage::class,
             'type'     => QuestionType::class,
             'level'    => QuestionLevel::class,
-            'tags'     => 'array',
-            'options'  => 'array',
         ];
     }
 }
