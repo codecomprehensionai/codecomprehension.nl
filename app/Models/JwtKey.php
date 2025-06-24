@@ -68,7 +68,7 @@ class JwtKey extends Model
     protected function casts(): array
     {
         return [
-            'public_key' => 'encrypted',
+            'public_key'  => 'encrypted',
             'private_key' => 'encrypted',
         ];
     }
