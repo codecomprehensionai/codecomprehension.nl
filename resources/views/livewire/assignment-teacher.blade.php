@@ -1,4 +1,4 @@
-<form wire:submit="create">
+<form wire:submit="update">
     {{ $this->form }}
 
     <x-filament::button type="submit">

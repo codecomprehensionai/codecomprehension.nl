@@ -6,18 +6,26 @@ use App\Enums\QuestionLanguage;
 use App\Enums\QuestionLevel;
 use App\Enums\QuestionType;
 use App\Models\Assignment;
+use Filament\Actions\Action;
+use Filament\Actions\Concerns\InteractsWithActions;
+use Filament\Actions\Contracts\HasActions;
+use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Notifications\Notification;
+use Filament\Schemas\Components\Flex;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Contracts\HasSchemas;
 use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
+use Illuminate\Support\Str;
 use Livewire\Component;
 
-class AssignmentTeacher extends Component implements HasSchemas
+class AssignmentTeacher extends Component implements HasActions, HasSchemas
 {
+    use InteractsWithActions;
     use InteractsWithForms;
 
     public Assignment $assignment;
@@ -25,7 +33,7 @@ class AssignmentTeacher extends Component implements HasSchemas
 
     public function mount(): void
     {
-        $this->form->fill();
+        $this->form->fill($this->assignment->attributesToArray());
     }
 
     public function form(Schema $schema): Schema
@@ -37,68 +45,92 @@ class AssignmentTeacher extends Component implements HasSchemas
                     ->description($this->assignment->title),
 
                 Repeater::make('questions')
+                    ->hiddenLabel()
                     ->relationship()
-                    ->columns(2)
                     ->minItems(1)
                     ->maxItems(25)
-                    ->addActionLabel(__('Add Question'))
+                    ->collapsible()
+                    ->collapsed()
                     ->schema([
-                        Select::make('language')
-                            ->label(__('Language'))
-                            ->options(QuestionLanguage::class)
+                        Flex::make([
+                            Select::make('language')
+                                ->label(__('Language'))
+                                ->options(QuestionLanguage::class)
+                                ->default(QuestionLanguage::Python)
+                                ->required()
+                                ->native(false)
+                                ->searchable(),
+
+                            Select::make('level')
+                                ->label(__('Level'))
+                                ->options(QuestionLevel::class)
+                                ->required()
+                                ->native(false)
+                                ->searchable(),
+
+                            Select::make('type')
+                                ->label(__('Type'))
+                                ->options(QuestionType::class)
+                                ->required()
+                                ->native(false)
+                                ->searchable(),
+
+                            TextInput::make('score_max')
+                                ->label(__('Max Score'))
+                                ->required()
+                                ->numeric()
+                                ->minValue(1)
+                                ->maxValue(10)
+                                ->step(0.5)
+                                ->default(1),
+                        ]),
+
+                        MarkdownEditor::make('question')
+                            ->label(__('Question'))
                             ->required()
-                            ->native(false)
-                            ->searchable(),
+                            ->live()
+                            ->toolbarButtons([
+                                ['bold', 'italic', 'link'],
+                                ['heading'],
+                                ['codeBlock', 'bulletList', 'orderedList'],
+                                ['undo', 'redo'],
+                            ]),
 
-                        Select::make('level')
-                            ->label(__('Level'))
-                            ->options(QuestionLevel::class)
+                        MarkdownEditor::make('answer')
+                            ->label(__('Answer'))
                             ->required()
-                            ->native(false)
-                            ->searchable(),
-
-                        Select::make('type')
-                            ->label(__('Type'))
-                            ->options(QuestionType::class)
-                            ->required()
-                            ->native(false)
-                            ->searchable(),
-
-                        // type
-                        // question
-                        // answer
-
-                        TextInput::make('name')->required(),
-                        Select::make('role')
-                            ->options([
-                                'member'        => 'Member',
-                                'administrator' => 'Administrator',
-                                'owner'         => 'Owner',
+                            ->toolbarButtons([
+                                ['bold', 'italic', 'link'],
+                                ['heading'],
+                                ['codeBlock', 'bulletList', 'orderedList'],
+                                ['undo', 'redo'],
+                            ]),
+                    ])
+                    ->itemLabel(fn (array $state): ?string => Str::limit($state['question'], 100) ?? null)
+                    ->extraItemActions([
+                        // TODO: updateQuestion
+                        Action::make('updateQuestion')
+                            ->icon(Heroicon::Envelope)
+                            ->schema([
+                                //
                             ])
-                            ->required(),
-                    ]),
-
-                // TODO: (generate actions) ->extraItemActions([
-                //     Action::make('sendEmail')
-                //         ->icon(Heroicon::Envelope)
-                //         ->action(function (array $arguments, Repeater $component): void {
-                //             $itemData = $component->getItemState($arguments['item']);
-
-                //             Mail::to($itemData['email'])
-                //                 ->send(
-                //                     // ...
-                //                 );
-                //         }),
-                // ])
-
-                // TODO: (show title) ->itemLabel(fn(array $state): ?string => $state['name'] ?? null),
+                            ->action(function (array $arguments, Repeater $component): void {
+                                //
+                            }),
+                    ])
+                    ->addActionLabel(__('Add Question')),
             ])
             ->statePath('data');
     }
 
-    public function create(): void
+    public function update(): void
     {
-        dd($this->form->getState());
+        $this->form->model($this->assignment)->saveRelationships();
+
+        Notification::make()
+            ->title(__('Assignment updated'))
+            ->success()
+            ->send();
     }
 
     public function render()
