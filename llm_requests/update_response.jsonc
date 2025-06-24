@@ -1,22 +1,11 @@
-// POST to APP/v1/webhooks/question/update
-
 {
-    "assignment": {
-        "id": "",
-    },
     "question": {
-        "id": "",
         "language": "",
         "type": "",
         "level": "",
-        "estimated_answer_duration": "",
-        "topics": [""],
-        "tags": [""],
         "question": "",
-        "explanation": "",
-        "code": "",
-        "options": [""],
         "answer": "",
+        "score_max": "",
     },
     "summary": "",
 }
