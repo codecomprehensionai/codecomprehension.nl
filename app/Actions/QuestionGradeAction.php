@@ -11,9 +11,10 @@ use App\Models\Question;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 
-final readonly class QuestionGenerateAction
+// TODO: build this class
+final readonly class QuestionGradeAction
 {
-    public function handle(Assignment $assignment, QuestionData $newQuestionData, string $newQuestionPrompt = ''): QuestionData
+    public function handle(Assignment $assignment, QuestionData $existingQuestionData, QuestionData $updateQuestionData, string $updateQuestionPrompt = ''): QuestionData
     {
         $sub = Auth::id() ?? 'anonymous';
         $aud = 'https://llm.codecomprehension.nl';
@@ -25,7 +26,7 @@ final readonly class QuestionGenerateAction
             ->connectTimeout(3)
             ->timeout(120)
             ->throw()
-            ->post('https://llm.codecomprehension.nl/question', [
+            ->put('https://llm.codecomprehension.nl/question', [
                 'assignment' => [
                     'id'          => $assignment->id,
                     'title'       => $assignment->title,
@@ -34,8 +35,9 @@ final readonly class QuestionGenerateAction
                 'questions' => $assignment->questions
                     ->map(fn (Question $question): array => QuestionData::from($question)->toArray())
                     ->toArray(),
-                'new_question'        => $newQuestionData->toArray(),
-                'new_question_prompt' => $newQuestionPrompt,
+                'existing_question'      => $existingQuestionData->toArray(),
+                'update_question'        => $updateQuestionData->toArray(),
+                'update_question_prompt' => $updateQuestionPrompt,
             ])
             ->json('data');
 
