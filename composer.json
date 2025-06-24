@@ -7,7 +7,7 @@
         "CodeComprehesnion",
         "backend"
     ],
-    "license": "MIT",
+    "license": "proprietary",
     "require": {
         "php": "^8.2",
         "firebase/php-jwt": "^6.11",
@@ -17,6 +17,7 @@
         "laravel/octane": "^2.9",
         "laravel/tinker": "^2.10.1",
         "lcobucci/jwt": "^5.5",
+        "livewire/livewire": "^3.6",
         "spatie/laravel-data": "^4.15",
         "tightenco/ziggy": "^2.5"
     },
