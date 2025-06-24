@@ -1,4 +1,10 @@
+// POST to API/v1/grade
+
 {
+    "assignment": {
+        "title": "",
+        "description": "",
+    },
     "question": {
         "language": "",
         "type": "",
@@ -7,5 +13,7 @@
         "answer": "",
         "score_max": "",
     },
-    "summary": "",
+    "submission": {
+        "answer": "",
+    },
 }
