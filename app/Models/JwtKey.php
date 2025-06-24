@@ -6,26 +6,6 @@ use App\Services\Jwt\JwtService;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 
-/**
- * @property string                          $id
- * @property null|string                     $name
- * @property mixed                           $public_key
- * @property null|mixed                      $private_key
- * @property null|\Illuminate\Support\Carbon $created_at
- * @property null|\Illuminate\Support\Carbon $updated_at
- *
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JwtKey newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JwtKey newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JwtKey query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JwtKey whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JwtKey whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JwtKey whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JwtKey wherePrivateKey($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JwtKey wherePublicKey($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|JwtKey whereUpdatedAt($value)
- *
- * @mixin \Eloquent
- */
 class JwtKey extends Model
 {
     use HasUlids;

@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Enums\QuestionLanguage;
 use App\Models\Assignment;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
@@ -39,6 +40,15 @@ class AssignmentTeacher extends Component implements HasSchemas
                     ->maxItems(25)
                     ->addActionLabel(__('Add Question'))
                     ->schema([
+                        Select::make('language')
+                            ->options(QuestionLanguage::class)
+                            ->required(),
+                        // language
+                        // level
+                        // type
+                        // question
+                        // answer
+
                         TextInput::make('name')->required(),
                         Select::make('role')
                             ->options([
