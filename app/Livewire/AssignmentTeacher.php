@@ -31,6 +31,14 @@ class AssignmentTeacher extends Component implements HasActions, HasSchemas
     public Assignment $assignment;
     public ?array $data = [];
 
+    // TODO: een vraag kunnen genereren
+    // TODO: bij een vraag een prompt kunnen uitvoeren om te updaten
+    // TODO: in itemLabel vraagnummer en aantal punten tonen
+    // TODO: in blok met titel ook aantal vragen en totaal aantal punten tonen
+    // TODO: add question button duidelijker een knop maken (->addAction(fn->button()))
+    // TODO: delete question warning
+    // TODO: LLM team vragen of meer programmeertalen mogelijk zijn
+    // TODO: LLM team vragen om vragen types te reviewen en eventueel aan te passen
     // TODO: submit button top right
 
     public function mount(): void
@@ -108,7 +116,7 @@ class AssignmentTeacher extends Component implements HasActions, HasSchemas
                                 ['undo', 'redo'],
                             ]),
                     ])
-                    ->itemLabel(fn (array $state): ?string => Str::limit($state['question'], 100) ?? null)
+                    ->itemLabel(fn(array $state): ?string => Str::limit($state['question'], 100) ?? null)
                     ->extraItemActions([
                         // TODO: updateQuestion
                         Action::make('updateQuestion')
