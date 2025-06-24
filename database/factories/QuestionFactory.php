@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\QuestionLanguage;
 use App\Enums\QuestionLevel;
 use App\Enums\QuestionType;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -20,7 +21,7 @@ class QuestionFactory extends Factory
     {
         return [
             /* Question metadata */
-            'language'                  => fake()->randomElement(QuestionType::cases()),
+            'language'                  => fake()->randomElement(QuestionLanguage::cases()),
             'type'                      => fake()->randomElement(QuestionType::cases()),
             'level'                     => fake()->randomElement(QuestionLevel::cases()),
             'estimated_answer_duration' => fake()->numberBetween(30, 300),
