@@ -2,8 +2,8 @@
 
 namespace App\Jobs;
 
+use App\Actions\CanvasGenerateTokenAction;
 use App\Models\Submission;
-use App\Services\Canvas\CanvasTokenService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -18,7 +18,7 @@ class SyncSubmisionToCanvasJob implements ShouldQueue
     use Queueable;
     use SerializesModels;
 
-    public function __construct(protected Submission $submission) {}
+    public function __construct(protected Submission $submission, protected CanvasGenerateTokenAction $generateToken) {}
 
     public function handle(): void
     {
@@ -38,10 +38,7 @@ class SyncSubmisionToCanvasJob implements ShouldQueue
             ],
         ];
 
-        // TODO: properly inject service class
-        $token = CanvasTokenService::get();
-
-        Http::withToken($token)
+        Http::withToken($this->generateToken->handle())
             ->post($this->submission->assignment->lti_lineitem_endpoint, $data)
             ->throw();
     }
