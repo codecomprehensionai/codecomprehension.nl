@@ -33,8 +33,8 @@ class QuestionFactory extends Factory
             /* Question content */
             'question'    => fake()->sentence(),
             'explanation' => fake()->optional()->paragraph(),
-            'code'        => fake()->optional()->text(),
-            'options'     => fake()->optional()->words(4),
+            'code'        => fake()->text(),
+            'options'     => fake()->words(4),
             'answer'      => fake()->optional()->sentence(),
         ];
     }
