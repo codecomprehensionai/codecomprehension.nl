@@ -23,6 +23,8 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
+        $exceptions->dontTruncateRequestExceptions();
+
         $exceptions->shouldRenderJsonWhen(function (Request $request) {
             /* Render JSON for API requests */
             if ($request->is('api/*')) {

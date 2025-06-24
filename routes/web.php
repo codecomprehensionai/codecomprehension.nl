@@ -4,6 +4,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\JwksController;
 use App\Http\Controllers\OidcController;
 use App\Http\Controllers\WelcomeController;
+use App\Livewire\AssignmentResults;
 use App\Livewire\AssignmentStudent;
 use App\Livewire\AssignmentTeacher;
 use App\Livewire\Welcome;
@@ -19,5 +20,5 @@ Route::get('api/v1/oidc/jwks', JwksController::class); /* Legacy */
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('{assignment}', AssignmentStudent::class)->name('assignment.student');
     Route::get('{assignment}/teacher', AssignmentTeacher::class)->name('assignment.teacher');
-    // Route::put('teacher/assignment/{assignmentId}/questions', [TeacherDashboardController::class, 'UpdateAssignmentQuestion']);
+    Route::get('{assignment}/results', AssignmentResults::class)->name('assignment.results'); // TODO: what does this do?
 });
