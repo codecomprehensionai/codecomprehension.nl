@@ -4,9 +4,9 @@ namespace App\Enums;
 
 enum QuestionType: string
 {
-    case CodeExplanation = 'code_explanation';
-    case MultipleChoice = 'multiple_choice';
-    case FillInTheBlanks = 'fill_in_the_blanks';
+    case SingleChoice = 'single';
+    case MultipleChoice = 'multiple';
+    case Open = 'open';
 
     public function getDescription(): string
     {
