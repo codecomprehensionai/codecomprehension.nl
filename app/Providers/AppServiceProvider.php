@@ -5,6 +5,8 @@ namespace App\Providers;
 use App\Enums\DateFormat;
 use App\Enums\TimeFormat;
 use App\Models;
+use Filament\Support\Colors\Color;
+use Filament\Support\Facades\FilamentColor;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Carbon;
@@ -75,5 +77,15 @@ class AppServiceProvider extends ServiceProvider
         if (!app()->isProduction()) {
             Mail::alwaysTo('luca@castelnuovo.dev');
         }
+
+        /* Filament */
+        FilamentColor::register([
+            'danger'  => Color::Red,
+            'gray'    => Color::Zinc,
+            'info'    => Color::Blue,
+            'primary' => Color::Green,
+            'success' => Color::Green,
+            'warning' => Color::Amber,
+        ]);
     }
 }
