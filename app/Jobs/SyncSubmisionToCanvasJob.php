@@ -26,7 +26,7 @@ class SyncSubmisionToCanvasJob implements ShouldQueue
             'timestamp'                                     => now()->toIso8601String(),
             'userId'                                        => $this->submission->user->lti_id,
             'scoreGiven'                                    => $this->submission->score,
-            'scoreMaximum'                                  => $this->submission->score_max,
+            'scoreMaximum'                                  => $this->submission->question->score_max,
             'activityProgress'                              => 'Completed',
             'gradingProgress'                               => 'FullyGraded',
             'comment'                                       => 'Graded by CodeComprehension',
