@@ -1,6 +1,6 @@
-@if(isset($question->type) && $question->type->value === 'multiple_choice' && isset($question->options) && $question->options)
+@if (isset($question->type) && $question->type->value === 'multiple_choice' && isset($question->options) && $question->options)
 <div class="space-y-2">
-    @foreach($question->options as $index => $option)
+    @foreach ($question->options as $index => $option)
         <label class="flex items-center gap-3 p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
             <input
                 type="radio"

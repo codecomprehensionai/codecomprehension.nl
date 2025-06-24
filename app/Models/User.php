@@ -10,23 +10,22 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 /**
- * 
+ * @property string                                                                                                        $id
+ * @property string                                                                                                        $lti_id
+ * @property UserType                                                                                                      $type
+ * @property string                                                                                                        $name
+ * @property string                                                                                                        $email
+ * @property null|\Illuminate\Support\Carbon                                                                               $email_verified_at
+ * @property string                                                                                                        $password
+ * @property null|string                                                                                                   $remember_token
+ * @property null|string                                                                                                   $avatar_url
+ * @property null|string                                                                                                   $locale
+ * @property null|\Illuminate\Support\Carbon                                                                               $created_at
+ * @property null|\Illuminate\Support\Carbon                                                                               $updated_at
+ * @property \Illuminate\Notifications\DatabaseNotificationCollection<int, \Illuminate\Notifications\DatabaseNotification> $notifications
+ * @property null|int                                                                                                      $notifications_count
  *
- * @property string $id
- * @property string $lti_id
- * @property UserType $type
- * @property string $name
- * @property string $email
- * @property \Illuminate\Support\Carbon|null $email_verified_at
- * @property string $password
- * @property string|null $remember_token
- * @property string|null $avatar_url
- * @property string|null $locale
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Notifications\DatabaseNotificationCollection<int, \Illuminate\Notifications\DatabaseNotification> $notifications
- * @property-read int|null $notifications_count
- * @method static \Database\Factories\UserFactory factory($count = null, $state = [])
+ * @method static \Database\Factories\UserFactory                    factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User query()
@@ -42,6 +41,7 @@ use Illuminate\Notifications\Notifiable;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereRememberToken($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class User extends Authenticatable implements MustVerifyEmail

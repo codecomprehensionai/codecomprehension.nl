@@ -30,7 +30,7 @@ final readonly class QuestionUpdateAction
                     'description' => $assignment->description,
                 ],
                 'questions' => $assignment->questions
-                    ->map(fn(Question $question): array => QuestionData::from($question)->toArray())
+                    ->map(fn (Question $question): array => QuestionData::from($question)->toArray())
                     ->toArray(),
                 'existing_question'      => $existingQuestionData->toArray(),
                 'update_question'        => $updateQuestionData->toArray(),

@@ -1,9 +1,7 @@
 <?php
 
-use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\JwksController;
 use App\Http\Controllers\OidcController;
-use App\Http\Controllers\WelcomeController;
 use App\Livewire\AssignmentResults;
 use App\Livewire\AssignmentStudent;
 use App\Livewire\AssignmentTeacher;

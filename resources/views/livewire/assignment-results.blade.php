@@ -18,7 +18,7 @@
             </div>
         </div>
 
-        @if($submissions->isNotEmpty())
+        @if ($submissions->isNotEmpty())
             <!-- Main Results Card -->
             <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
                 <!-- Score Display -->
@@ -54,7 +54,7 @@
                 </div>
 
                 <!-- Feedback -->
-                @if($feedback)
+                @if ($feedback)
                     <div class="bg-green-50 border border-green-200 rounded-lg p-4 flex items-start space-x-3">
                         <div class="flex-shrink-0">
                             <svg class="w-5 h-5 text-green-400 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
@@ -71,7 +71,7 @@
                 <h3 class="text-xl font-semibold text-gray-900 mb-6">Detailed Feedback</h3>
                 <p class="text-gray-600 mb-6">AI-generated insights on your performance</p>
 
-                @foreach($assignment->questions as $question)
+                @foreach ($assignment->questions as $question)
                     @php
                         $userSubmission = $submissions->firstWhere('question_id', $question->id);
                         $isCorrect = $userSubmission ? $userSubmission->is_correct : false;
@@ -82,8 +82,8 @@
                             <h4 class="text-lg font-medium text-gray-900">
                                 Question {{ $loop->iteration }}: {{ $question->question }}
                             </h4>
-                            @if($userSubmission)
-                                @if($isCorrect)
+                            @if ($userSubmission)
+                                @if ($isCorrect)
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                         <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                                             <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
@@ -105,33 +105,33 @@
                             @endif
                         </div>
 
-                        @if($question->code)
+                        @if ($question->code)
                             <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4">
                                 <pre class="text-sm text-gray-800 whitespace-pre-wrap"><code>{{ $question->code }}</code></pre>
                             </div>
                         @endif
 
-                        @if($question->options)
+                        @if ($question->options)
                             @php
                                 $options = is_string($question->options) ? json_decode($question->options, true) : $question->options;
                                 $userAnswer = $userSubmission ? $userSubmission->answer : null;
                                 $correctAnswer = $question->correct_answer;
                             @endphp
 
-                            @if(is_array($options))
+                            @if (is_array($options))
                                 <div class="space-y-2">
-                                    @foreach($options as $optionKey => $option)
+                                    @foreach ($options as $optionKey => $option)
                                         <div class="flex items-center space-x-3 p-3 rounded-lg
-                                            @if($optionKey === $correctAnswer) bg-green-50 border border-green-200
-                                            @elseif($optionKey === $userAnswer && !$isCorrect) bg-red-50 border border-red-200
+                                            @if ($optionKey === $correctAnswer) bg-green-50 border border-green-200
+                                            @elseif ($optionKey === $userAnswer && !$isCorrect) bg-red-50 border border-red-200
                                             @else bg-gray-50 border border-gray-200 @endif">
 
                                             <span class="font-medium text-gray-700">{{ strtoupper($optionKey) }})</span>
                                             <span class="text-gray-900">{{ $option }}</span>
 
-                                            @if($optionKey === $correctAnswer)
+                                            @if ($optionKey === $correctAnswer)
                                                 <span class="ml-auto text-green-600 text-sm font-medium">Correct</span>
-                                            @elseif($optionKey === $userAnswer && !$isCorrect)
+                                            @elseif ($optionKey === $userAnswer && !$isCorrect)
                                                 <span class="ml-auto text-red-600 text-sm font-medium">Your Answer</span>
                                             @endif
                                         </div>
@@ -140,7 +140,7 @@
                             @endif
                         @endif
 
-                        @if($userSubmission && $userSubmission->feedback)
+                        @if ($userSubmission && $userSubmission->feedback)
                             <div class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
                                 <p class="text-sm text-blue-800">
                                     <span class="font-medium">Feedback:</span> {{ $userSubmission->feedback }}
@@ -148,7 +148,7 @@
                             </div>
                         @endif
 
-                        @if(!$isCorrect && $question->explanation)
+                        @if (!$isCorrect && $question->explanation)
                             <div class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
                                 <p class="text-sm text-blue-800">
                                     <span class="font-medium">Explanation:</span> {{ $question->explanation }}

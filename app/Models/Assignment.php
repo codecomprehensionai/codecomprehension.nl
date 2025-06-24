@@ -10,27 +10,26 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * 
+ * @property string                                                              $id
+ * @property string                                                              $lti_id
+ * @property string                                                              $lti_lineitem_endpoint
+ * @property string                                                              $course_id
+ * @property string                                                              $title
+ * @property null|string                                                         $description
+ * @property null|\Illuminate\Support\Carbon                                     $deadline_at
+ * @property null|string                                                         $score_max
+ * @property null|string                                                         $score
+ * @property null|\Illuminate\Support\Carbon                                     $created_at
+ * @property null|\Illuminate\Support\Carbon                                     $updated_at
+ * @property \App\Models\Course                                                  $course
+ * @property int                                                                 $estimated_answer_duration
+ * @property array                                                               $languages
+ * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\Question> $questions
+ * @property null|int                                                            $questions_count
+ * @property array                                                               $tags
+ * @property array                                                               $topics
  *
- * @property string $id
- * @property string $lti_id
- * @property string $lti_lineitem_endpoint
- * @property string $course_id
- * @property string $title
- * @property string|null $description
- * @property \Illuminate\Support\Carbon|null $deadline_at
- * @property string|null $score_max
- * @property string|null $score
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Course $course
- * @property-read int $estimated_answer_duration
- * @property-read array $languages
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Question> $questions
- * @property-read int|null $questions_count
- * @property-read array $tags
- * @property-read array $topics
- * @method static \Database\Factories\AssignmentFactory factory($count = null, $state = [])
+ * @method static \Database\Factories\AssignmentFactory                    factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Assignment newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Assignment newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Assignment query()
@@ -45,6 +44,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Assignment whereScoreMax($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Assignment whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Assignment whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class Assignment extends Model
