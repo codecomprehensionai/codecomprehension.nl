@@ -40,25 +40,25 @@ class AssignmentTeacher extends Component implements HasActions, HasSchemas
     {
         return $schema
             ->record($this->assignment)
-            ->disabled(fn (Assignment $record) => filled($record->published_at))
+            ->disabled(fn(Assignment $record) => filled($record->published_at))
             ->components([
                 // TODO: in blok met titel ook aantal vragen en totaal aantal punten tonen
-                Section::make(fn (Assignment $record) => $record->title)
-                    ->description(fn (Assignment $record): string => $record->description)
+                Section::make(fn(Assignment $record) => $record->title)
+                    ->description(fn(Assignment $record): string => $record->description)
                     ->afterHeader([
                         Action::make('published')
-                            ->label(fn (Assignment $record) => __(
+                            ->label(fn(Assignment $record) => __(
                                 'Published at :date',
                                 ['date' => $record->published_at->inTimezone()->formatDateTime()]
                             ))
-                            ->visible(fn (Assignment $record) => filled($record->published_at))
-                            ->disabled(fn (Assignment $record) => filled($record->published_at))
+                            ->visible(fn(Assignment $record) => filled($record->published_at))
+                            ->disabled(fn(Assignment $record) => filled($record->published_at))
                             ->outlined(),
 
                         Action::make('publish')
                             ->label(__('Publish'))
-                            ->visible(fn (Assignment $record) => blank($record->published_at))
-                            ->requiresConfirmation() // TODO: modal is ugly
+                            ->visible(fn(Assignment $record) => blank($record->published_at))
+                            ->requiresConfirmation()
                             ->action(function (Assignment $record) {
                                 $record->published_at = now();
                                 $record->save();
@@ -71,7 +71,7 @@ class AssignmentTeacher extends Component implements HasActions, HasSchemas
 
                         Action::make('update')
                             ->label(__('Update'))
-                            ->visible(fn (Assignment $record) => blank($record->published_at))
+                            ->visible(fn(Assignment $record) => blank($record->published_at))
                             ->action(function (Assignment $record) {
                                 $this->form->model($record)->saveRelationships();
 
@@ -162,13 +162,13 @@ class AssignmentTeacher extends Component implements HasActions, HasSchemas
                             }),
                     ])
                     ->addAction(
-                        fn (Action $action) => $action
+                        fn(Action $action) => $action
                             ->label(__('Add Question'))
                             ->color('primary'),
                     )
                     ->deleteAction(
-                        fn (Action $action) => $action
-                            ->requiresConfirmation(), // TODO: modal is ugly
+                        fn(Action $action) => $action
+                            ->requiresConfirmation(),
                     ),
             ])
             ->statePath('data');
