@@ -33,10 +33,6 @@ class AssignmentTeacher extends Component implements HasActions, HasSchemas
 
     // TODO: een vraag kunnen genereren
     // TODO: bij een vraag een prompt kunnen uitvoeren om te updaten
-    // TODO: in itemLabel vraagnummer en aantal punten tonen
-    // TODO: in blok met titel ook aantal vragen en totaal aantal punten tonen
-    // TODO: add question button duidelijker een knop maken (->addAction(fn->button()))
-    // TODO: delete question warning
     // TODO: LLM team vragen of meer programmeertalen mogelijk zijn
     // TODO: LLM team vragen om vragen types te reviewen en eventueel aan te passen
     // TODO: submit button top right
@@ -51,7 +47,44 @@ class AssignmentTeacher extends Component implements HasActions, HasSchemas
         return $schema
             ->record($this->assignment)
             ->components([
+                // TODO: in blok met titel ook aantal vragen en totaal aantal punten tonen
                 Section::make(config('app.name'))
+                    ->afterHeader([
+                        Action::make('published')
+                            ->label(fn (Assignment $record) => __(
+                                'Published at :date',
+                                ['date' => $record->published_at->inTimezone()->formatDateTime()]
+                            ))
+                            ->visible(fn (Assignment $record) => filled($record->published_at))
+                            ->disabled(fn (Assignment $record) => filled($record->published_at))
+                            ->outlined(),
+
+                        Action::make('publish')
+                            ->label(__('Publish'))
+                            ->visible(fn (Assignment $record) => blank($record->published_at))
+                            // ->requiresConfirmation() // TODO: modal is ugly
+                            ->action(function () {
+                                $this->assignment->published_at = now();
+                                $this->assignment->save();
+
+                                Notification::make()
+                                    ->title(__('Assignment published'))
+                                    ->success()
+                                    ->send();
+                            }),
+
+                        Action::make('update')
+                            ->label(__('Update'))
+                            ->visible(fn (Assignment $record) => blank($record->published_at))
+                            ->action(function () {
+                                $this->form->model($this->assignment)->saveRelationships();
+
+                                Notification::make()
+                                    ->title(__('Assignment updated'))
+                                    ->success()
+                                    ->send();
+                            }),
+                    ])
                     ->description($this->assignment->title),
 
                 Repeater::make('questions')
@@ -62,6 +95,7 @@ class AssignmentTeacher extends Component implements HasActions, HasSchemas
                     ->collapsible()
                     ->collapsed()
                     ->schema([
+                        // TODO: check if FusedGroup is pretty
                         Flex::make([
                             Select::make('language')
                                 ->label(__('Language'))
@@ -116,7 +150,10 @@ class AssignmentTeacher extends Component implements HasActions, HasSchemas
                                 ['undo', 'redo'],
                             ]),
                     ])
-                    ->itemLabel(fn(array $state): ?string => Str::limit($state['question'], 100) ?? null)
+                    ->itemLabel(function (array $state): ?string {
+                        // TODO: in itemLabel vraagnummer en aantal punten tonen
+                        return Str::limit($state['question'], 100) ?? null;
+                    })
                     ->extraItemActions([
                         // TODO: updateQuestion
                         Action::make('updateQuestion')
@@ -128,19 +165,18 @@ class AssignmentTeacher extends Component implements HasActions, HasSchemas
                                 //
                             }),
                     ])
-                    ->addActionLabel(__('Add Question')),
+                    ->addAction(
+                        fn (Action $action) => $action
+                            ->label(__('Add Question'))
+                            ->color('primary'),
+                    )
+                    ->deleteAction(
+                        fn (Action $action) => $action
+                            // TODO: delete question warning
+                            ->requiresConfirmation(), // TODO: modal is ugly
+                    ),
             ])
             ->statePath('data');
-    }
-
-    public function update(): void
-    {
-        $this->form->model($this->assignment)->saveRelationships();
-
-        Notification::make()
-            ->title(__('Assignment updated'))
-            ->success()
-            ->send();
     }
 
     public function render()
