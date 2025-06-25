@@ -5,6 +5,7 @@ namespace App\Data;
 use App\Enums\QuestionLanguage;
 use App\Enums\QuestionLevel;
 use App\Enums\QuestionType;
+use Spatie\LaravelData\Attributes\MapInputName;
 use Spatie\LaravelData\Attributes\MapOutputName;
 use Spatie\LaravelData\Data;
 
@@ -16,7 +17,7 @@ class QuestionData extends Data
         public QuestionLevel $level,
         public ?string $question = null,
         public ?string $answer = null,
-        #[MapOutputName('score_max')]
+        #[MapInputName('score_max'), MapOutputName('score_max')]
         public ?float $scoreMax = null,
     ) {}
 }

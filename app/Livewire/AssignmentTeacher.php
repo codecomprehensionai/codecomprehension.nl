@@ -43,7 +43,8 @@ class AssignmentTeacher extends Component implements HasActions, HasSchemas
             ->disabled(fn (Assignment $record) => filled($record->published_at))
             ->components([
                 // TODO: in blok met titel ook aantal vragen en totaal aantal punten tonen
-                Section::make(config('app.name'))
+                Section::make(fn (Assignment $record) => $record->title)
+                    ->description(fn (Assignment $record): string => $record->description)
                     ->afterHeader([
                         Action::make('published')
                             ->label(fn (Assignment $record) => __(
@@ -58,9 +59,9 @@ class AssignmentTeacher extends Component implements HasActions, HasSchemas
                             ->label(__('Publish'))
                             ->visible(fn (Assignment $record) => blank($record->published_at))
                             ->requiresConfirmation() // TODO: modal is ugly
-                            ->action(function () {
-                                $this->assignment->published_at = now();
-                                $this->assignment->save();
+                            ->action(function (Assignment $record) {
+                                $record->published_at = now();
+                                $record->save();
 
                                 Notification::make()
                                     ->title(__('Assignment published'))
@@ -71,16 +72,15 @@ class AssignmentTeacher extends Component implements HasActions, HasSchemas
                         Action::make('update')
                             ->label(__('Update'))
                             ->visible(fn (Assignment $record) => blank($record->published_at))
-                            ->action(function () {
-                                $this->form->model($this->assignment)->saveRelationships();
+                            ->action(function (Assignment $record) {
+                                $this->form->model($record)->saveRelationships();
 
                                 Notification::make()
                                     ->title(__('Assignment updated'))
                                     ->success()
                                     ->send();
                             }),
-                    ])
-                    ->description($this->assignment->title),
+                    ]),
 
                 Repeater::make('questions')
                     ->hiddenLabel()
