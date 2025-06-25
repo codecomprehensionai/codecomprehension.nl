@@ -29,5 +29,11 @@ class AssignmentStudent extends Component
         }
     }
 
+    public function submitAssignment()
+    {
+        // TODO handle actual submissions
+        logger('Called it');
+    }
+
 
 }

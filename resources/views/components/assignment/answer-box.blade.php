@@ -19,10 +19,22 @@
         @endif
 
         <x-question-answer-box :question="$question"  />
-        <button wire:click="nextQuestion" class="mt-4 btn btn-primary">
-            Next
-        </button>
-        <button wire:click="previousQuestion" class="mt-4 btn btn-secondary" @disabled($index === 0)>
+            @if($index === count($assignment->questions) - 1)
+                <button
+                    wire:click="submitAssignment"
+                    class="mt-4 btn btn-secondary hover:bg-green-400 hover:border-black-400 hover:shadow-sm"
+                >
+                    Submit
+                </button>
+            @else
+                <button
+                    wire:click="nextQuestion"
+                    class="mt-4 btn btn-secondary hover:bg-blue-50 hover:border-gray-400 hover:shadow-sm"
+                >
+                    Next
+                </button>
+            @endif
+        <button wire:click="previousQuestion" class="mt-4 btn btn-secondary hover:bg-blue-50 hover:border-gray-400 hover:shadow-sm" @disabled($index === 0)>
             Previous
         </button>
     </div>
