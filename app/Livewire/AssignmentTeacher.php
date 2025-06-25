@@ -31,12 +31,6 @@ class AssignmentTeacher extends Component implements HasActions, HasSchemas
     public Assignment $assignment;
     public ?array $data = [];
 
-    // TODO: een vraag kunnen genereren
-    // TODO: bij een vraag een prompt kunnen uitvoeren om te updaten
-    // TODO: LLM team vragen of meer programmeertalen mogelijk zijn
-    // TODO: LLM team vragen om vragen types te reviewen en eventueel aan te passen
-    // TODO: submit button top right
-
     public function mount(): void
     {
         $this->form->fill($this->assignment->attributesToArray());
@@ -46,6 +40,7 @@ class AssignmentTeacher extends Component implements HasActions, HasSchemas
     {
         return $schema
             ->record($this->assignment)
+            ->disabled(fn (Assignment $record) => filled($record->published_at))
             ->components([
                 // TODO: in blok met titel ook aantal vragen en totaal aantal punten tonen
                 Section::make(config('app.name'))
@@ -62,7 +57,7 @@ class AssignmentTeacher extends Component implements HasActions, HasSchemas
                         Action::make('publish')
                             ->label(__('Publish'))
                             ->visible(fn (Assignment $record) => blank($record->published_at))
-                            // ->requiresConfirmation() // TODO: modal is ugly
+                            ->requiresConfirmation() // TODO: modal is ugly
                             ->action(function () {
                                 $this->assignment->published_at = now();
                                 $this->assignment->save();
@@ -156,13 +151,14 @@ class AssignmentTeacher extends Component implements HasActions, HasSchemas
                     })
                     ->extraItemActions([
                         // TODO: updateQuestion
-                        Action::make('updateQuestion')
+                        Action::make('update')
                             ->icon(Heroicon::Envelope)
                             ->schema([
                                 //
                             ])
                             ->action(function (array $arguments, Repeater $component): void {
-                                //
+                                // TODO: een vraag kunnen genereren
+                                // TODO: bij een vraag een prompt kunnen uitvoeren om te updaten
                             }),
                     ])
                     ->addAction(
@@ -172,7 +168,6 @@ class AssignmentTeacher extends Component implements HasActions, HasSchemas
                     )
                     ->deleteAction(
                         fn (Action $action) => $action
-                            // TODO: delete question warning
                             ->requiresConfirmation(), // TODO: modal is ugly
                     ),
             ])
