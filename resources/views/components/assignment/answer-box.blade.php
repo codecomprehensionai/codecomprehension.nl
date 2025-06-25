@@ -1,3 +1,7 @@
+@php
+    $currentAnswer = (isset($answers) && isset($index) && isset($answers[$index])) ? $answers[$index] : null;
+@endphp
+
 <x-card>
     <div class="text-muted-foreground text-sm">
         Provide your answer to the question below
@@ -14,11 +18,11 @@
             <div class="font-medium">{{ $question->content }}</div>
         @endif
 
-        <x-question-answer-box :question="$question" />
+        <x-question-answer-box :question="$question"  />
         <button wire:click="nextQuestion" class="mt-4 btn btn-primary">
             Next
         </button>
-        <button wire:click="previousQuestion" class="mt-4 btn btn-secondary" @if($index === 0) disabled @endif>
+        <button wire:click="previousQuestion" class="mt-4 btn btn-secondary" @disabled($index === 0)>
             Previous
         </button>
     </div>
