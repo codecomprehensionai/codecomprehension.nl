@@ -5,7 +5,7 @@
  *
  * This enum provides a structured way to classify questions by format, enabling
  * consistent handling of logic across question generation, evaluation, and display.
- * Each case corresponds to a distinct pedagogical format, and the included method
+ * Each case corresponds to a distinct format, and the included method
  * is intended to supply a user-friendly explanation of each type.
  */
 
