@@ -3,9 +3,9 @@
 /**
  * Handles the generation of a new question for an assignment using an external LLM API.
  *
- * This action collects relevant data from an Assignment instance—including metadata,
- * existing questions, and a prompt for the new question—then securely communicates with
- * an external question-generation service via a signed JWT. The result is parsed into
+ * This action collects relevant data from an Assignment instance, which includes metadata,
+ * existing questions, and a prompt for the new question. Then, it securely communicates with
+ * an external question generation service via a signed JWT. The result is parsed into
  * a QuestionData object and returned.
  */
 
