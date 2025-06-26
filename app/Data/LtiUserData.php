@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Data transfer object for representing user information from an LTI (Learning Tools Interoperability) launch.
+ *
+ * This class encapsulates user attributes provided by LTI-compliant identity claims and maps them into a
+ * structured format using the Spatie Laravel Data package. It provides a static constructor that extracts
+ * and transforms relevant fields from a decoded LTI JWT payload.
+ */
+
 namespace App\Data;
 
 use App\Enums\UserType;

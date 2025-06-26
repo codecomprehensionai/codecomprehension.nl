@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * Data transfer object representing the full structure of a question in the system.
+ *
+ * This class defines the schema and transformation rules for question related data, including metadata,
+ * AI-generated insights, and content for display or evaluation. It integrates with the Spatie Laravel Data
+ * package for easy mapping, validation, and serialization.
+ */
+
+
 namespace App\Data;
 
 use App\Enums\QuestionLanguage;
