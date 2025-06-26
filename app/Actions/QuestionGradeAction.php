@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * Handles updating and evaluating an existing question for a given assignment using an external LLM API.
+ *
+ * This action submits both the current and updated versions of a question, along with optional
+ * prompting context, to an external grading service. It securely authenticates the request using
+ * a signed JWT based on the current user or defaults to 'anonymous'. The updated and enriched
+ * version of the question is returned as a QuestionData object.
+ */
+
 declare(strict_types=1);
 
 namespace App\Actions;

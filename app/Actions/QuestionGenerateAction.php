@@ -7,11 +7,6 @@
  * existing questions, and a prompt for the new question—then securely communicates with
  * an external question-generation service via a signed JWT. The result is parsed into
  * a QuestionData object and returned.
- *
- * - Retrieves the authenticated user or falls back to 'anonymous'
- * - Signs a JWT for secure API authentication using a stored key
- * - Sends assignment and question data to the external service
- * - Handles the API response and transforms it into a usable QuestionData object
  */
 
 declare(strict_types=1);

@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Submits an update request for an existing question within a given assignment using an external LLM API.
+ *
+ * This action handles secure communication with a question-editing service, providing both the original
+ * and revised versions of a question along with contextual prompts and metadata. It generates a JWT
+ * for user authentication, sends the request, and transforms the response back into a QuestionData object.
+ */
+
 declare(strict_types=1);
 
 namespace App\Actions;
