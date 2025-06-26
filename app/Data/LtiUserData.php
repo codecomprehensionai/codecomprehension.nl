@@ -22,7 +22,7 @@ class LtiUserData extends Data
             ltiId: $payload->sub,
             type: UserType::fromRoles($payload->{'https://purl.imsglobal.org/spec/lti/claim/roles'}),
             name: $payload->name,
-            email: $payload->email,
+            email: $payload->email ?? sprintf('%s@invalid.codecomprehension.nl', $payload->sub),
             avatarUrl: $payload->picture ?? null,
             locale: $payload->locale ?? null,
         );
