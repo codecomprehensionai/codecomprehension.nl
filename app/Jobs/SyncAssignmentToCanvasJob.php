@@ -52,7 +52,7 @@ class SyncAssignmentToCanvasJob implements ShouldQueue
         $token = app(CanvasGenerateTokenAction::class)->handle();
 
         Http::withToken($token)
-            ->post($this->assignment->lti_lineitem_endpoint, $data)
+            ->post(sprintf('%s/scores', $this->assignment->lti_lineitem_endpoint), $data)
             ->throw();
     }
 }

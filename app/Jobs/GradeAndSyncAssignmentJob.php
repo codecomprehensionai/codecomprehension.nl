@@ -12,7 +12,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Bus;
 
-class AssignmentGradeAndSyncJob implements ShouldQueue
+class GradeAndSyncAssignmentJob implements ShouldQueue
 {
     use Dispatchable;
     use InteractsWithQueue;
@@ -29,7 +29,7 @@ class AssignmentGradeAndSyncJob implements ShouldQueue
         $submissions = $this->submissions;
         $user = $submissions->first()->user;
 
-        Bus::batch($submissions->map(fn (Submission $submission) => new SubmissionGradeJob($submission)))
+        Bus::batch($submissions->map(fn(Submission $submission) => new GradeSubmissionJob($submission)))
             ->then(function () use ($assignment, $user) {
                 dispatch(new SyncAssignmentToCanvasJob($assignment, $user));
             })

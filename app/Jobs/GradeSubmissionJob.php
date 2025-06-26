@@ -11,7 +11,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class SubmissionGradeJob implements ShouldQueue
+class GradeSubmissionJob implements ShouldQueue
 {
     use Batchable;
     use Dispatchable;
