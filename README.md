@@ -79,9 +79,24 @@ herd open
 
 This application follows key security best practices:
 
-- **punt 1** asdf
-- **punt 2** asdf
-- **punt 3** asdf
+- **Input Validation:**  
+  All incoming requests are validated using Laravel’s `$request->validate()` in controllers, such as in [`OidcController`](app/Http/Controllers/OidcController.php).
+
+- **Authentication & Authorization:**  
+  OpenID Connect authentication is implemented for secure integration with Canvas LMS, using signed JWTs and state/nonce checks ([`OidcController`](app/Http/Controllers/OidcController.php)). Laravel’s authentication system is configured in [`config/auth.php`](config/auth.php).
+
+- **CSRF Protection:**  
+  CSRF protection is enabled for all web routes by default. API routes for OIDC are explicitly excluded in [`bootstrap/app.php`](bootstrap/app.php) to allow external LTI launches.
+
+- **Password Hashing:**  
+  User passwords are hashed using Laravel’s default hashing before storage (see user creation in [`OidcController`](app/Http/Controllers/OidcController.php)).
+
+- **Environment Variables:**  
+  Sensitive credentials (such as database, Canvas, and API keys) are stored in the `.env` file and referenced in [`config/services.php`](config/services.php).
+
+- **JWT Signing & Verification:**  
+  JWTs are signed and verified using ECDSA key pairs managed by the [`JwtKey`](app/Models/JwtKey.php) model and [`JwtService`](app/Services/Jwt/JwtService.php). Keys are stored encrypted, and tokens are validated for issuer, audience, and time
+
 
 These measures help protect user data and maintain a secure environment.
 
