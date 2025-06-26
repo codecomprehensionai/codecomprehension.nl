@@ -83,7 +83,7 @@ This application follows key security best practices:
 - **punt 2** asdf
 - **punt 3** asdf
 
-These measures help protect user data and maintain a
+These measures help protect user data and maintain a secure environment.
 
 ### Energy efficiency
 
