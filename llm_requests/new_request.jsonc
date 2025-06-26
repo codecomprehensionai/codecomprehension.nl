@@ -1,4 +1,4 @@
-// POST to API/v1/question
+// POST to API/question
 
 {
     "assignment": {

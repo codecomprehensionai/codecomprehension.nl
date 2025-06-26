@@ -1,4 +1,4 @@
-// PUT to API/v1/question
+// PUT to API/question
 
 {
     "assignment": {
