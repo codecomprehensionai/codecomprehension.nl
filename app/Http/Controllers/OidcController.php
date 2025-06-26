@@ -77,7 +77,7 @@ class OidcController
         $jwks = Cache::flexible(
             'cloudflare-access.jwks',
             [300, 3600],
-            fn () => Http::get(config('services.canvas.endpoint') . '/api/lti/security/jwks')->throw()->json()
+            fn() => Http::get(config('services.canvas.endpoint') . '/api/lti/security/jwks')->throw()->json()
         );
 
         $jwt = JWT::decode($validated['id_token'], JWK::parseKeySet($jwks));
@@ -107,9 +107,6 @@ class OidcController
         ]);
 
         $assignment->questions()->delete();
-        Question::factory()->count(5)->create([
-            'assignment_id' => $assignment->id,
-        ]);
 
         $user = User::updateOrCreate(['lti_id' => $userData->ltiId], [
             'type'              => $userData->type,
