@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * CalculateSubmissionScoreJob
+ *
+ * This job calculates the score for a given submission.
+ * updates the submission model and grading status.
+ */
 namespace App\Jobs;
 
 use App\Models\Submission;
