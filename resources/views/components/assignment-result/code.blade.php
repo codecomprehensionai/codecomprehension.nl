@@ -7,7 +7,7 @@
                         $lineCount = count($lines);
                         $maxDigits = strlen((string)$lineCount);
                     @endphp
-                    @foreach($lines as $index => $line)
+                    @foreach ($lines as $index => $line)
                         <div class="px-3 py-1 text-xs font-mono leading-5"
                              style="min-width: {{ ($maxDigits * 0.6) + 1.5 }}rem;">
                             {{ $index + 1 }}

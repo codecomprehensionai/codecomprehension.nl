@@ -83,7 +83,7 @@ class JwtService
             $aud = [$aud];
         }
 
-        $builder = new Builder(new JoseEncoder, ChainedFormatter::withUnixTimestampDates())
+        $builder = (new Builder(new JoseEncoder, ChainedFormatter::withUnixTimestampDates()))
             ->withHeader('kid', $this->key->id)
             ->issuedBy(config('app.url'))
             ->relatedTo($sub)
@@ -118,7 +118,7 @@ class JwtService
         }
 
         $publicKey = InMemory::plainText($this->key->public_key);
-        $token = new Parser(new JoseEncoder)->parse($input);
+        $token = (new Parser(new JoseEncoder))->parse($input);
 
         $validator = new Validator;
 

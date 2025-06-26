@@ -1,5 +1,5 @@
 <div class="space-y-3">
-    @foreach($question->options as $optionIndex => $option)
+    @foreach ($question->options as $optionIndex => $option)
         <div class="flex items-start space-x-3">
             <x-filament::input.checkbox
                 wire:model="answers.{{ $index }}.answer.{{ $optionIndex }}"

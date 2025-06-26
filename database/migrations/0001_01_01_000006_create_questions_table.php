@@ -18,7 +18,7 @@ return new class extends Migration
 
             $table->text('question');
             $table->text('answer');
-            $table->integer("score_max");
+            $table->integer('score_max');
 
             $table->timestamps();
         });
