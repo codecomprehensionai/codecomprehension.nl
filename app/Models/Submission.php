@@ -19,19 +19,20 @@ class Submission extends Model
 
     protected static function booted(): void
     {
-        static::created(function (self $submission) {
-            Bus::chain([
-                new CalculateSubmissionScoreJob($submission),
-                new SyncSubmisionToCanvasJob($submission),
-            ])->dispatch();
-        });
+        // TODO: naar kijken
+        // static::created(function (self $submission) {
+        //     Bus::chain([
+        //         new CalculateSubmissionScoreJob($submission),
+        //         new SyncSubmisionToCanvasJob($submission),
+        //     ])->dispatch();
+        // });
 
-        static::updated(function (self $submission) {
-            Bus::chain([
-                new CalculateSubmissionScoreJob($submission),
-                new SyncSubmisionToCanvasJob($submission),
-            ])->dispatch();
-        });
+        // static::updated(function (self $submission) {
+        //     Bus::chain([
+        //         new CalculateSubmissionScoreJob($submission),
+        //         new SyncSubmisionToCanvasJob($submission),
+        //     ])->dispatch();
+        // });
     }
 
     /**

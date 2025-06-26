@@ -49,7 +49,7 @@ class AssignmentTeacher extends Component implements HasActions, HasSchemas
                 Section::make(fn (Assignment $record) => $record->title)
                     ->description(function (Assignment $record): HtmlString {
                         return new HtmlString(
-                            __(':count_questions questions, :sum_score_max total score', [
+                            __(':count_questions questions, :sum_score_max total points', [
                                 'count_questions' => $record->questions->count(),
                                 'sum_score_max'   => $record->questions->sum('score_max'),
                             ])
@@ -187,7 +187,7 @@ class AssignmentTeacher extends Component implements HasActions, HasSchemas
                     ->extraItemActions([
                         Action::make('generate')
                             ->label(__('AI Update'))
-                            ->icon(Heroicon::Bolt)
+                            ->icon(Heroicon::Sparkles)
                             ->modalHeading(__('Update Question with Prompt'))
                             ->schema([
                                 TextInput::make('prompt')

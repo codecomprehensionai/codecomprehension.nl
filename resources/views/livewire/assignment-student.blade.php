@@ -1,5 +1,5 @@
 <div>
-    <form wire:submit="update">
+    <form wire:submit="submit">
         {{ $this->form }}
     </form>
 
