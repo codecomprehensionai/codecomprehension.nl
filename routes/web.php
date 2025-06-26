@@ -1,5 +1,10 @@
 <?php
 
+/*
+ * Web routes for the application.
+ * This file is responsible for defining all the web routes handled by the application.
+ */
+
 use App\Http\Controllers\JwksController;
 use App\Http\Controllers\OidcController;
 use App\Livewire\AssignmentResults;
