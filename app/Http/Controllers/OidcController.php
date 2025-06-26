@@ -100,7 +100,6 @@ class OidcController
             'title' => $courseData->title,
         ]);
 
-        // TODO: get deadline from somewhere
         $assignment = $course->assignments()->updateOrCreate(['lti_id' => $assignmentData->ltiId], [
             'lti_lineitem_endpoint' => $assignmentData->ltiLineitemEndpoint,
             'title'                 => $assignmentData->title,

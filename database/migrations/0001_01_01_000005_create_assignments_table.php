@@ -15,9 +15,7 @@ return new class extends Migration
             $table->foreignUlid('course_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
             $table->text('title');
             $table->text('description')->nullable();
-            $table->timestamp('deadline_at')->nullable(); // TODO: remove
-            $table->string('score_max')->nullable(); // TODO: remove nullable
-            $table->string('score')->nullable(); // TODO: remove, this should be added to submissions
+            $table->timestamp('published_at')->nullable();
             $table->timestamps();
         });
     }

@@ -2,8 +2,8 @@
 
 namespace App\Jobs;
 
+use App\Actions\CanvasGenerateTokenAction;
 use App\Models\Submission;
-use App\Services\Canvas\CanvasTokenService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -18,7 +18,7 @@ class SyncSubmisionToCanvasJob implements ShouldQueue
     use Queueable;
     use SerializesModels;
 
-    public function __construct(protected Submission $submission) {}
+    public function __construct(protected Submission $submission, protected CanvasGenerateTokenAction $generateToken) {}
 
     public function handle(): void
     {
@@ -26,7 +26,7 @@ class SyncSubmisionToCanvasJob implements ShouldQueue
             'timestamp'                                     => now()->toIso8601String(),
             'userId'                                        => $this->submission->user->lti_id,
             'scoreGiven'                                    => $this->submission->score,
-            'scoreMaximum'                                  => $this->submission->score_max,
+            'scoreMaximum'                                  => $this->submission->question->score_max,
             'activityProgress'                              => 'Completed',
             'gradingProgress'                               => 'FullyGraded',
             'comment'                                       => 'Graded by CodeComprehension',
@@ -38,10 +38,7 @@ class SyncSubmisionToCanvasJob implements ShouldQueue
             ],
         ];
 
-        // TODO: properly inject service class
-        $token = CanvasTokenService::get();
-
-        Http::withToken($token)
+        Http::withToken($this->generateToken->handle())
             ->post($this->submission->assignment->lti_lineitem_endpoint, $data)
             ->throw();
     }

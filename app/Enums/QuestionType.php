@@ -2,16 +2,20 @@
 
 namespace App\Enums;
 
-enum QuestionType: string
+use Filament\Support\Contracts\HasLabel;
+
+enum QuestionType: string implements HasLabel
 {
     case CodeExplanation = 'code_explanation';
     case MultipleChoice = 'multiple_choice';
     case FillInTheBlanks = 'fill_in_the_blanks';
 
-    public function getDescription(): string
+    public function getLabel(): string
     {
         return match ($this) {
-            default => 'TODO: write description',
+            self::CodeExplanation => __('Code Explanation'),
+            self::MultipleChoice  => __('Multiple Choice'),
+            self::FillInTheBlanks => __('Fill in the Blanks'),
         };
     }
 }

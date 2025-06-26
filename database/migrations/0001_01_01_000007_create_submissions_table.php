@@ -13,9 +13,14 @@ return new class extends Migration
             $table->string('lti_id')->nullable()->unique();
             $table->foreignUlid('question_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignUlid('user_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
+
+            /* User submission */
             $table->text('answer');
+
+            /* LLM grading */
             $table->text('feedback')->nullable();
-            $table->boolean('is_correct')->default(false);
+            $table->float('score')->nullable();
+
             $table->timestamps();
         });
     }

@@ -20,12 +20,15 @@ class QuestionFactory extends Factory
     public function definition(): array
     {
         return [
-            'language'                  => fake()->randomElement(QuestionLanguage::cases()),
-            'type'                      => fake()->randomElement(QuestionType::cases()),
-            'level'                     => fake()->randomElement(QuestionLevel::cases()),
-            'question'    => fake()->sentence(),
-            'answer'      => fake()->sentence(),
-            'score_max'  => fake()->numberBetween(1, 5),
+            /* Question metadata */
+            'language'  => fake()->randomElement(QuestionLanguage::cases()),
+            'type'      => fake()->randomElement(QuestionType::cases()),
+            'level'     => fake()->randomElement(QuestionLevel::cases()),
+            'score_max' => fake()->randomFloat(1, 1, 10),
+
+            /* Question content */
+            'question' => fake()->sentence(),
+            'answer'   => fake()->sentence(),
         ];
     }
 }
