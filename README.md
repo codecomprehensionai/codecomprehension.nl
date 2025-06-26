@@ -71,6 +71,37 @@ composer run dev
 herd open
 ```
 
+### Environment Variables
+
+Copy `.env.example` to `.env` and configure the following:
+
+```env
+# Application
+APP_NAME="CodeComprehension"
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://localhost
+
+# Database
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=codecomprehension
+DB_USERNAME=your_username
+DB_PASSWORD=your_password
+
+# Canvas LTI Integration
+CANVAS_ENDPOINT=https://your-canvas-instance.com
+CANVAS_ISSUER=https://your-canvas-instance.com
+CANVAS_CLIENT_ID=your_client_id
+
+# AI Services
+OPENAI_API_KEY=your_openai_key
+
+# LLM Keys
+LLM_JWT_SECRET=your_secret_key
+```
+
 ### About
 
 This repository contains the source code for CodeComprehension, a project from the University of Amsterdam (UvA). The goal of this project is to provide teachers with an easy and accessible environment for creating and grading homework assignments for code comprehension.
