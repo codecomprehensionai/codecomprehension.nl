@@ -19,8 +19,6 @@ class GradeSubmissionJob implements ShouldQueue
     use Queueable;
     use SerializesModels;
 
-    // TODO: max execution time 3 minutes
-
     public function __construct(protected Submission $submission) {}
 
     public function handle(): void

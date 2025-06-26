@@ -19,8 +19,6 @@ class GradeAndSyncAssignmentJob implements ShouldQueue
     use Queueable;
     use SerializesModels;
 
-    // TODO: max execution time 3 minutes
-
     public function __construct(protected Assignment $assignment, protected Collection $submissions) {}
 
     public function handle(): void
