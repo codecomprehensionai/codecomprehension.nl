@@ -88,7 +88,7 @@ For the backend, we have decided to use Laravel. Laravel is a PHP framework that
 
 **LLM**
 
-At the core of our LLM framework is the Agent Orchestrator. When a prompt comes in, for example a request to generate a question, it is first processed by the Agent Orchestrator. The orchestrator determines which subtask is required and sends targeted prompts to specialized agents, such as the Test Agent, the Question Agent, and the Verification Agent. These agents operate within a shared context, allowing them to communicate with each other. This prevents duplication of work and significantly reduces errors. The generated partial responses are merged, and the orchestrator ultimately sends the composed question or answer back to the user.
+At the core of our LLM framework is the Agent Orchestrator. When a prompt comes in, for example a request to generate a question, it is first processed by the Agent Orchestrator. The orchestrator determines which subtask is required and sends targeted prompts to specialized agents, such as the Test Agent, the Question Agent, and the Verification Agent. These agents operate within a shared context, allowing them to communicate with each other. This prevents duplication of work and significantly reduces errors. The generated partial responses are merged, and the orchestrator ultimately sends the composed question or answer back to the user. For design decisions, refer to the LLM repository.
 
 ### Security measures 
 
@@ -118,14 +118,13 @@ These measures help protect user data and maintain a secure environment.
 
 To minimize energy consumption, we made several conscious design decisions in this project:
 
-- **punt 1** asdf
-- **punt 2** asdf
-- **punt 3** asdf
+- **Efficient Data Handling:**
+- **LLM Token Reduction:** 
+- **LLM Time reduction:**
+- **Optimized Development Workflow:**
+- **Less Redirects**
 
 These choices help create a more efficient application, reducing energy consumption both on the server and for
 
 ### Credits 
 
-- **pers 1**
-- **pers 2**
-- **pers 3**
