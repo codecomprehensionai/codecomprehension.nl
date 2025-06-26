@@ -30,7 +30,7 @@ final readonly class SubmitAction
         // Batch the jobs and afterwards set assignment status to GRADED
         Bus::batch($jobs)
             ->then(function (Batch $batch) use ($user, $assignment) {
-                // When job comes back set status to graded
+                // Set AssignmentStatus to graded in DB
                 $assignment->assignmentStatuses()->updateOrCreate(
                     ['user_id' => $user->id],
                     ['status' => AssignmentStatus::GRADED]

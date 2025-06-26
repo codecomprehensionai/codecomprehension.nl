@@ -3,8 +3,6 @@
 namespace App\Models;
 
 use App\Enums\AssignmentStatus;
-use App\Models\Assignment;
-use App\Models\Submission;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -13,7 +11,7 @@ class UserAssignmentStatus extends Model
     /*
      * To check if a user has submitted a whole assignment, we keep track of
      * this using the AssignmentStatus enum. For every user and assignment combo
-     * the AssignmentStatus is kept track of. 
+     * the AssignmentStatus is kept track of.
      */
 
     /**
@@ -42,5 +40,4 @@ class UserAssignmentStatus extends Model
             'assignment_status' => AssignmentStatus::class,
         ];
     }
-
 }
