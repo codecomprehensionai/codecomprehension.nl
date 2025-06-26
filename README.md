@@ -174,7 +174,7 @@ These choices help create a more efficient application, reducing energy consumpt
     - **Lars:** Laravel Documentatie / Inertia 
     - **Mathieu:** Database & Models / Front-end teacher / Improved question workflow
     - **Stein:** Canvas grading Peerwork / Code reviews
-    - **Stijn:** Database design 
+    - **Stijn:** Database design and model / Front-end submission result
     - **Luca:** Scrum master / Setup Cloudfare and Dokploy
     - **Reinout:** Design LLM 
   
