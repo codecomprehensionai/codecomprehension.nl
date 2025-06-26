@@ -133,4 +133,6 @@ To minimize energy consumption, we made several conscious design decisions in th
 These choices help create a more efficient application, reducing energy consumption both on the server and for users.
 
 ### Credits 
-
+- **Taak 1**
+- **Taak 2**
+- **Taak 3**
