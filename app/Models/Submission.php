@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Bus;
 
 /**
- *
  * @method static \Database\Factories\SubmissionFactory                    factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Submission newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Submission newQuery()
@@ -79,7 +78,6 @@ class Submission extends Model
         return $this->belongsTo(User::class);
     }
 
-
     /**
      * Scope to get users with their correct answer counts for specific questions
      */
@@ -99,7 +97,7 @@ class Submission extends Model
     protected function casts(): array
     {
         return [
-            'answer' => 'json',
+            'answer'     => 'json',
             'is_correct' => 'boolean',
         ];
     }

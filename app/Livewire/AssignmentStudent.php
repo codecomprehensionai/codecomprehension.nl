@@ -2,11 +2,11 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
 use App\Models\Assignment;
 use App\Models\Submission;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Livewire\Component;
 
 class AssignmentStudent extends Component
 {
@@ -19,10 +19,10 @@ class AssignmentStudent extends Component
         $this->answers = array_fill(0, count($this->assignment->questions), null);
         foreach ($this->assignment->questions as $index => $question) {
             $this->answers[$index] = [
-                'lti_id' => $this->assignment->lti_id,
+                'lti_id'      => $this->assignment->lti_id,
                 'question_id' => $question->id,
-                'user_id' => Auth::id(),
-                'answer' => $question->type->value === 'multiple_choice' ? [] : '',
+                'user_id'     => Auth::id(),
+                'answer'      => 'multiple_choice' === $question->type->value ? [] : '',
             ];
         }
     }

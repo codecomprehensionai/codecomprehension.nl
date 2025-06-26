@@ -1,5 +1,5 @@
 <div class="space-y-2">
-    @foreach($question->options as $index => $option)
+    @foreach ($question->options as $index => $option)
         <label class="w-full flex items-center p-3 rounded-lg border transition-colors cursor-pointer
             {{ isset($answer) && $answer === $index
                 ? 'bg-blue-50 border-blue-300 ring-2 ring-blue-200'

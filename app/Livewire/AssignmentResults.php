@@ -70,7 +70,7 @@ class AssignmentResults extends Component
         $questionIds = $this->assignment->questions->pluck('id');
 
         // Get all users who have more correct answers for this assignment
-        $betterUsers =  Submission::correctCountsByUser($questionIds)
+        $betterUsers = Submission::correctCountsByUser($questionIds)
             ->where('user_id', '!=', Auth::id())
             ->havingRaw('COUNT(*) > ?', [$userCorrectCount])
             ->count();

@@ -25,23 +25,24 @@ class QuestionFactory extends Factory
         $answer = match ($type) {
             QuestionType::MultipleChoice => json_encode([
                 fake()->randomElement([0, 1, 2, 3]),
-                ...(fake()->boolean(30) ? [fake()->randomElement([0, 1, 2, 3])] : [])
+                ...(fake()->boolean(30) ? [fake()->randomElement([0, 1, 2, 3])] : []),
             ]),
             QuestionType::CodeExplanation => fake()->paragraph(),
-            default => fake()->word(),
+            default                       => fake()->word(),
         };
+
         return [
             'language'                  => fake()->randomElement(QuestionLanguage::cases()),
             'type'                      => $type,
             'level'                     => fake()->randomElement(QuestionLevel::cases()),
             'estimated_answer_duration' => fake()->numberBetween(30, 300),
-            'topic' => fake()->word(),
-            'tags'  => fake()->words(3),
-            'question'    => fake()->sentence(),
-            'explanation' => fake()->optional()->paragraph(),
-            'code'        => fake()->text(),
-            'options'     => $options,
-            'answer'      => $answer,
+            'topic'                     => fake()->word(),
+            'tags'                      => fake()->words(3),
+            'question'                  => fake()->sentence(),
+            'explanation'               => fake()->optional()->paragraph(),
+            'code'                      => fake()->text(),
+            'options'                   => $options,
+            'answer'                    => $answer,
         ];
     }
 
@@ -51,9 +52,9 @@ class QuestionFactory extends Factory
     public function multipleChoice(array $correctIndices = [0]): static
     {
         return $this->state(fn (array $attributes) => [
-            'type' => QuestionType::MultipleChoice,
+            'type'    => QuestionType::MultipleChoice,
             'options' => ['Option A', 'Option B', 'Option C', 'Option D'],
-            'answer' => $correctIndices,
+            'answer'  => $correctIndices,
         ]);
     }
 
@@ -63,9 +64,9 @@ class QuestionFactory extends Factory
     public function codeExplanation(): static
     {
         return $this->state(fn (array $attributes) => [
-            'type' => QuestionType::CodeExplanation,
+            'type'    => QuestionType::CodeExplanation,
             'options' => null,
-            'answer' => fake()->paragraph(),
+            'answer'  => fake()->paragraph(),
         ]);
     }
 }
