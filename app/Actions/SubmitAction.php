@@ -11,6 +11,11 @@ use App\Models\User;
 use Illuminate\Bus\Batch;
 use Illuminate\Support\Facades\Bus;
 
+
+/* This action makes sure that every submission get's graded. Afterwards it sets
+ * the database entry for this assignment and user to GRADED. During this 
+ * process the assignment status is SUBMITTED.
+ */
 final readonly class SubmitAction
 {
     public function handle(User $user, Assignment $assignment, array $submissions)
