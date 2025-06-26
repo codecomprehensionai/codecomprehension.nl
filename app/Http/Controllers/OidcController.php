@@ -108,7 +108,7 @@ class OidcController
         ]);
 
         $assignment->questions()->delete();
-        Question::factory()->count(5)->create([
+        Question::factory()->count(15)->create([
             'assignment_id' => $assignment->id,
         ]);
 
