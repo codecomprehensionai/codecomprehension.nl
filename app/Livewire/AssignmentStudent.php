@@ -18,17 +18,51 @@ class AssignmentStudent extends Component
     public int $index = 0;
     public array $answers = [];
 
+    public string $code;
+    public string $description;
+    public string $question;
+    public QuestionLanguage $language;
+
+    protected $rules = [
+        'answers.*.answer' => 'nullable',
+    ];
+
+    public function updated($propertyName)
+    {
+        // Log updates for debugging
+        // if (str_starts_with($propertyName, 'answers.')) {
+        //     \Log::info('Answer updated:', [
+        //         'property' => $propertyName,
+        //         'value' => data_get($this, $propertyName),
+        //         'current_index' => $this->index
+        //     ]);
+        // }
+    }
+
     public function mount()
     {
         $this->answers = array_fill(0, count($this->assignment->questions), null);
+        
+        // Load existing submissions if any
+        $existingSubmissions = Submission::whereIn('question_id', $this->assignment->questions->pluck('id'))
+            ->where('user_id', Auth::id())
+            ->get()
+            ->keyBy('question_id');
+        
         foreach ($this->assignment->questions as $index => $question) {
+            $existingSubmission = $existingSubmissions->get($question->id);
+            
             $this->answers[$index] = [
                 'lti_id' => $this->assignment->lti_id,
                 'question_id' => $question->id,
                 'user_id' => Auth::id(),
-                'answer' => $question->type->value === 'multiple_choice' ? [] : '',
+                'answer' => $existingSubmission 
+                    ? $existingSubmission->answer 
+                    : ($question->type->value === 'multiple_choice' ? [] : ''),
             ];
         }
+        
+        // \Log::info('Mounted AssignmentStudent with answers:', ['answers' => $this->answers]);
         $this->getCurrentQuestion();
     }
 
@@ -137,6 +171,7 @@ class AssignmentStudent extends Component
     {
         if ($this->index < count($this->assignment->questions) - 1) {
             ++$this->index;
+            $this->getCurrentQuestion();
         }
     }
 
@@ -144,14 +179,28 @@ class AssignmentStudent extends Component
     {
         if ($this->index > 0) {
             --$this->index;
+            $this->getCurrentQuestion();
         }
     }
 
     public function submitAnswer()
     {
+        // Debug: Log what we're about to submit
+        // \Log::info('Submitting answers:', ['answers' => $this->answers]);
+        
         DB::transaction(function () {
-            foreach ($this->answers as $submission) {
-                Submission::create($submission);
+            // First, delete any existing submissions for this user and assignment
+            $questionIds = $this->assignment->questions->pluck('id');
+            Submission::whereIn('question_id', $questionIds)
+                ->where('user_id', Auth::id())
+                ->delete();
+            
+            foreach ($this->answers as $submissionData) {
+                // Only create submission if there's an actual answer
+                if (!empty($submissionData['answer']) || (is_array($submissionData['answer']) && !empty($submissionData['answer']))) {
+                    // \Log::info('Creating submission:', $submissionData);
+                    Submission::create($submissionData);
+                }
             }
         });
 

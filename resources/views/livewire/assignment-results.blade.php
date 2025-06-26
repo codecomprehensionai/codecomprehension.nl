@@ -53,48 +53,40 @@
                                     </span>
                                 @endif
                             </div>
+                                                        <div class="mt-2 p-2 bg-yellow-100 border border-yellow-300 rounded text-xs">
+                                <strong>Debug:</strong><br>
+                                User Submission: {{ $userSubmission ? 'EXISTS' : 'NULL' }}<br>
+                                @if($userSubmission)
+                                    Answer type: {{ gettype($userSubmission->answer) }}<br>
+                                    Answer: {{ is_array($userSubmission->answer) ? json_encode($userSubmission->answer) : $userSubmission->answer }}<br>
+                                    Answer is empty: {{ empty($userSubmission->answer) ? 'YES' : 'NO' }}
+                                @endif
+                            </div>
 
-                            @if($question->code)
-                                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4">
-                                    <pre class="text-sm text-gray-800 whitespace-pre-wrap"><code>{{ $question->code }}</code></pre>
+                            @if($userSubmission && !empty($userSubmission->answer))
+                                <div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                                    <p class="text-sm font-medium text-blue-800 mb-1">Your Answer:</p>
+                                    <div class="text-blue-900">
+                                        @if(is_array($userSubmission->answer))
+                                            @foreach($userSubmission->answer as $key => $value)
+                                                <p><strong>{{ $key }}:</strong> {{ $value }}</p>
+                                            @endforeach
+                                        @else
+                                            {{ $userSubmission->answer }}
+                                        @endif
+                                    </div>
                                 </div>
                             @endif
 
-                            @if($question->options)
-                                @php
-                                    $options = is_string($question->options) ? json_decode($question->options, true) : $question->options;
-                                    $userAnswer = $userSubmission ? $userSubmission->answer : null;
-                                    $correctAnswer = $question->correct_answer;
-                                @endphp
-
-                                @if(is_array($options))
-                                    <div class="space-y-2">
-                                        @foreach($options as $optionKey => $option)
-                                            <div class="flex items-center space-x-3 p-3 rounded-lg
-                                                @if($optionKey === $correctAnswer) bg-green-50 border border-green-200
-                                                @elseif($optionKey === $userAnswer && !$isCorrect) bg-red-50 border border-red-200
-                                                @else bg-gray-50 border border-gray-200 @endif">
-
-                                                <span class="font-medium text-gray-700">{{ strtoupper($optionKey) }})</span>
-                                                <span class="text-gray-900">{{ $option }}</span>
-
-                                                @if($optionKey === $correctAnswer)
-                                                    <span class="ml-auto text-green-600 text-sm font-medium">Correct</span>
-                                                @elseif($optionKey === $userAnswer && !$isCorrect)
-                                                    <span class="ml-auto text-red-600 text-sm font-medium">Your Answer</span>
-                                                @endif
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                @endif
+                            @if($question->answer)
+                                <div class="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+                                    <p class="text-sm font-medium text-green-800 mb-1">Correct Answer:</p>
+                                    <p class="text-green-900">{{ $question->answer }}</p>
+                                </div>
                             @endif
 
                             @if($userSubmission && $userSubmission->feedback)
                                 <x-assignment-result.ai-feedback :userSubmission="$userSubmission" />
-                            @endif
-
-                            @if(!$isCorrect && $question->explanation)
-                                <x-assignment-result.feedback-explanation :question="$question" />
                             @endif
                         </div>
                     @endforeach

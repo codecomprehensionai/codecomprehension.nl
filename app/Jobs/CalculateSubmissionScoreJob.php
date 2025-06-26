@@ -25,7 +25,6 @@ class CalculateSubmissionScoreJob implements ShouldQueue
         $score = random_int(0, $scoreMax);
 
         $this->submission->updateQuietly([
-            'score_max' => $scoreMax,
             'score'     => $score,
         ]);
     }

@@ -26,7 +26,7 @@ class SyncSubmisionToCanvasJob implements ShouldQueue
             'timestamp'                                     => now()->toIso8601String(),
             'userId'                                        => $this->submission->user->lti_id,
             'scoreGiven'                                    => $this->submission->score,
-            'scoreMaximum'                                  => $this->submission->score_max,
+            'scoreMaximum'                                  => $this->submission->question->score_max,
             'activityProgress'                              => 'Completed',
             'gradingProgress'                               => 'FullyGraded',
             'comment'                                       => 'Graded by CodeComprehension',
@@ -42,7 +42,7 @@ class SyncSubmisionToCanvasJob implements ShouldQueue
         $token = CanvasTokenService::get();
 
         Http::withToken($token)
-            ->post($this->submission->assignment->lti_lineitem_endpoint, $data)
+            ->post($this->submission->question->assignment->lti_lineitem_endpoint, $data)
             ->throw();
     }
 }

@@ -16,6 +16,7 @@ return new class extends Migration
             $table->text('answer');
             $table->unsignedInteger('attempt')->default(1);
             $table->text('feedback')->nullable();
+            $table->integer('score')->nullable();
             $table->boolean('is_correct')->default(false);
             $table->timestamps();
         });
