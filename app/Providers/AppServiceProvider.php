@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * This service provider bootstraps application services.
+ *
+ * It configures various framework behaviors like database safety, model handling,
+ * date formatting, and environment-specific settings for HTTPS and email.
+ */
+
 namespace App\Providers;
 
 use App\Enums\DateFormat;

@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * This file defines the Assignment model.
+ * The Assignment model represents an assignment within the application and handles its data logic,
+ * including relationships with courses and questions, and computed properties.
+ */
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -86,6 +92,10 @@ class Assignment extends Model
         ];
     }
 
+    /**
+     * Accessor for the estimated answer duration, calculated as the sum of
+     * the estimated answer durations of all questions in this assignment.
+     */
     protected function estimatedAnswerDuration(): Attribute
     {
         return Attribute::make(
@@ -94,6 +104,10 @@ class Assignment extends Model
         );
     }
 
+    /**
+     * Accessor for the topics, aggregated from all unique topics
+     * of the questions in this assignment.
+     */
     protected function topics(): Attribute
     {
         return Attribute::make(
@@ -106,6 +120,10 @@ class Assignment extends Model
         );
     }
 
+    /**
+     * Accessor for the tags, aggregated from all unique tags
+     * of the questions in this assignment.
+     */
     protected function tags(): Attribute
     {
         return Attribute::make(
@@ -119,6 +137,10 @@ class Assignment extends Model
         );
     }
 
+    /**
+     * Accessor for the languages, aggregated from all unique languages
+     * of the questions in this assignment.
+     */
     protected function languages(): Attribute
     {
         return Attribute::make(

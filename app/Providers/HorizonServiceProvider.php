@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * This service provider configures Laravel Horizon.
+ * It handles authorization for the Horizon dashboard and sets up mail notifications.
+ */
+
 namespace App\Providers;
 
 use Illuminate\Support\Facades\Gate;

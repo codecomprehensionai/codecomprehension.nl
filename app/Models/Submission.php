@@ -1,5 +1,11 @@
 <?php
 
+/**
+* This model represents a user's submission for a question.
+* When a submission is created or updated, it triggers a chain of jobs
+* to calculate the score and synchronize the submission to an external system like Canvas.
+*/
+
 namespace App\Models;
 
 use App\Jobs\CalculateSubmissionScoreJob;

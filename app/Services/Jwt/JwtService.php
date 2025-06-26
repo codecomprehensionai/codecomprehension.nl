@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * This service handles JSON Web Token (JWT) generation and validation.
+ * It uses an ECDSA key pair to sign and verify tokens. The service
+ * provides methods to create new key pairs, sign tokens with
+ * specific claims, and verify the authenticity and validity of
+ * incoming tokens.
+ */
+
 namespace App\Services\Jwt;
 
 use App\Models\JwtKey;
