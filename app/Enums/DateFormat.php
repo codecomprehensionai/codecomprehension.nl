@@ -20,6 +20,6 @@ enum DateFormat: string
     case YMD_LONG = 'Y F d'; /* 2021 December 31 */
     case YMD_SHORT = 'Y M d'; /* 2021 Dec 31 */
 
-    public const string DEFAULT = self::DMY_LONG->value;
-    public const string DEFAULT_WITH_TIME = self::DEFAULT . ' ' . TimeFormat::DEFAULT;
+    public const string DEFAULT = self::DMY_LONG->value; /* Default date format */
+    public const string DEFAULT_WITH_TIME = self::DEFAULT . ' ' . TimeFormat::DEFAULT; /* Default date and time format */
 }

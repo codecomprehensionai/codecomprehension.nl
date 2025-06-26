@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Enum representing user types within an LTI context.
+ *
+ * Distinguishes between Student and Teacher roles using semantic LTI role URIs.
+ * Includes a helper method to determine the correct UserType
+ * based on an array of LTI-defined roles from a launch payload.
+ */
+
 namespace App\Enums;
 
 enum UserType: string

@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * Enum representing levels of question difficulty for assessments or exercises.
+ *
+ * This enum categorizes questions by conceptual depth and complexity, ranging from beginner
+ * fundamentals to expert level challenges. It includes a utility method for returning
+ * human-readable summaries of each level, which is useful for UI displays, filtering,
+ * and analytics.
+ */
+
 namespace App\Enums;
 
 enum QuestionLevel: string
