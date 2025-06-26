@@ -12,22 +12,13 @@ return new class extends Migration
             $table->ulid('id')->primary();
             $table->foreignUlid('assignment_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
 
-            /* Question metadata */
             $table->string('language');
             $table->string('type');
             $table->string('level');
-            $table->integer('estimated_answer_duration');
 
-            /* Question aidata */
-            $table->text('topic')->nullable();
-            $table->json('tags')->nullable();
-
-            /* Question content */
-            $table->text('question')->nullable();
-            $table->text('explanation')->nullable();
-            $table->text('code')->nullable();
-            $table->json('options')->nullable();
-            $table->text('answer')->nullable();
+            $table->text('question');
+            $table->text('answer');
+            $table->integer("score_max");
 
             $table->timestamps();
         });
