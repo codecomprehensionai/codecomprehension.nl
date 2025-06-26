@@ -28,7 +28,7 @@ class QuestionFactory extends Factory
 
             /* Question content */
             'question' => fake()->sentence(),
-            'answer'   => fake()->optional()->sentence(),
+            'answer'   => fake()->sentence(),
         ];
     }
 }

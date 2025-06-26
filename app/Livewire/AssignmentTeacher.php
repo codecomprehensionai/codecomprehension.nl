@@ -14,12 +14,14 @@ use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Flex;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Contracts\HasSchemas;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
 use Livewire\Component;
 
@@ -42,9 +44,15 @@ class AssignmentTeacher extends Component implements HasActions, HasSchemas
             ->record($this->assignment)
             ->disabled(fn(Assignment $record) => filled($record->published_at))
             ->components([
-                // TODO: in blok met titel ook aantal vragen en totaal aantal punten tonen
                 Section::make(fn(Assignment $record) => $record->title)
-                    ->description(fn(Assignment $record): string => $record->description)
+                    ->description(function (Assignment $record): HtmlString {
+                        return new HtmlString(
+                            __(':count_questions questions, :sum_score_max total score', [
+                                'count_questions' => $record->questions->count(),
+                                'sum_score_max' => $record->questions->sum('score_max'),
+                            ])
+                        );
+                    })
                     ->afterHeader([
                         Action::make('published')
                             ->label(fn(Assignment $record) => __(
@@ -59,6 +67,8 @@ class AssignmentTeacher extends Component implements HasActions, HasSchemas
                             ->label(__('Publish'))
                             ->visible(fn(Assignment $record) => blank($record->published_at))
                             ->requiresConfirmation()
+                            ->color('gray')
+                            ->outlined()
                             ->action(function (Assignment $record) {
                                 $record->published_at = now();
                                 $record->save();
@@ -69,14 +79,14 @@ class AssignmentTeacher extends Component implements HasActions, HasSchemas
                                     ->send();
                             }),
 
-                        Action::make('update')
-                            ->label(__('Update'))
+                        Action::make('save')
+                            ->label(__('Save'))
                             ->visible(fn(Assignment $record) => blank($record->published_at))
                             ->action(function (Assignment $record) {
                                 $this->form->model($record)->saveRelationships();
 
                                 Notification::make()
-                                    ->title(__('Assignment updated'))
+                                    ->title(__('Assignment saved'))
                                     ->success()
                                     ->send();
                             }),
@@ -147,6 +157,8 @@ class AssignmentTeacher extends Component implements HasActions, HasSchemas
                     ])
                     ->itemLabel(function (array $state): ?string {
                         // TODO: in itemLabel vraagnummer en aantal punten tonen
+                        ray($state);
+
                         return Str::limit($state['question'], 100) ?? null;
                     })
                     ->extraItemActions([

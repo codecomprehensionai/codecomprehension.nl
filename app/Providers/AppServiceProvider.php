@@ -5,7 +5,10 @@ namespace App\Providers;
 use App\Enums\DateFormat;
 use App\Enums\TimeFormat;
 use App\Models;
+use Filament\Notifications\Livewire\Notifications;
 use Filament\Support\Colors\Color;
+use Filament\Support\Enums\Alignment;
+use Filament\Support\Enums\VerticalAlignment;
 use Filament\Support\Facades\FilamentColor;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -83,9 +86,12 @@ class AppServiceProvider extends ServiceProvider
             'danger'  => Color::Red,
             'gray'    => Color::Zinc,
             'info'    => Color::Blue,
-            'primary' => Color::Green,
+            'primary' => Color::Purple,
             'success' => Color::Green,
             'warning' => Color::Amber,
         ]);
+
+        Notifications::alignment(Alignment::Center);
+        Notifications::verticalAlignment(VerticalAlignment::Start);
     }
 }
