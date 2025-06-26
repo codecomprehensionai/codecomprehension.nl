@@ -20,22 +20,12 @@ class QuestionFactory extends Factory
     public function definition(): array
     {
         return [
-            /* Question metadata */
             'language'                  => fake()->randomElement(QuestionLanguage::cases()),
             'type'                      => fake()->randomElement(QuestionType::cases()),
             'level'                     => fake()->randomElement(QuestionLevel::cases()),
-            'estimated_answer_duration' => fake()->numberBetween(30, 300),
-
-            /* Question aidata */
-            'topic' => fake()->word(),
-            'tags'  => fake()->words(3),
-
-            /* Question content */
             'question'    => fake()->sentence(),
-            'explanation' => fake()->optional()->paragraph(),
-            'code'        => fake()->text(),
-            'options'     => fake()->words(4),
-            'answer'      => fake()->optional()->sentence(),
+            'answer'      => fake()->sentence(),
+            'score_max'  => fake()->numberBetween(1, 5),
         ];
     }
 }
