@@ -1,4 +1,4 @@
-// POST to API/v1/grade
+// POST to API/grade
 
 {
     "assignment": {
