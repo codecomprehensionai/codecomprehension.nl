@@ -7,8 +7,9 @@ use App\Models\User;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 
-class SubmitAndGradeJob implements ShouldQueue
+class SubmitJob implements ShouldQueue
 {
+    // TODO: Make this
     use Queueable;
 
     /**
@@ -22,5 +23,7 @@ class SubmitAndGradeJob implements ShouldQueue
     /**
      * Execute the job.
      */
-    public function handle(): void {}
+    public function handle(): void
+    {
+    }
 }
