@@ -92,7 +92,6 @@ class Question extends Model
             'type'     => QuestionType::class,
             'level'    => QuestionLevel::class,
             'tags'     => 'array',
-            'options'  => 'array',
         ];
     }
 }

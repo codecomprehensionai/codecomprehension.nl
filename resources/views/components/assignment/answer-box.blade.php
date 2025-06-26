@@ -18,7 +18,9 @@
             <div class="font-medium">{{ $question->content }}</div>
         @endif
 
-        <x-question-answer-box :question="$question" :index="$index"/>
+
+
+        <x-question-answer-box :question="$question" :index="$index" :options="$options"/>
 
         <div class="flex justify-between items-center mt-4">
             <x-button wire:click="previousQuestion" :disabled="$index === 0">

@@ -9,18 +9,14 @@ use App\Models\Submission;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use League\CommonMark\CommonMarkConverter;
+use Illuminate\Support\Str;
+
 
 class AssignmentStudent extends Component
 {
     public Assignment $assignment;
     public int $index = 0;
     public array $answers = [];
-
-    public string $code;
-    public string $description;
-    public string $question;
-    public QuestionLanguage $language;
-
 
     public function mount()
     {
@@ -38,78 +34,104 @@ class AssignmentStudent extends Component
 
     public function render()
     {
-        return view('livewire.assignment-student');
+        $converter = new CommonMarkConverter();
+        $html = $converter->convert("# List Comprehension with Filtering and Transformation\n\n## Description\nAnalyze the following Python code snippet, which uses a list comprehension to process a list of words. The list comprehension both filters and transforms elements from the original list.\n\n## Code Example\n```python\nwords = ['apple', 'banana', 'pear', 'plum', 'cherry', 'avocado', 'kiwi', 'apricot']\n\nresult = [w.upper() for w in words if w.startswith('a') and len(w) > 5]\nprint(result)\n```\n\n## Question\nExplain thoroughly what the list comprehension is doing. In your explanation, answer:\n\n1. **Filtering logic:** What is the filtering condition applied to each word? Which specific words from the `words` list satisfy this condition?\n2. **Transformation:** What transformation is performed on the filtered words?\n3. **Final Output:** What will be the exact contents of the `result` list after this code is run? Justify each value.\n\nBe detailed in your reasoning for each part.");
+
+        // $html = $converter->convert($this->assignment->questions[$this->index]->question);
+
+        return view('livewire.assignment-student', ['html' => $html]);
     }
 
     public function getCurrentQuestion()
     {
-        $parsed = $this->parseQuestionContent();
-        $this->code = $parsed['code'] ?? '';
-        $this->description = $parsed['description'] ?? '';
-        $this->question = $parsed['question'] ?? '';
-        $this->language = $this->assignment->questions[$this->index]->language;
 
         return $this->assignment->questions[$this->index] ?? null;
     }
 
-    private function parseQuestionContent()
-    {
-        $content = "# List Comprehension with Filtering and Transformation\n\n## Description\nAnalyze the following Python code snippet, which uses a list comprehension to process a list of words. The list comprehension both filters and transforms elements from the original list.\n\n## Code Example\n```python\nwords = ['apple', 'banana', 'pear', 'plum', 'cherry', 'avocado', 'kiwi', 'apricot']\n\nresult = [w.upper() for w in words if w.startswith('a') and len(w) > 5]\nprint(result)\n```\n\n## Question\nExplain thoroughly what the list comprehension is doing. In your explanation, answer:\n\n1. **Filtering logic:** What is the filtering condition applied to each word? Which specific words from the `words` list satisfy this condition?\n2. **Transformation:** What transformation is performed on the filtered words?\n3. **Final Output:** What will be the exact contents of the `result` list after this code is run? Justify each value.\n\nBe detailed in your reasoning for each part.";
-        $lines = explode("\n", $content);
-        $parsed = [
-            'title' => '',
-            'description' => '',
-            'code' => '',
-            'question' => ''
-        ];
+    // private function parseQuestionContent()
+    // {
+    //     $content = "# List Comprehension with Filtering and Transformation\n\n## Description\nAnalyze the following Python code snippet, which uses a list comprehension to process a list of words. The list comprehension both filters and transforms elements from the original list.\n\n## Code Example\n```python\nwords = ['apple', 'banana', 'pear', 'plum', 'cherry', 'avocado', 'kiwi', 'apricot']\n\nresult = [w.upper() for w in words if w.startswith('a') and len(w) > 5]\nprint(result)\n```\n\n## Question\nExplain thoroughly what the list comprehension is doing. In your explanation, answer:\n\n1. **Filtering logic:** What is the filtering condition applied to each word? Which specific words from the `words` list satisfy this condition?\n2. **Transformation:** What transformation is performed on the filtered words?\n3. **Final Output:** What will be the exact contents of the `result` list after this code is run? Justify each value.\n\nBe detailed in your reasoning for each part.\n\n## Options\nA) The result will be ['APPLE', 'AVOCADO', 'APRICOT']\nB) The result will be ['AVOCADO', 'APRICOT']\nC) The result will be ['apple', 'avocado', 'apricot']\nD) The result will be an empty list";
 
-        $currentSection = '';
-        $codeBlockOpen = false;
+    //     $lines = explode("\n", $content);
+    //     $parsed = [
+    //         'title' => '',
+    //         'description' => '',
+    //         'code' => '',
+    //         'question' => '',
+    //         'options' => []
+    //     ];
 
-        foreach ($lines as $line) {
-            if (preg_match('/^# (.+)$/', $line, $matches)) {
-                $parsed['title'] = '# ' . $matches[1];
-                continue;
-            }
+    //     $currentSection = '';
+    //     $codeBlockOpen = false;
 
-            if (preg_match('/^## Description$/', $line)) {
-                $currentSection = 'description';
-                continue;
-            }
+    //     foreach ($lines as $line) {
+    //         if (preg_match('/^# (.+)$/', $line, $matches)) {
+    //             $parsed['title'] = '# ' . $matches[1];
+    //             continue;
+    //         }
 
-            if (preg_match('/^## Code Example$/', $line)) {
-                $currentSection = 'code';
-                continue;
-            }
+    //         if (preg_match('/^## Description$/', $line)) {
+    //             $currentSection = 'description';
+    //             continue;
+    //         }
 
-            if (preg_match('/^## Question$/', $line)) {
-                $currentSection = 'question';
-                continue;
-            }
+    //         if (preg_match('/^## Code Example$/', $line)) {
+    //             $currentSection = 'code';
+    //             continue;
+    //         }
 
-            if ($line === '```python') {
-                $codeBlockOpen = true;
-                $parsed['code'] .= $line . "\n";
-                continue;
-            }
+    //         if (preg_match('/^## Question$/', $line)) {
+    //             $currentSection = 'question';
+    //             continue;
+    //         }
 
-            if ($line === '```' && $codeBlockOpen) {
-                $codeBlockOpen = false;
-                $parsed['code'] .= $line;
-                continue;
-            }
+    //         if (preg_match('/^## Options$/', $line)) {
+    //             $currentSection = 'options';
+    //             continue;
+    //         }
 
-            if ($currentSection && !empty(trim($line)) || $codeBlockOpen) {
-                $parsed[$currentSection] .= $line . "\n";
-            }
-        }
+    //         // Handle multiple choice options (A), B), C), etc.) - REMOVED dd() here
+    //         if ($currentSection === 'options' && preg_match('/^([A-Z])\)\s*(.+)$/', $line, $matches)) {
+    //             $parsed['options'][] = [
+    //                 'key' => $matches[1],
+    //                 'value' => trim($matches[2])
+    //             ];
+    //             continue;
+    //         }
 
-        foreach ($parsed as $key => $value) {
-            $parsed[$key] = rtrim($value, "\n");
-        }
+    //         if ($line === '```python' || preg_match('/^```\w*$/', $line)) {
+    //             if (!$codeBlockOpen) {
+    //                 $codeBlockOpen = true;
+    //                 if ($currentSection === 'code') {
+    //                     $parsed['code'] .= $line . "\n";
+    //                 }
+    //             }
+    //             continue;
+    //         }
 
-        return $parsed;
-    }
+    //         if ($line === '```' && $codeBlockOpen) {
+    //             $codeBlockOpen = false;
+    //             if ($currentSection === 'code') {
+    //                 $parsed['code'] .= $line;
+    //             }
+    //             continue;
+    //         }
+
+    //         if ($currentSection && (!empty(trim($line)) || $codeBlockOpen)) {
+    //             if ($currentSection !== 'options') {
+    //                 $parsed[$currentSection] .= $line . "\n";
+    //             }
+    //         }
+    //     }
+
+    //     foreach ($parsed as $key => $value) {
+    //         if ($key !== 'options') {
+    //             $parsed[$key] = rtrim($value, "\n");
+    //         }
+    //     }
+
+    //     return $parsed;
+    // }
 
     public function nextQuestion()
     {
