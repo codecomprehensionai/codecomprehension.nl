@@ -20,7 +20,6 @@ class QuestionFactory extends Factory
     public function definition(): array
     {
         $type = fake()->randomElement(QuestionType::cases());
-        $options = fake()->words(4);
 
         $answer = match ($type) {
             QuestionType::MultipleChoice => json_encode([
@@ -34,38 +33,9 @@ class QuestionFactory extends Factory
             'language'                  => fake()->randomElement(QuestionLanguage::cases()),
             'type'                      => $type,
             'level'                     => fake()->randomElement(QuestionLevel::cases()),
-            'estimated_answer_duration' => fake()->numberBetween(30, 300),
-            'topic' => fake()->word(),
-            'tags'  => fake()->words(3),
             'question'    => fake()->sentence(),
-            'explanation' => fake()->optional()->paragraph(),
-            'code'        => fake()->text(),
-            'options'     => $options,
             'answer'      => $answer,
+            'score_max' => fake()->numberBetween(1, 10),
         ];
-    }
-
-    /**
-     * Create a multiple choice question with specific correct answers
-     */
-    public function multipleChoice(array $correctIndices = [0]): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'type' => QuestionType::MultipleChoice,
-            'options' => ['Option A', 'Option B', 'Option C', 'Option D'],
-            'answer' => $correctIndices,
-        ]);
-    }
-
-    /**
-     * Create a code explanation question
-     */
-    public function codeExplanation(): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'type' => QuestionType::CodeExplanation,
-            'options' => null,
-            'answer' => fake()->paragraph(),
-        ]);
     }
 }
