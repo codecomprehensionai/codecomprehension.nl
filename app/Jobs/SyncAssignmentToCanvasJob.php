@@ -25,34 +25,34 @@ class SyncAssignmentToCanvasJob implements ShouldQueue
 
     public function handle(): void
     {
-        // $score = Submission::where('user_id', $this->user->id)
-        //     ->whereIn('question_id', $this->assignment->questions->pluck('id'))
-        //     ->sum('score');
+        $score = Submission::where('user_id', $this->user->id)
+            ->whereIn('question_id', $this->assignment->questions->pluck('id'))
+            ->sum('score');
 
-        // $scoreMax = $this->assignment->questions->sum('score_max');
+        $scoreMax = $this->assignment->questions->sum('score_max');
 
-        // $submissionId = Str::uuid();
+        $submissionId = Str::uuid();
 
-        // $data = [
-        //     'timestamp'                                     => now()->toIso8601String(),
-        //     'userId'                                        => $this->user->lti_id,
-        //     'scoreGiven'                                    => $score,
-        //     'scoreMaximum'                                  => $scoreMax,
-        //     'activityProgress'                              => 'Completed',
-        //     'gradingProgress'                               => 'FullyGraded',
-        //     'comment'                                       => 'Graded by CodeComprehension',
-        //     'https://canvas.instructure.com/lti/submission' => [
-        //         'new_submission'            => true,
-        //         'submission_type'           => 'basic_lti_launch',
-        //         'submission_data'           => config('services.canvas.endpoint') . '/launch?lti_submission_id=' . $submissionId,
-        //         'prioritize_non_tool_grade' => true,
-        //     ],
-        // ];
+        $data = [
+            'timestamp'                                     => now()->toIso8601String(),
+            'userId'                                        => $this->user->lti_id,
+            'scoreGiven'                                    => $score,
+            'scoreMaximum'                                  => $scoreMax,
+            'activityProgress'                              => 'Completed',
+            'gradingProgress'                               => 'FullyGraded',
+            'comment'                                       => 'Graded by CodeComprehension',
+            'https://canvas.instructure.com/lti/submission' => [
+                'new_submission'            => true,
+                'submission_type'           => 'basic_lti_launch',
+                'submission_data'           => config('services.canvas.endpoint') . '/launch?lti_submission_id=' . $submissionId,
+                'prioritize_non_tool_grade' => true,
+            ],
+        ];
 
-        // $token = app(CanvasGenerateTokenAction::class)->handle();
+        $token = app(CanvasGenerateTokenAction::class)->handle();
 
-        // Http::withToken($token)
-        //     ->post($this->assignment->lti_lineitem_endpoint, $data)
-        //     ->throw();
+        Http::withToken($token)
+            ->post($this->assignment->lti_lineitem_endpoint, $data)
+            ->throw();
     }
 }

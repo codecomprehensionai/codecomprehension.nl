@@ -85,7 +85,8 @@ class JwtService
 
         $builder = new Builder(new JoseEncoder, ChainedFormatter::withUnixTimestampDates())
             ->withHeader('kid', $this->key->id)
-            ->issuedBy(config('app.url'))
+            // ->issuedBy(config('app.url'))
+            ->issuedBy('https://codecomprehension.nl')
             ->relatedTo($sub)
             ->permittedFor(...$aud)
             ->expiresAt(DateTimeImmutable::createFromInterface($exp))
