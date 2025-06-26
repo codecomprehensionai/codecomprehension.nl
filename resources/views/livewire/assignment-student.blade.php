@@ -11,6 +11,9 @@
             <div class="prose">
                  {!! Str::markdown($question->question ) !!}
             </div>
+            <div class="mt-8">
+                <x-assignment.answer-box :question="$question" :index="$index" :assignment="$assignment" />
+            </div>
 
         <div class="flex justify-between items-center mt-4">
             <x-button wire:click="previousQuestion" :disabled="$index === 0">

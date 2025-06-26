@@ -8,19 +8,7 @@
     </div>
 
     <div class="flex flex-col gap-4">
-        @if (isset($question->question) && $question->question)
-            <div class="font-medium">{{ $question->question }}</div>
-        @elseif (isset($question->text) && $question->text)
-            <div class="font-medium">{{ $question->text }}</div>
-        @elseif (isset($question->title) && $question->title)
-            <div class="font-medium">{{ $question->title }}</div>
-        @elseif (isset($question->content) && $question->content)
-            <div class="font-medium">{{ $question->content }}</div>
-        @endif
-
-
-
-        <x-question-answer-box :question="$question" :index="$index" :options="$options"/>
+        <x-question-answer-box :question="$question" :index="$index"/>
 
         <div class="flex justify-between items-center mt-4">
             <x-button wire:click="previousQuestion" :disabled="$index === 0">

@@ -1,23 +1,12 @@
-@php
-    dd($options)
-@endphp
-<div class="space-y-3">
-    @foreach($options as $optionIndex => $option)
-        <div class="flex items-start space-x-3">
-            <x-filament::input.checkbox
-                wire:model="answers.{{ $index }}.answer.{{ $optionIndex }}"
-                :id="'option_' . $question->id . '_' . $optionIndex"
-                name="question_{{ $question->id }}"
-                value="{{ $optionIndex }}"
-                class="mt-1"
-            />
-            <label
-                :for="'option_' . $question->id . '_' . $optionIndex"
-                class="flex-1 cursor-pointer text-sm leading-6"
-            >
-                <span class="font-mono font-medium mr-2">{{ chr(65 + $optionIndex) }})</span>
-                <span>{{ $option }}</span>
-            </label>
-        </div>
-    @endforeach
+{{-- Multiple choice component - now using text area since options are removed --}}
+<textarea 
+    wire:model="answers.{{ $index }}.answer" 
+    name="question_{{ $question->id }}" 
+    placeholder="Type your answer here... (Question {{ $index + 1 }})" 
+    rows="4"
+    class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary resize-vertical"
+    wire:key="answer-{{ $index }}"
+></textarea>
+<div class="text-xs text-gray-500 mt-1">
+    Bound to: answers.{{ $index }}.answer | Current value: {{ $answers[$index]['answer'] ?? 'empty' }}
 </div>
