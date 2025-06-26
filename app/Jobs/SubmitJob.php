@@ -46,14 +46,22 @@ class SubmitJob implements ShouldQueue
         // Batch the jobs and afterwards set assignment status to GRADED
         Bus::batch($jobs)
             ->then(function (Batch $batch) {
-                // Set AssignmentStatus to graded in DB
-                $this->assignment->assignmentStatuses()->updateOrCreate(
-                    ['user_id' => $this->user->id],
-                    ['status' => AssignmentStatus::GRADED]
-                );
+                $this->afterGradingCallback();
             })
             ->name('Grade all submission')
             ->dispatch();
 
+    }
+
+    private function afterGradingCallback()
+    {
+        // Update assignment status to graded
+        $this->assignment->assignmentStatuses()->updateOrCreate(
+            ['user_id' => $this->user->id],
+            ['status' => AssignmentStatus::GRADED]
+        );
+
+        // Update send grade to canvas
+        SyncAssignmentToCanvasJob::dispatch($this->assignment, $this->user);
     }
 }
