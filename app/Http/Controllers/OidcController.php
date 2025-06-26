@@ -119,11 +119,9 @@ class OidcController
 
         Auth::login($user);
 
-        return redirect()->route('assignment.student', $assignment);
-
         return match ($user->type) {
-            UserType::Teacher => redirect()->route('assignment.teacher', $assignment),
-            UserType::Student => redirect()->route('assignment.student', $assignment),
+            UserType::Teacher => redirect()->route('teacher.assignment', $assignment),
+            UserType::Student => redirect()->route('student.assignment', $assignment),
         };
     }
 }

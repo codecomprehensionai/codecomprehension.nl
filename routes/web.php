@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\JwksController;
 use App\Http\Controllers\OidcController;
+use App\Http\Middleware\EnsureUserTypeMiddleware;
 use App\Livewire\AssignmentResults;
 use App\Livewire\AssignmentStudent;
 use App\Livewire\AssignmentTeacher;
@@ -20,8 +21,12 @@ Route::get('api/v1/jwks', JwksController::class)->name('oidc.jwks');
 Route::get('api/v1/oidc/jwks', JwksController::class); /* Legacy */
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    // TODO: Route::get('{assignment}', AssignmentStudent::class)->name('assignment.student');
-    Route::get('{assignment}', AssignmentTeacher::class)->name('assignment.student');
-    Route::get('{assignment}/teacher', AssignmentTeacher::class)->name('assignment.teacher');
-    Route::get('{assignment}/results', AssignmentResults::class)->name('assignment.results');
+    Route::prefix('student')->as('student.')->middleware(EnsureUserTypeMiddleware::class . ':student')->group(function () {
+        Route::get('{assignment}', AssignmentStudent::class)->name('assignment');
+        Route::get('{assignment}/results', AssignmentResults::class)->name('assignment.results');
+    });
+
+    Route::prefix('teacher')->as('teacher.')->middleware(EnsureUserTypeMiddleware::class . ':teacher')->group(function () {
+        Route::get('{assignment}', AssignmentTeacher::class)->name('assignment');
+    });
 });
