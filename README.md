@@ -133,6 +133,14 @@ To minimize energy consumption, we made several conscious design decisions in th
 These choices help create a more efficient application, reducing energy consumption both on the server and for users.
 
 ### Credits 
-- **Taak 1**
-- **Taak 2**
-- **Taak 3**
+- **Unseen Work**
+    - **Ziaad:** Rate limitter unit
+    - **Tim/Jimme:** Initial front-end / LLM integration
+    - **Sven:** API controllers / Inertia / LLM integration
+- **Buddy Coding**
+    - **Tim/Jimme/Sven** 
+    - **Daniel/Luca**
+    - **Daniel/Thijmen**
+    - **Mathieu/Stijn**
+    - **Reinout/Stein**
+    - **Lars/Thijmen**
