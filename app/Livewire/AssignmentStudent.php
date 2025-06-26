@@ -4,11 +4,13 @@ namespace App\Livewire;
 
 use App\Models\Assignment;
 use App\Models\Question;
+use App\Models\Submission;
 use Filament\Actions\Action;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Flex;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Text;
@@ -17,8 +19,6 @@ use Filament\Schemas\Components\Wizard\Step;
 use Filament\Schemas\Contracts\HasSchemas;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Blade;
-use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
 use Livewire\Component;
@@ -30,10 +30,12 @@ class AssignmentStudent extends Component implements HasActions, HasSchemas
 
     public Assignment $assignment;
     public ?array $data = [];
+    public bool $isSubmitted = false;
 
     public function mount(): void
     {
         $this->form->fill($this->assignment->attributesToArray());
+        $this->isSubmitted = Submission::where('user_id', Auth::id())->whereIn('question_id', $this->assignment->questions->pluck('id'))->exists();
     }
 
     public function form(Schema $schema): Schema
@@ -41,7 +43,7 @@ class AssignmentStudent extends Component implements HasActions, HasSchemas
         return $schema
             ->statePath('data')
             ->record($this->assignment)
-            // ->disabled(fn(Assignment $record) => filled($record->published_at)) // TODO: disable if submission is completed
+            ->disabled(fn () => $this->isSubmitted)
             ->components([
                 Section::make(fn (Assignment $record) => $record->title)
                     ->description(function (Assignment $record): HtmlString {
@@ -53,42 +55,43 @@ class AssignmentStudent extends Component implements HasActions, HasSchemas
                         );
                     })
                     ->afterHeader([
-                        // TODO: look at user submission instead of assignment
                         Action::make('submitted')
                             ->label(fn (Assignment $record) => __(
                                 'Submitted at :date',
-                                ['date' => $record->published_at->inTimezone()->formatDateTime()]
+                                [
+                                    'date' => Submission::where('user_id', Auth::id())
+                                        ->whereIn('question_id', $this->assignment->questions->pluck('id'))
+                                        ->first()
+                                        ->created_at
+                                        ->inTimezone()
+                                        ->formatDateTime(),
+                                ]
                             ))
-                            ->visible(fn (Assignment $record) => filled($record->published_at))
-                            ->disabled(fn (Assignment $record) => filled($record->published_at))
+                            ->visible(fn () => $this->isSubmitted)
+                            ->disabled(fn () => $this->isSubmitted)
                             ->outlined(),
 
-                        // TODO: look at user submission instead of assignment
                         Action::make('submit')
                             ->label(__('Submit'))
-                            ->visible(fn (Assignment $record) => blank($record->published_at))
+                            ->hidden(fn () => $this->isSubmitted)
                             ->requiresConfirmation()
-                            ->action(function (Assignment $record, Action $action) {
-                                $this->form->model($record)->saveRelationships();
+                            ->action(function () {
+                                $data = $this->form->getState();
 
-                                if ($record->questions->isEmpty()) {
-                                    Notification::make()
-                                        ->title(__('Cannot publish without questions'))
-                                        ->danger()
-                                        ->send();
-
-                                    $action->cancel();
-
-                                    return;
+                                foreach ($this->assignment->questions as $question) {
+                                    $question->submissions()->create([
+                                        'user_id' => Auth::id(),
+                                        'answer'  => $data[$question->id]['answer'] ?? null,
+                                    ]);
                                 }
 
-                                $record->published_at = now();
-                                $record->save();
-
                                 Notification::make()
-                                    ->title(__('Assignment published'))
+                                    ->title(__('Assignment submitted'))
                                     ->success()
                                     ->send();
+
+                                $this->isSubmitted = true;
+                                $this->dispatch('refresh');
                             }),
                     ]),
 
@@ -129,9 +132,6 @@ class AssignmentStudent extends Component implements HasActions, HasSchemas
                                         ),
 
                                         MarkdownEditor::make(sprintf('%s.answer', $record->id))
-                                            ->label(__('Answer'))
-                                            ->required()
-                                            ->live()
                                             ->toolbarButtons([
                                                 ['bold', 'italic', 'link'],
                                                 ['heading'],
@@ -140,8 +140,6 @@ class AssignmentStudent extends Component implements HasActions, HasSchemas
                                             ]),
                                     ];
                                 });
-
-                            // TODO: laatste pagine met overview van questions, maybe
                         })
                         ->all()
                 )
@@ -157,17 +155,7 @@ class AssignmentStudent extends Component implements HasActions, HasSchemas
                             ->color('primary')
                             ->outlined(),
                     )
-                    // TODO: do we keep this button, trigger modal to show confirmation
-                    ->submitAction(new HtmlString(Blade::render(<<<'BLADE'
-                            <x-filament::button
-                                type="submit"
-                                size="sm"
-                            >
-                                Submit
-                            </x-filament::button>
-                        BLADE)))
                     ->skippable(),
-                // ->startOnStep(2) // TODO: get from assignment student progression
             ]);
     }
 
@@ -176,17 +164,5 @@ class AssignmentStudent extends Component implements HasActions, HasSchemas
         // TODO: if not published show a message that the assignment is not published yet
 
         return view('livewire.assignment-student');
-    }
-
-    public function submit(): void
-    {
-        $data = $this->form->getState();
-
-        foreach ($this->assignment->questions as $question) {
-            $question->submissions()->create([
-                'user_id' => Auth::id(),
-                'answer'  => $data[$question->id]['answer'] ?? null,
-            ]);
-        }
     }
 }

@@ -156,7 +156,6 @@ class AssignmentTeacher extends Component implements HasActions, HasSchemas
                         MarkdownEditor::make('question')
                             ->label(__('Question'))
                             ->required()
-                            ->live()
                             ->toolbarButtons([
                                 ['bold', 'italic', 'link'],
                                 ['heading'],
@@ -179,7 +178,7 @@ class AssignmentTeacher extends Component implements HasActions, HasSchemas
                             '{1} Question :order (:score point) |[2,*] Question :order (:score points)',
                             $state['score_max'] ?? 0,
                             [
-                                'order' => $state['order'],
+                                'order' => $state['order'] ?? 0,
                                 'score' => $state['score_max'] ?? 0,
                             ]
                         );
