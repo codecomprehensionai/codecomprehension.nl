@@ -2,37 +2,38 @@
 
 namespace App\Livewire;
 
+use App\Enums\QuestionLanguage;
 use Livewire\Component;
 use App\Models\Assignment;
-use Filament\Forms\Contracts\HasForms;
-use Filament\Forms\Concerns\InteractsWithForms;
-use Filament\Schemas\Schema;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\CheckboxList;
-use Filament\Schemas\Components\Section;
-use Illuminate\Support\Facades\Auth;
 use App\Models\Submission;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use League\CommonMark\CommonMarkConverter;
 
-class AssignmentStudent extends Component implements HasForms
+class AssignmentStudent extends Component
 {
-    use InteractsWithForms;
-
     public Assignment $assignment;
     public int $index = 0;
-    public array $formData = [];
     public array $answers = [];
+
+    public string $code;
+    public string $description;
+    public string $question;
+    public QuestionLanguage $language;
+
 
     public function mount()
     {
-        $this->form->fill([
-            'lti_id' => $this->assignment->lti_id,
-            'question_id' => $this->assignment->questions[$this->index]->id ?? null,
-            'user_id' => Auth::id(),
-            'answer' => '',
-            'feedback' => '',
-            'is_correct' => false,
-        ]);
+        $this->answers = array_fill(0, count($this->assignment->questions), null);
+        foreach ($this->assignment->questions as $index => $question) {
+            $this->answers[$index] = [
+                'lti_id' => $this->assignment->lti_id,
+                'question_id' => $question->id,
+                'user_id' => Auth::id(),
+                'answer' => $question->type->value === 'multiple_choice' ? [] : '',
+            ];
+        }
+        $this->getCurrentQuestion();
     }
 
     public function render()
@@ -40,105 +41,99 @@ class AssignmentStudent extends Component implements HasForms
         return view('livewire.assignment-student');
     }
 
-    public function form(Schema $schema): Schema
+    public function getCurrentQuestion()
     {
-        $question = $this->assignment->questions[$this->index] ?? null;
-        $type = $question->type->value ?? null;
+        $parsed = $this->parseQuestionContent();
+        $this->code = $parsed['code'] ?? '';
+        $this->description = $parsed['description'] ?? '';
+        $this->question = $parsed['question'] ?? '';
+        $this->language = $this->assignment->questions[$this->index]->language;
 
-        if (!$question) {
-            return $schema->components([]);
-        }
-
-        $components = [
-            Hidden::make('lti_id')->default($this->assignment->lti_id),
-            Hidden::make('question_id')->default($question->id),
-            Hidden::make('user_id')->default(Auth::id()),
-        ];
-
-        switch ($type) {
-            case 'multiple_choice':
-                $components[] =
-                    CheckboxList::make('selected_option')
-                    ->required()
-                    ->options($question->options)
-                    ->columns(2);
-                break;
-
-            case 'code_explanation':
-            case 'fill_in_the_blanks':
-                $components[] = TextInput::make('answer')
-                    ->type('text')
-                    ->required()
-                    ->hiddenLabel();
-                break;
-
-            default:
-                dd("Unsupported question type: $type");
-                $components[] = TextInput::make('answer');
-        }
-
-
-        return $schema
-            ->components($components)
-            ->statePath('formData');
+        return $this->assignment->questions[$this->index] ?? null;
     }
 
+    private function parseQuestionContent()
+    {
+        $content = "# List Comprehension with Filtering and Transformation\n\n## Description\nAnalyze the following Python code snippet, which uses a list comprehension to process a list of words. The list comprehension both filters and transforms elements from the original list.\n\n## Code Example\n```python\nwords = ['apple', 'banana', 'pear', 'plum', 'cherry', 'avocado', 'kiwi', 'apricot']\n\nresult = [w.upper() for w in words if w.startswith('a') and len(w) > 5]\nprint(result)\n```\n\n## Question\nExplain thoroughly what the list comprehension is doing. In your explanation, answer:\n\n1. **Filtering logic:** What is the filtering condition applied to each word? Which specific words from the `words` list satisfy this condition?\n2. **Transformation:** What transformation is performed on the filtered words?\n3. **Final Output:** What will be the exact contents of the `result` list after this code is run? Justify each value.\n\nBe detailed in your reasoning for each part.";
+        $lines = explode("\n", $content);
+        $parsed = [
+            'title' => '',
+            'description' => '',
+            'code' => '',
+            'question' => ''
+        ];
+
+        $currentSection = '';
+        $codeBlockOpen = false;
+
+        foreach ($lines as $line) {
+            if (preg_match('/^# (.+)$/', $line, $matches)) {
+                $parsed['title'] = '# ' . $matches[1];
+                continue;
+            }
+
+            if (preg_match('/^## Description$/', $line)) {
+                $currentSection = 'description';
+                continue;
+            }
+
+            if (preg_match('/^## Code Example$/', $line)) {
+                $currentSection = 'code';
+                continue;
+            }
+
+            if (preg_match('/^## Question$/', $line)) {
+                $currentSection = 'question';
+                continue;
+            }
+
+            if ($line === '```python') {
+                $codeBlockOpen = true;
+                $parsed['code'] .= $line . "\n";
+                continue;
+            }
+
+            if ($line === '```' && $codeBlockOpen) {
+                $codeBlockOpen = false;
+                $parsed['code'] .= $line;
+                continue;
+            }
+
+            if ($currentSection && !empty(trim($line)) || $codeBlockOpen) {
+                $parsed[$currentSection] .= $line . "\n";
+            }
+        }
+
+        foreach ($parsed as $key => $value) {
+            $parsed[$key] = rtrim($value, "\n");
+        }
+
+        return $parsed;
+    }
 
     public function nextQuestion()
     {
-        $this->saveCurrentAnswer();
         if ($this->index < count($this->assignment->questions) - 1) {
-            $this->index++;
-            $this->loadCurrentAnswer();
+            ++$this->index;
         }
     }
 
     public function previousQuestion()
     {
-        $this->saveCurrentAnswer();
         if ($this->index > 0) {
-            $this->index--;
-            $this->loadCurrentAnswer();
+            --$this->index;
         }
     }
 
-    private function saveCurrentAnswer()
-    {
-        Submission::updateOrCreate(
-            [
-                'lti_id' => $this->assignment->lti_id,
-                'question_id' => $this->assignment->questions[$this->index]->id,
-                'user_id' => Auth::id(),
-                'answer' => $this->form->getState()['answer'] ?? '',
-            ],
-            $this->form->getState()
-        );
-        $this->answers[$this->index] = $this->form->getState();
-    }
-
-    private function loadCurrentAnswer()
-    {
-        $question = $this->assignment->questions[$this->index] ?? null;
-        if (!$question) {
-            return;
-        }
-        if (isset($this->answers[$this->index])) {
-            $this->form->fill($this->answers[$this->index]);
-        } else {
-            $this->form->fill([
-                'lti_id' => $this->assignment->lti_id,
-                'question_id' => $question->id,
-                'user_id' => Auth::id(),
-                'answer' => '',
-                'selected_option' => [],
-                'feedback' => '',
-                'is_correct' => false,
-            ]);
-        }
-    }
     public function submitAnswer()
     {
-        $this->saveCurrentAnswer();
-        dd($this->answers);
+        DB::transaction(function () {
+            foreach ($this->answers as $submission) {
+                Submission::create($submission);
+            }
+        });
+
+        return redirect()->route('assignment.results', ['assignment' => $this->assignment->id])
+            ->with('success', 'Your answers have been submitted successfully.');
     }
 }

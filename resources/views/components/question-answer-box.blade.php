@@ -1,6 +1,6 @@
 
 @if (isset($question->type) && $question->type->value === 'multiple_choice')
-    <x-inputs.multiple-choice :question="$question" :index="$index"/>
+    {{-- <x-inputs.multiple-choice :question="$question" :index="$index"/> --}}
 @else
     <textarea wire:model="answers.{{ $index }}.answer" name="question_{{ $question->id }}" placeholder="Type your answer here..." rows="4"
         class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary resize-vertical"></textarea>

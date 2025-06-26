@@ -21,6 +21,7 @@
         "laravel/octane": "^2.9",
         "laravel/tinker": "^2.10.1",
         "lcobucci/jwt": "^5.5",
+        "league/commonmark": "^2.7",
         "livewire/livewire": "^3.6",
         "spatie/laravel-data": "^4.15",
         "tightenco/ziggy": "^2.5"
