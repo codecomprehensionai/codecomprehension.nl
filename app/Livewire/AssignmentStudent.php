@@ -63,14 +63,21 @@ class AssignmentStudent extends Component implements HasActions, HasSchemas
             ->disabled(fn() => $this->isSubmitted)
             ->components([
                 Section::make(fn(Assignment $record) => $record->title)
-                    ->description(function (Assignment $record): HtmlString {
-                        return new HtmlString(
-                            // TODO: show total recived score
-                            __(':count_questions questions, :sum_score_max total points', [
-                                'count_questions' => $record->questions->count(),
-                                'sum_score_max'   => $record->questions->sum('score_max'),
-                            ])
-                        );
+                    ->description(function (Assignment $record): string {
+                        if (!$this->isSubmitted) {
+                            return __(':score_max points', [
+                                'score_max' => $record->questions->sum('score_max'),
+                            ]);
+                        }
+
+                        $score = Submission::where('user_id', Auth::id())
+                            ->whereIn('question_id', $record->questions->pluck('id'))
+                            ->sum('score');
+
+                        return __(':score out of :score_max points', [
+                            'score'     => $score ?? 'x',
+                            'score_max' => $record->questions->sum('score_max'),
+                        ]);
                     })
                     ->afterHeader([
                         Action::make('submitted')
@@ -121,58 +128,64 @@ class AssignmentStudent extends Component implements HasActions, HasSchemas
 
                 Wizard::make(
                     fn(Assignment $record): array => $record->questions->map(
-                        fn(Question $question) => Step::make(__('Question :order', ['order' => $question->order]))
-                            ->description(trans_choice(
-                                '{1} :score point|{2,*} :score points',
-                                $question->score_max,
-                                ['score' => $question->score_max]
-                            ))
-                            ->model($question)
-                            ->schema(function (Question $record) {
-                                return [
-                                    Flex::make([
-                                        Text::make(new HtmlString(__(
-                                            '<strong>Language:</strong> :language',
-                                            ['language' => $record->language->getLabel()]
-                                        ))),
+                        function (Question $question) {
+                            $submission = Submission::where('user_id', Auth::id())
+                                ->where('question_id', $question->id)
+                                ->first();
 
-                                        Text::make(new HtmlString(__(
-                                            '<strong>Type:</strong> :type',
-                                            ['type' => $record->type->getLabel()]
-                                        ))),
+                            return Step::make(__('Question :order', ['order' => $question->order]))
+                                ->description(function () use ($question, $submission) {
+                                    if (!$submission) {
+                                        return __(':score_max points', [
+                                            'score_max' => $question->score_max,
+                                        ]);
+                                    }
 
-                                        Text::make(new HtmlString(__(
-                                            '<strong>Level:</strong> :level',
-                                            ['level' => $record->level->getLabel()]
-                                        ))),
-                                    ]),
+                                    return __(':score out of :score_max points', [
+                                        'score'     => $submission->score ?? 'x',
+                                        'score_max' => $question->score_max,
+                                    ]);
+                                })
+                                ->model($question)
+                                ->schema(function (Question $record) {
+                                    return [
+                                        Flex::make([
+                                            Text::make(new HtmlString(__(
+                                                '<strong>Language:</strong> :language',
+                                                ['language' => $record->language->getLabel()]
+                                            ))),
 
-                                    // TODO: use better markdown rendering
-                                    Text::make(
-                                        new HtmlString(
-                                            '<div class="prose">' . Str::of($record->question)->markdown() . '</div>'
+                                            Text::make(new HtmlString(__(
+                                                '<strong>Type:</strong> :type',
+                                                ['type' => $record->type->getLabel()]
+                                            ))),
+
+                                            Text::make(new HtmlString(__(
+                                                '<strong>Level:</strong> :level',
+                                                ['level' => $record->level->getLabel()]
+                                            ))),
+                                        ]),
+
+                                        // TODO: use better markdown rendering
+                                        Text::make(
+                                            new HtmlString(
+                                                '<div class="prose">' . Str::of($record->question)->markdown() . '</div>'
+                                            ),
                                         ),
-                                    ),
 
-                                    MarkdownEditor::make(sprintf('%s.answer', $record->id))
-                                        ->toolbarButtons([
-                                            ['bold', 'italic', 'link'],
-                                            ['heading'],
-                                            ['codeBlock', 'bulletList', 'orderedList'],
-                                            ['undo', 'redo'],
-                                        ]),
+                                        MarkdownEditor::make(sprintf('%s.answer', $record->id))
+                                            ->toolbarButtons([
+                                                ['bold', 'italic', 'link'],
+                                                ['heading'],
+                                                ['codeBlock', 'bulletList', 'orderedList'],
+                                                ['undo', 'redo'],
+                                            ]),
 
-                                    // TODO: show feedback
-                                    MarkdownEditor::make(sprintf('%s.feedback', $record->id))
-                                        ->visible()
-                                        ->toolbarButtons([
-                                            ['bold', 'italic', 'link'],
-                                            ['heading'],
-                                            ['codeBlock', 'bulletList', 'orderedList'],
-                                            ['undo', 'redo'],
-                                        ]),
-                                ];
-                            })
+                                        MarkdownEditor::make(sprintf('%s.feedback', $record->id))
+                                            ->visible(fn() => $this->isSubmitted),
+                                    ];
+                                });
+                        }
                     )->all()
                 )
                     ->previousAction(
