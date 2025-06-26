@@ -13,11 +13,24 @@
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
 
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @vite(['resources/css/app.css', 'resources/css/prism.css', 'resources/js/app.js', 'resources/js/prism.js'])
+
     </head>
 
     <body class="font-sans antialiased">
-        {{-- TODO: menubar, show logo (left), show user (right) --}}
+        <script>
+            document.addEventListener('livewire:navigated', () => {
+                if (typeof Prism !== 'undefined') {
+                    Prism.highlightAll();
+                }
+            });
+
+            window.addEventListener('prism-highlight', () => {
+                if (typeof Prism !== 'undefined') {
+                    Prism.highlightAll();
+                }
+            });
+        </script>
 
        {{ $slot }}
     </body>

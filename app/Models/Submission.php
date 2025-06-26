@@ -11,17 +11,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Bus;
 
 /**
- * @property string                          $id
- * @property null|string                     $lti_id
- * @property string                          $question_id
- * @property string                          $user_id
- * @property string                          $answer
- * @property null|string                     $feedback
- * @property bool                            $is_correct
- * @property null|\Illuminate\Support\Carbon $created_at
- * @property null|\Illuminate\Support\Carbon $updated_at
- * @property \App\Models\Question            $question
- * @property \App\Models\User                $user
  *
  * @method static \Database\Factories\SubmissionFactory                    factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Submission newModelQuery()
@@ -49,6 +38,13 @@ class Submission extends Model
     protected static function booted(): void
     {
         static::created(function (self $submission) {
+            if (!$submission->attempt) {
+                $maxAttempt = static::where('question_id', $submission->question_id)
+                    ->where('user_id', $submission->user_id)
+                    ->max('attempt') ?? 0;
+
+                $submission->attempt = $maxAttempt + 1;
+            }
             Bus::chain([
                 new CalculateSubmissionScoreJob($submission),
                 new SyncSubmisionToCanvasJob($submission),
@@ -83,6 +79,18 @@ class Submission extends Model
         return $this->belongsTo(User::class);
     }
 
+
+    /**
+     * Scope to get users with their correct answer counts for specific questions
+     */
+    public function scopeCorrectCountsByUser($query, $questionIds)
+    {
+        return $query->whereIn('question_id', $questionIds)
+            ->where('is_correct', true)
+            ->selectRaw('user_id, COUNT(*) as correct_count')
+            ->groupBy('user_id');
+    }
+
     /**
      * Get the attributes that should be cast.
      *
@@ -91,6 +99,7 @@ class Submission extends Model
     protected function casts(): array
     {
         return [
+            'answer' => 'json',
             'is_correct' => 'boolean',
         ];
     }

@@ -1,15 +1,15 @@
 <x-card>
     @php
         $totalQuestions = $assignment->questions->count();
-        $answeredCount = $assignment->questions->whereNotNull('saved_answer')->count();
-        $progressPercentage = $totalQuestions > 0 ? ($answeredCount / $totalQuestions) * 100 : 0;
+        // $answeredCount = $assignment->questions->whereNotNull('saved_answer')->count();
+        $progressPercentage = $totalQuestions > 0 ? ($index / $totalQuestions) * 100 : 0;
     @endphp
 
     <div class="flex flex-col gap-3">
         <div class="flex items-center justify-between">
             <h3 class="text-lg font-semibold text-gray-900">Progress</h3>
             <span class="text-sm text-gray-500">
-                {{ $answeredCount }} of {{ $totalQuestions }} completed
+                {{ $index }} of {{ $totalQuestions }} completed
             </span>
         </div>
 
