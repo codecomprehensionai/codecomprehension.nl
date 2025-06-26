@@ -8,7 +8,6 @@
  * package for easy mapping, validation, and serialization.
  */
 
-
 namespace App\Data;
 
 use App\Enums\QuestionLanguage;
