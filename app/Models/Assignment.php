@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 /**
  * @property string                                                              $id
@@ -72,6 +73,72 @@ class Assignment extends Model
     public function questions(): HasMany
     {
         return $this->hasMany(Question::class);
+    }
+
+    /**
+     * The assignment statuses for users.
+     *
+     * @return HasMany<UserAssignmentStatus, Assignment>
+     */
+    public function assignmentStatuses(): HasMany
+    {
+        return $this->hasMany(UserAssignmentStatus::class);
+    }
+
+    /**
+     * All submissions for this assignment through questions.
+     *
+     * @return HasManyThrough<Submission, Question>
+     */
+    public function submissions(): HasManyThrough
+    {
+        return $this->hasManyThrough(Submission::class, Question::class);
+    }
+
+    /**
+     * Get submissions for a specific user.
+     */
+    public function submissionsForUser(User $user)
+    {
+        return $this->submissions()->where('user_id', $user->id);
+    }
+
+    /**
+     * Check if a user has completed all questions in this assignment.
+     */
+    public function isCompleteForUser(User $user): bool
+    {
+        $totalQuestions = $this->questions()->count();
+        $userSubmissions = $this->submissionsForUser($user)->count();
+        
+        return $totalQuestions > 0 && $userSubmissions >= $totalQuestions;
+    }
+
+    /**
+     * Calculate total score for a user across all questions.
+     */
+    public function calculateTotalScoreForUser(User $user): array
+    {
+        $submissions = $this->submissionsForUser($user)->get();
+        
+        $totalScore = $submissions->sum('score') ?? 0;
+        $totalMaxScore = $submissions->sum('score_max') ?? 0;
+        
+        return [
+            'score' => $totalScore,
+            'score_max' => $totalMaxScore,
+            'percentage' => $totalMaxScore > 0 ? round(($totalScore / $totalMaxScore) * 100, 2) : 0,
+            'question_count' => $submissions->count(),
+            'total_questions' => $this->questions()->count(),
+        ];
+    }
+
+    /**
+     * Get the assignment status for a specific user.
+     */
+    public function getStatusForUser(User $user): ?UserAssignmentStatus
+    {
+        return $this->assignmentStatuses()->where('user_id', $user->id)->first();
     }
 
     /**

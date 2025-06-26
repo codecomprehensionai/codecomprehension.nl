@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Jobs\CalculateSubmissionScoreJob;
 use App\Jobs\SyncSubmisionToCanvasJob;
+use App\Jobs\SyncAssignmentToCanvasJob;
+use App\Models\Assignment;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -45,18 +47,40 @@ class Submission extends Model
 
                 $submission->attempt = $maxAttempt + 1;
             }
-            Bus::chain([
-                new CalculateSubmissionScoreJob($submission),
-                new SyncSubmisionToCanvasJob($submission),
-            ])->dispatch();
+            
+            // After scoring, check if we should sync to Canvas
+            static::maybeSyncAssignmentToCanvas($submission);
         });
 
         static::updated(function (self $submission) {
-            Bus::chain([
-                new CalculateSubmissionScoreJob($submission),
-                new SyncSubmisionToCanvasJob($submission),
-            ])->dispatch();
+            // After scoring, check if we should sync to Canvas
+            static::maybeSyncAssignmentToCanvas($submission);
         });
+    }
+
+    /**
+     * Determine if we should sync the assignment to Canvas.
+     * This happens when a submission is scored and either:
+     * 1. The assignment is complete for the user, OR
+     * 2. This is an update to an existing submission (immediate feedback)
+     */
+    protected static function maybeSyncAssignmentToCanvas(self $submission): void
+    {
+        // Wait for the scoring job to complete by chaining the sync job
+        Bus::chain([
+            new CalculateSubmissionScoreJob($submission),
+            function () use ($submission) {
+                // Refresh the submission to get the latest score
+                $submission->refresh();
+                
+                $assignment = $submission->assignment();
+                $user = $submission->user;
+                
+                // Always sync to Canvas after scoring - this allows for both
+                // partial submissions (for progress tracking) and final submissions
+                SyncAssignmentToCanvasJob::dispatch($assignment, $user);
+            }
+        ])->dispatch();
     }
 
     /**
@@ -79,6 +103,32 @@ class Submission extends Model
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * Get the assignment this submission belongs to through the question.
+     *
+     * @return Assignment
+     */
+    public function assignment(): Assignment
+    {
+        return $this->question->assignment;
+    }
+
+    /**
+     * Check if this submission completes the assignment for the user.
+     */
+    public function completesAssignmentForUser(): bool
+    {
+        $assignment = $this->assignment();
+        return $assignment->isCompleteForUser($this->user);
+    }
+
+    /**
+     * Scope to get submissions for a specific assignment.
+     */
+    public function scopeForAssignment($query, Assignment $assignment)
+    {
+        return $query->whereIn('question_id', $assignment->questions()->pluck('id'));
+    }
 
     /**
      * Scope to get users with their correct answer counts for specific questions

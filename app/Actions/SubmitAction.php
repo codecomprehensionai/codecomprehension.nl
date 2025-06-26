@@ -6,6 +6,7 @@ namespace App\Actions;
 
 use App\Enums\AssignmentStatus;
 use App\Jobs\CalculateSubmissionScoreJob;
+use App\Jobs\SyncAssignmentToCanvasJob;
 use App\Models\Assignment;
 use App\Models\User;
 use Illuminate\Bus\Batch;
@@ -32,16 +33,19 @@ final readonly class SubmitAction
             $jobs[] = new CalculateSubmissionScoreJob($submission);
         }
 
-        // Batch the jobs and afterwards set assignment status to GRADED
+        // Batch the jobs and afterwards set assignment status to GRADED and sync to Canvas
         Bus::batch($jobs)
             ->then(function (Batch $batch) use ($user, $assignment) {
-                // Set AssignmentStatus to graded in DB
+                // When all scoring jobs complete, set status to graded
                 $assignment->assignmentStatuses()->updateOrCreate(
                     ['user_id' => $user->id],
                     ['status' => AssignmentStatus::GRADED]
                 );
+
+                // Sync the complete assignment to Canvas
+                SyncAssignmentToCanvasJob::dispatch($assignment, $user);
             })
-            ->name('Grade all submission')
+            ->name("Grade assignment {$assignment->id} for user {$user->id}")
             ->dispatch();
     }
 }
