@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -15,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\Assignment> $assignments
  * @property null|int                                                              $assignments_count
  *
+ * @method static \Database\Factories\CourseFactory                    factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Course newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Course newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Course query()
@@ -28,6 +30,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class Course extends Model
 {
+    /** @use HasFactory<\Database\Factories\CourseFactory> */
+    use HasFactory;
+    
     use HasUlids;
 
     /**

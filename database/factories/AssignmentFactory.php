@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Course;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +18,10 @@ class AssignmentFactory extends Factory
     public function definition(): array
     {
         return [
-            'title'       => fake()->sentence(),
+            'lti_id' => fake()->uuid(),
+            'lti_lineitem_endpoint' => 'https://uvadlo-dev.test.instructure.com/api/lti/courses/' . fake()->numberBetween(1000, 9999) . '/line_items/' . fake()->numberBetween(10, 99),
+            'course_id' => Course::factory(),
+            'title' => fake()->sentence(),
             'description' => fake()->paragraph(),
             'deadline_at' => fake()->dateTimeBetween('now', '+1 month'),
         ];
