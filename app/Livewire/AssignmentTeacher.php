@@ -71,7 +71,18 @@ class AssignmentTeacher extends Component implements HasActions, HasSchemas
                             ->requiresConfirmation()
                             ->color('gray')
                             ->outlined()
-                            ->action(function (Assignment $record) {
+                            ->action(function (Assignment $record, Action $action) {
+                                if ($record->questions->isEmpty()) {
+                                    Notification::make()
+                                        ->title(__('Cannot publish without questions'))
+                                        ->danger()
+                                        ->send();
+
+                                    $action->cancel();
+
+                                    return;
+                                }
+
                                 $record->published_at = now();
                                 $record->save();
 
