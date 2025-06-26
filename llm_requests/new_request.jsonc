@@ -1,5 +1,5 @@
 /*
- * Format for sending new request to the LLM.
+ * Format for requesting a new question from the LLM.
  */
 
 // POST to API/v1/question
