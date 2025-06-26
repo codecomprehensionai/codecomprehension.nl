@@ -39,7 +39,7 @@ class JwtService
     {
         $config = [
             'private_key_type' => OPENSSL_KEYTYPE_EC,
-            'curve_name'       => 'prime256v1',
+            'curve_name' => 'prime256v1',
             'private_key_bits' => 384,
         ];
 
@@ -55,7 +55,7 @@ class JwtService
 
         return [
             'private_key' => $privateKey,
-            'public_key'  => $details['key'],
+            'public_key' => $details['key'],
         ];
     }
 
