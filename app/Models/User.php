@@ -63,6 +63,14 @@ class User extends Authenticatable implements MustVerifyEmail
     ];
 
     /**
+     * Get the user assignment statuses for the user.
+     */
+    public function userAssignmentStatuses()
+    {
+        return $this->hasMany(UserAssignmentStatus::class);
+    }
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
@@ -70,9 +78,9 @@ class User extends Authenticatable implements MustVerifyEmail
     protected function casts(): array
     {
         return [
-            'type'              => UserType::class,
+            'type' => UserType::class,
             'email_verified_at' => 'datetime',
-            'password'          => 'hashed',
+            'password' => 'hashed',
         ];
     }
 }

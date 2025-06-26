@@ -110,7 +110,7 @@ class Assignment extends Model
     {
         $totalQuestions = $this->questions()->count();
         $userSubmissions = $this->submissionsForUser($user)->count();
-        
+
         return $totalQuestions > 0 && $userSubmissions >= $totalQuestions;
     }
 
@@ -120,10 +120,10 @@ class Assignment extends Model
     public function calculateTotalScoreForUser(User $user): array
     {
         $submissions = $this->submissionsForUser($user)->get();
-        
+
         $totalScore = $submissions->sum('score') ?? 0;
         $totalMaxScore = $submissions->sum('score_max') ?? 0;
-        
+
         return [
             'score' => $totalScore,
             'score_max' => $totalMaxScore,
@@ -156,7 +156,7 @@ class Assignment extends Model
     protected function estimatedAnswerDuration(): Attribute
     {
         return Attribute::make(
-            get: fn (): int => $this->questions
+            get: fn(): int => $this->questions
                 ->sum('estimated__answer_duration'),
         );
     }
@@ -164,7 +164,7 @@ class Assignment extends Model
     protected function topics(): Attribute
     {
         return Attribute::make(
-            get: fn (): array => $this->questions
+            get: fn(): array => $this->questions
                 ->pluck('topic')
                 ->filter()
                 ->unique()
@@ -173,10 +173,20 @@ class Assignment extends Model
         );
     }
 
+    /**
+     * Get all user assignment statuses for this assignment.
+     *
+     * @return HasMany<UserAssignmentStatus, Assignment>
+     */
+    public function userAssignmentStatuses(): HasMany
+    {
+        return $this->hasMany(UserAssignmentStatus::class);
+    }
+
     protected function tags(): Attribute
     {
         return Attribute::make(
-            get: fn (): array => $this->questions
+            get: fn(): array => $this->questions
                 ->pluck('tags')
                 ->filter()
                 ->flatten()
@@ -189,7 +199,7 @@ class Assignment extends Model
     protected function languages(): Attribute
     {
         return Attribute::make(
-            get: fn (): array => $this->questions
+            get: fn(): array => $this->questions
                 ->pluck('language')
                 ->filter()
                 ->unique()
