@@ -148,8 +148,3 @@ These choices help create a more efficient application, reducing energy consumpt
     - **Reinout:** Design LLM 
   
 Alot of the coding was done in pairs/groups
-
-Lars:
-
-Matihue: 
-    - **Lars/Thijmen**
