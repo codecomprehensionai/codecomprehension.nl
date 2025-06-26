@@ -75,6 +75,24 @@ herd open
 
 ### Security measures 
 
-### Energy efficienc
+### Application Security
+
+This application follows key security best practices:
+
+- **punt 1** asdf
+- **punt 2** asdf
+- **punt 3** asdf
+
+These measures help protect user data and maintain a
+
+### Energy efficiency
+
+To minimize energy consumption, we made several conscious design decisions in this project:
+
+- **punt 1** asdf
+- **punt 2** asdf
+- **punt 3** asdf
+
+These choices help create a more efficient application, reducing energy consumption both on the server and for
 
 ### Credits 
