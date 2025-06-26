@@ -134,15 +134,22 @@ These choices help create a more efficient application, reducing energy consumpt
 
 ### Credits 
 - **Unseen Work**
-    - **Ziaad:** Rate limiter unit
-    - **Tim/Jimme:** Initial front-end / LLM integration
-    - **Sven:** API controllers / Inertia / LLM integration
+    - **Ziaad:** Rate limiter / Optimization
+    - **Tim:** Initial front-end / LLM integration
+    - **Jimme:** Initial front-end / LLM integration
+    - **Sven:** Inertia / LLM integration / Laravel Documentatie
+    - **Daniel:** Authentication / Front-end
+    - **Thijmen:** Front-end / Assigning task
+    - **Lars:** Laravel Documentatie / Inertia 
+    - **Mathieu:** Database & Models with luca / Front-end teacher / Improved question workflow
+    - **Stein:** Canvas grading Peerwork / Code reviews
+    - **Stijn:** Database design 
+    - **Luca:** Scrum master / Setup Cloudfare and Dokploy
+    - **Reinout:** Design LLM 
   
-Alot of the coding was done in small groups
-- **Buddy Coding**
-    - **Tim/Jimme/Sven** 
-    - **Daniel/Luca**
-    - **Daniel/Thijmen**
-    - **Mathieu/Stijn**
-    - **Reinout/Stein**
+Alot of the coding was done in pairs/groups
+
+Lars:
+
+Matihue: 
     - **Lars/Thijmen**
