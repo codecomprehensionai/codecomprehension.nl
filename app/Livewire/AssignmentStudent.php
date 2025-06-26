@@ -43,9 +43,9 @@ class AssignmentStudent extends Component implements HasActions, HasSchemas
         return $schema
             ->statePath('data')
             ->record($this->assignment)
-            ->disabled(fn () => $this->isSubmitted)
+            ->disabled(fn() => $this->isSubmitted)
             ->components([
-                Section::make(fn (Assignment $record) => $record->title)
+                Section::make(fn(Assignment $record) => $record->title)
                     ->description(function (Assignment $record): HtmlString {
                         return new HtmlString(
                             __(':count_questions questions, :sum_score_max total points', [
@@ -56,7 +56,7 @@ class AssignmentStudent extends Component implements HasActions, HasSchemas
                     })
                     ->afterHeader([
                         Action::make('submitted')
-                            ->label(fn (Assignment $record) => __(
+                            ->label(fn(Assignment $record) => __(
                                 'Submitted at :date',
                                 [
                                     'date' => Submission::where('user_id', Auth::id())
@@ -67,13 +67,13 @@ class AssignmentStudent extends Component implements HasActions, HasSchemas
                                         ->formatDateTime(),
                                 ]
                             ))
-                            ->visible(fn () => $this->isSubmitted)
-                            ->disabled(fn () => $this->isSubmitted)
+                            ->visible(fn() => $this->isSubmitted)
+                            ->disabled(fn() => $this->isSubmitted)
                             ->outlined(),
 
                         Action::make('submit')
                             ->label(__('Submit'))
-                            ->hidden(fn () => $this->isSubmitted)
+                            ->hidden(fn() => $this->isSubmitted)
                             ->requiresConfirmation()
                             ->action(function () {
                                 $data = $this->form->getState();
@@ -96,7 +96,7 @@ class AssignmentStudent extends Component implements HasActions, HasSchemas
                     ]),
 
                 Wizard::make(
-                    fn (Assignment $record): array => $record->questions
+                    fn(Assignment $record): array => $record->questions
                         ->map(function (Question $question) {
                             return Step::make(__('Question :order', ['order' => $question->order]))
                                 ->description(trans_choice(
@@ -138,19 +138,28 @@ class AssignmentStudent extends Component implements HasActions, HasSchemas
                                                 ['codeBlock', 'bulletList', 'orderedList'],
                                                 ['undo', 'redo'],
                                             ]),
+
+                                        // TODO: show feedback
+                                        // MarkdownEditor::make(sprintf('%s.feedback', $record->id))
+                                        //     ->toolbarButtons([
+                                        //         ['bold', 'italic', 'link'],
+                                        //         ['heading'],
+                                        //         ['codeBlock', 'bulletList', 'orderedList'],
+                                        //         ['undo', 'redo'],
+                                        //     ]),
                                     ];
                                 });
                         })
                         ->all()
                 )
                     ->previousAction(
-                        fn (Action $action) => $action
+                        fn(Action $action) => $action
                             ->label(__('Previous'))
                             ->color('primary')
                             ->outlined(),
                     )
                     ->nextAction(
-                        fn (Action $action) => $action
+                        fn(Action $action) => $action
                             ->label(__('Next'))
                             ->color('primary')
                             ->outlined(),
