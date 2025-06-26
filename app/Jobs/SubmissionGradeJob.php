@@ -2,30 +2,34 @@
 
 namespace App\Jobs;
 
+use App\Actions\SubmissionGradeAction;
 use App\Models\Submission;
+use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class CalculateSubmissionScoreJob implements ShouldQueue
+class SubmissionGradeJob implements ShouldQueue
 {
+    use Batchable;
     use Dispatchable;
     use InteractsWithQueue;
     use Queueable;
     use SerializesModels;
 
+    // TODO: max execution time 3 minutes
+
     public function __construct(protected Submission $submission) {}
 
     public function handle(): void
     {
-        // TODO: integrate with LLM
-        $scoreMax = random_int(80, 100);
-        $score = random_int(0, $scoreMax);
+        $data = app(SubmissionGradeAction::class)->handle($this->submission);
 
         $this->submission->updateQuietly([
-            'score' => $score,
+            'feedback' => $data->feedback,
+            'score'    => $data->score,
         ]);
     }
 }

@@ -14,7 +14,7 @@ use App\Models\Submission;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 
-final readonly class QuestionGradeAction
+final readonly class SubmissionGradeAction
 {
     public function handle(Submission $submission): SubmissionData
     {
@@ -36,10 +36,19 @@ final readonly class QuestionGradeAction
             ->connectTimeout(3)
             ->timeout(120)
             ->throw()
-            ->put('https://llm.codecomprehension.nl/grade', [
+            ->post('https://llm.codecomprehension.nl/grade', [
                 'assignment' => $assignmentData->toArray(),
-                'question'   => $questionData->toArray(),
-                'submission' => $submissionData->toArray(),
+                'question'   => [
+                    'language'  => $questionData->language,
+                    'type'      => $questionData->type,
+                    'level'     => $questionData->level,
+                    'question'  => $questionData->question,
+                    'answer'    => $questionData->answer,
+                    'score_max' => (string) $questionData->scoreMax,
+                ],
+                'submission' => [
+                    'answer' => $submissionData->answer,
+                ],
             ])
             ->json('data');
 
