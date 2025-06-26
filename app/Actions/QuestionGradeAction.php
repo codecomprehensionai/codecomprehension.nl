@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Http;
 // TODO: build this class
 final readonly class QuestionGradeAction
 {
-    public function handle(Assignment $assignment, QuestionData $existingQuestionData, QuestionData $updateQuestionData, string $updateQuestionPrompt = ''): QuestionData
+    public function handle(Assignment $assignment, Question $question, string $submissionAnswer): array
     {
         $sub = Auth::id() ?? 'anonymous';
         $aud = 'https://llm.codecomprehension.nl';
@@ -24,21 +24,29 @@ final readonly class QuestionGradeAction
             ->connectTimeout(3)
             ->timeout(120)
             ->throw()
-            ->put('https://llm.codecomprehension.nl/question', [
+            ->post('https://llm.codecomprehension.nl/grade', [
                 'assignment' => [
-                    'id'          => $assignment->id,
                     'title'       => $assignment->title,
                     'description' => $assignment->description,
                 ],
-                'questions' => $assignment->questions
-                    ->map(fn (Question $question): array => QuestionData::from($question)->toArray())
-                    ->toArray(),
-                'existing_question'      => $existingQuestionData->toArray(),
-                'update_question'        => $updateQuestionData->toArray(),
-                'update_question_prompt' => $updateQuestionPrompt,
+                'question' => [
+                    'language'  => $question->language,
+                    'type'      => $question->type,
+                    'level'     => $question->level,
+                    'question'  => $question->question,
+                    'answer'    => $question->answer,
+                    'score_max' => $question->score_max,
+                ],
+                'submission' => [
+                    'answer' => $submissionAnswer,
+                ],
             ])
-            ->json('data');
+            ->json();
 
-        return QuestionData::from($response['question']);
+        return [
+            'answer'   => $response['submission']['answer'],
+            'feedback' => $response['submission']['feedback'],
+            'score'    => $response['submission']['score'],
+        ];
     }
 }
