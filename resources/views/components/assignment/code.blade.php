@@ -11,12 +11,17 @@
     <div data-slot="card-description" class="text-muted-foreground text-sm">
         Study this code carefully before answering the questions
     </div>
-    <div class="relative rounded-lg bg-slate-900 p-2">
+    <div class="line-numbers relative rounded-lg bg-slate-900 p-2">
         <div class="relative flex text-center">
-          <div class="flex pl-3.5 pt-3"><svg viewBox="0 0 24 24" fill="currentColor" class="-ml-0.5 mr-1.5 h-3 w-3 text-red-500/20">
-            </svg></div><span class="absolute inset-x-0 top-2 text-xs text-slate-500">foo</span>
+            <div class="flex pl-3.5 pt-3"><svg viewBox="0 0 24 24" fill="currentColor"
+                    class="-ml-0.5 mr-1.5 h-3 w-3 text-red-500/20">
+                </svg></div><span class="absolute inset-x-0 top-2 text-xs text-slate-500">foo</span>
         </div>
-       <pre><code class="language-{{ $question->language }}">{{ $question->code }} </code></pre>
-        </div>
-      </div>
+        <pre class="line-number"><code class="language-{{ $question->language }}">import sys
+from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton
+from PyQt5.QtCore import pyqtSlot, QFile, QTextStream
+
+from sidebar_ui import Ui_MainWindow
+            </code></pre>
+    </div>
 </x-card>
