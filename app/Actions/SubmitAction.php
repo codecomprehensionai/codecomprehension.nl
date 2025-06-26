@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Bus;
 
 final readonly class SubmitAction
 {
-    // TODO: Link to QuestionGradeAction
+
     public function handle(User $user, Assignment $assignment, array $submissions)
     {
         // Set the assignmentstatus of this user for this assignment to submitted
