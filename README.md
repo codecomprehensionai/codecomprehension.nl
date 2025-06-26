@@ -134,7 +134,7 @@ These choices help create a more efficient application, reducing energy consumpt
 
 ### Credits 
 - **Unseen Work**
-    - **Ziaad:** Rate limitter unit
+    - **Ziaad:** Rate limiter unit
     - **Tim/Jimme:** Initial front-end / LLM integration
     - **Sven:** API controllers / Inertia / LLM integration
   
