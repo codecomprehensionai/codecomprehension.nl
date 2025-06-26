@@ -5,7 +5,6 @@
  *
  * This controller is responsible for managing user authentication, token exchange,
  * and callback handling for OpenID Connect providers.
- *
  */
 
 namespace App\Http\Controllers;
