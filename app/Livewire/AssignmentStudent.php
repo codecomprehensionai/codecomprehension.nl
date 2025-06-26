@@ -35,7 +35,23 @@ class AssignmentStudent extends Component implements HasActions, HasSchemas
 
     public function mount(): void
     {
-        $this->form->fill($this->assignment->attributesToArray());
+        $data = $this->assignment->questions
+            ->mapWithKeys(function (Question $question) {
+                $submission = Submission::where('user_id', Auth::id())
+                    ->where('question_id', $question->id)
+                    ->first();
+
+                return [
+                    $question->id => [
+                        'answer'   => $submission->answer,
+                        'feedback' => $submission->feedback,
+                        'score'    => $submission->score,
+                    ],
+                ];
+            })
+            ->toArray();
+
+        $this->form->fill($data);
         $this->isSubmitted = Submission::where('user_id', Auth::id())->whereIn('question_id', $this->assignment->questions->pluck('id'))->exists();
     }
 
@@ -49,6 +65,7 @@ class AssignmentStudent extends Component implements HasActions, HasSchemas
                 Section::make(fn(Assignment $record) => $record->title)
                     ->description(function (Assignment $record): HtmlString {
                         return new HtmlString(
+                            // TODO: show total recived score
                             __(':count_questions questions, :sum_score_max total points', [
                                 'count_questions' => $record->questions->count(),
                                 'sum_score_max'   => $record->questions->sum('score_max'),
@@ -146,13 +163,14 @@ class AssignmentStudent extends Component implements HasActions, HasSchemas
                                         ]),
 
                                     // TODO: show feedback
-                                    // MarkdownEditor::make(sprintf('%s.feedback', $record->id))
-                                    //     ->toolbarButtons([
-                                    //         ['bold', 'italic', 'link'],
-                                    //         ['heading'],
-                                    //         ['codeBlock', 'bulletList', 'orderedList'],
-                                    //         ['undo', 'redo'],
-                                    //     ]),
+                                    MarkdownEditor::make(sprintf('%s.feedback', $record->id))
+                                        ->visible()
+                                        ->toolbarButtons([
+                                            ['bold', 'italic', 'link'],
+                                            ['heading'],
+                                            ['codeBlock', 'bulletList', 'orderedList'],
+                                            ['undo', 'redo'],
+                                        ]),
                                 ];
                             })
                     )->all()
