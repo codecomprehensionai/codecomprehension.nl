@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * Application Configuration
+ *
+ * This file configures the application, including routing, middleware, and exception handling.
+ */
+
 use App\Http\Middleware\RequireJsonMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;

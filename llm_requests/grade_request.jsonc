@@ -1,3 +1,7 @@
+/*
+ *This the format for the request to the API for grading a submission.
+ */
+
 // POST to API/v1/grade
 
 {

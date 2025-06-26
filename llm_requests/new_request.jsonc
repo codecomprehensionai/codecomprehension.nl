@@ -1,3 +1,7 @@
+/*
+ * Format for sending new request to the LLM.
+ */
+
 // POST to API/v1/question
 
 {

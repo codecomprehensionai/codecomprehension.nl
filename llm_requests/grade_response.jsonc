@@ -1,3 +1,7 @@
+/*
+ * Format for grading a response in the CodeComprehension project.
+ */
+
 {
     "submission": {
         "answer": "",
