@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * This file defines the Question model.
+ *
+ * The Question model represents a single question within an assignment. It includes relationships
+ * to the Assignment and Submission models, and defines attributes like language, type, and level.
+ */
+
 namespace App\Models;
 
 use App\Enums\QuestionLanguage;

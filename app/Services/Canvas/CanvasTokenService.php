@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * This service is responsible for retrieving and
+ * caching an OAuth access token for the Canvas API.
+ */
+
 namespace App\Services\Canvas;
 
 use App\Models\JwtKey;

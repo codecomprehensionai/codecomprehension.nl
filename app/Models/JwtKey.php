@@ -7,6 +7,10 @@ use DateTimeInterface;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * The `JwtKey` model represents a JWT key pair for signing and verifying tokens.
+ * It automatically generates key pairs and stores them encrypted.
+ */
 class JwtKey extends Model
 {
     use HasUlids;

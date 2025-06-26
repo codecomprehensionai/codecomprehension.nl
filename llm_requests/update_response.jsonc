@@ -1,3 +1,7 @@
+/*
+ * Format response for updating an existing question in the LLM.
+ */
+
 {
     "question": {
         "language": "",

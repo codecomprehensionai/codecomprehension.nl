@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * Data object representing an LTI (Learning Tools Interoperability) assignment payload.
+ *
+ * This class is used to encapsulate assignment-related data received via LTI-compliant
+ * launch requests. It is compatible with Spatie Laravel Data for validation, transformation,
+ * and serialization. The class also provides a static constructor to extract data directly
+ * from a decoded LTI JWT payload.
+ */
+
 namespace App\Data;
 
 use Spatie\LaravelData\Data;

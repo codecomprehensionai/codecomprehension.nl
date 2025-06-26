@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * AssignmentTeacher
+ *
+ * This Livewire component handles the display of assignment details for teachers.
+ * It allows teachers to view the assignment and its associated questions.
+ */
+
 namespace App\Livewire;
 
 use App\Models\Assignment;

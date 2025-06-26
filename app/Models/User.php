@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * This file defines the User model for the application.
+ * It represents a user of the system, which can be a student or a teacher, as defined by the UserType enum.
+ * The model uses ULIDs for its primary key and includes properties for LTI integration.
+ */
+
 namespace App\Models;
 
 use App\Enums\UserType;

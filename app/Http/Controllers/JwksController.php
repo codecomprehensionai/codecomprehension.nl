@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * JwksController
+ *
+ * This controller handles the generation and serving of JSON Web Key Sets (JWKS).
+ * It retrieves all JWT public keys from the database, formats them according to the JWKS specification,
+ * and returns them as a JSON response.
+ */
+
 namespace App\Http\Controllers;
 
 use App\Models\JwtKey;
