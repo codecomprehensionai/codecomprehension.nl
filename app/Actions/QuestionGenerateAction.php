@@ -29,7 +29,7 @@ final readonly class QuestionGenerateAction
             ->post('https://llm.codecomprehension.nl/question', [
                 'assignment' => $assignmentData->toArray(),
                 'questions'  => $assignment->questions
-                    ->map(fn(Question $question): array => QuestionData::from($question)->toArray())
+                    ->map(fn (Question $question): array => QuestionData::from($question)->toArray())
                     ->toArray(),
                 'new_question'        => $newQuestionData->toArray(),
                 'new_question_prompt' => $newQuestionPrompt,

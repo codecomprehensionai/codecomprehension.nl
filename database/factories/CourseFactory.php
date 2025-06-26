@@ -18,7 +18,7 @@ class CourseFactory extends Factory
     {
         return [
             'lti_id' => fake()->uuid(),
-            'title' => fake()->words(5, true),
+            'title'  => fake()->words(5, true),
         ];
     }
 }

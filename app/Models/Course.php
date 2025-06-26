@@ -9,9 +9,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Course extends Model
 {
-    use HasUlids;
     /** @use HasFactory<\Database\Factories\CourseFactory> */
     use HasFactory;
+
+    use HasUlids;
 
     /**
      * The assignments that belong to the course.

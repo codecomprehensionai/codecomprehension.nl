@@ -29,7 +29,7 @@ final readonly class QuestionUpdateAction
             ->put('https://llm.codecomprehension.nl/question', [
                 'assignment' => $assignmentData->toArray(),
                 'questions'  => $assignment->questions
-                    ->map(fn(Question $question): array => QuestionData::from($question)->toArray())
+                    ->map(fn (Question $question): array => QuestionData::from($question)->toArray())
                     ->toArray(),
                 'original_question'      => $existingQuestionData->toArray(),
                 'update_question'        => $updateQuestionData->toArray(),

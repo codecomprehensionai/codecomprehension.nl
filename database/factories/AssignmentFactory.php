@@ -24,10 +24,10 @@ class AssignmentFactory extends Factory
                 fake()->numberBetween(1000, 9999),
                 fake()->numberBetween(10, 99)
             ),
-            'course_id'             => Course::factory(),
-            'title'                 => fake()->sentence(),
-            'description'           => fake()->paragraph(),
-            'deadline_at'           => fake()->dateTimeBetween('now', '+1 month'),
+            'course_id'   => Course::factory(),
+            'title'       => fake()->sentence(),
+            'description' => fake()->paragraph(),
+            'deadline_at' => fake()->dateTimeBetween('now', '+1 month'),
         ];
     }
 }

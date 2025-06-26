@@ -39,7 +39,7 @@ class Assignment extends Model
     protected function languages(): Attribute
     {
         return Attribute::make(
-            get: fn(): array => $this->questions
+            get: fn (): array => $this->questions
                 ->pluck('language')
                 ->filter()
                 ->unique()

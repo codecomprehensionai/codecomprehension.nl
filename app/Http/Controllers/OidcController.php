@@ -7,7 +7,6 @@ use App\Data\LtiCourseData;
 use App\Data\LtiUserData;
 use App\Enums\UserType;
 use App\Models\Course;
-use App\Models\Question;
 use App\Models\User;
 use Firebase\JWT\JWK;
 use Firebase\JWT\JWT;
@@ -77,7 +76,7 @@ class OidcController
         $jwks = Cache::flexible(
             'cloudflare-access.jwks',
             [300, 3600],
-            fn() => Http::get(config('services.canvas.endpoint') . '/api/lti/security/jwks')->throw()->json()
+            fn () => Http::get(config('services.canvas.endpoint') . '/api/lti/security/jwks')->throw()->json()
         );
 
         $jwt = JWT::decode($validated['id_token'], JWK::parseKeySet($jwks));
