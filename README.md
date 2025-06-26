@@ -88,7 +88,7 @@ We also use TailwindCSS for our CSS, since Tailwind promotes utility-first styli
 
 For the backend, we have decided to use Laravel. Laravel is a PHP framework that helps you build web applications quickly and cleanly using modern tools and structure. It handles things like routing, authentication, database access, and more. This gave us the ability to focus on writing the actual features of our app. The Laravel backend talks to the front-end using Livewire.<br>
 We use a MySQL database to store information about users, assignments, questions and submissions. We use MySQL because it is a reliable, mature relational database that integrates seamlessly with Laravel through Eloquent ORM. It's well-supported, performant for our use case, and widely understood by developers.<br>
-We use FastAPI, from Python, to talk with the LLM api. FastAPI is a high-performance Python web framework ideal for serving machine learning models or APIs. It supports asynchronous programming, is easy to use, and integrates well with Python’s AI and ML tooling ecosystem.<br>
+We use FastAPI, from Python, to talk with the LLM api. FastAPI is a high-performance Python web framework ideal for serving machine learning models or APIs. It supports asynchronous programming, is easy to use, and integrates well with Python’s AI and machine learning tooling ecosystem.<br>
 Because the LLM response takes a while, we use Laravel jobs to send requests to it.
 
 **LLM**
@@ -141,7 +141,7 @@ These choices help create a more efficient application, reducing energy consumpt
     - **Daniel:** Authentication / Front-end
     - **Thijmen:** Front-end / Assigning task
     - **Lars:** Laravel Documentatie / Inertia 
-    - **Mathieu:** Database & Models with luca / Front-end teacher / Improved question workflow
+    - **Mathieu:** Database & Models / Front-end teacher / Improved question workflow
     - **Stein:** Canvas grading Peerwork / Code reviews
     - **Stijn:** Database design 
     - **Luca:** Scrum master / Setup Cloudfare and Dokploy
