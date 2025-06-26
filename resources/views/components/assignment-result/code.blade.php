@@ -16,9 +16,8 @@
                 </div>
 
                 <div class="flex-1 min-w-0">
-                    <pre class="text-sm font-mono leading-5 p-4 m-0 whitespace-pre-wrap break-words overflow-hidden"><code>{{ $question->code }}</code></pre>
+                    <pre class="language-php text-sm font-mono leading-5 p-4 m-0 whitespace-pre-wrap break-words overflow-hidden"><code class="language-{{ $question->language }}">{{ $question->code }} </code></pre>
                 </div>
-                
             </div>
         </div>
     </div>

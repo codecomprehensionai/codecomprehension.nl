@@ -19,23 +19,53 @@ class QuestionFactory extends Factory
      */
     public function definition(): array
     {
+        $type = fake()->randomElement(QuestionType::cases());
+        $options = fake()->words(4);
+
+        $answer = match ($type) {
+            QuestionType::MultipleChoice => json_encode([
+                fake()->randomElement([0, 1, 2, 3]),
+                ...(fake()->boolean(30) ? [fake()->randomElement([0, 1, 2, 3])] : [])
+            ]),
+            QuestionType::CodeExplanation => fake()->paragraph(),
+            default => fake()->word(),
+        };
         return [
-            /* Question metadata */
             'language'                  => fake()->randomElement(QuestionLanguage::cases()),
-            'type'                      => fake()->randomElement(QuestionType::cases()),
+            'type'                      => $type,
             'level'                     => fake()->randomElement(QuestionLevel::cases()),
             'estimated_answer_duration' => fake()->numberBetween(30, 300),
-
-            /* Question aidata */
             'topic' => fake()->word(),
             'tags'  => fake()->words(3),
-
-            /* Question content */
             'question'    => fake()->sentence(),
             'explanation' => fake()->optional()->paragraph(),
             'code'        => fake()->text(),
-            'options'     => fake()->words(4),
-            'answer'      => fake()->optional()->sentence(),
+            'options'     => $options,
+            'answer'      => $answer,
         ];
+    }
+
+    /**
+     * Create a multiple choice question with specific correct answers
+     */
+    public function multipleChoice(array $correctIndices = [0]): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'type' => QuestionType::MultipleChoice,
+            'options' => ['Option A', 'Option B', 'Option C', 'Option D'],
+            'answer' => $correctIndices,
+        ]);
+    }
+
+    /**
+     * Create a code explanation question
+     */
+    public function codeExplanation(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'type' => QuestionType::CodeExplanation,
+            'options' => null,
+            'answer' => fake()->paragraph(),
+        ]);
     }
 }

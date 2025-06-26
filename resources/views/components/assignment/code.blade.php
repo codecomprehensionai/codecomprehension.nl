@@ -11,27 +11,12 @@
     <div data-slot="card-description" class="text-muted-foreground text-sm">
         Study this code carefully before answering the questions
     </div>
-    <div data-slot="card-content" class="px-6">
-        <div class="bg-gray-900 text-gray-100 rounded-lg overflow-hidden">
-            <div class="flex">
-                <div class="bg-gray-800 text-gray-400 text-right select-none border-r border-gray-700 flex-shrink-0">
-                    @php
-                        $lines = explode("\n", $question->code);
-                        $lineCount = count($lines);
-                        $maxDigits = strlen((string)$lineCount);
-                    @endphp
-                    @foreach($lines as $index => $line)
-                        <div class="px-3 py-1 text-xs font-mono leading-5"
-                             style="min-width: {{ ($maxDigits * 0.6) + 1.5 }}rem;">
-                            {{ $index + 1 }}
-                        </div>
-                    @endforeach
-                </div>
-
-                <div class="flex-1 min-w-0">
-                    <pre class="text-sm font-mono leading-5 p-4 m-0 whitespace-pre-wrap break-words overflow-hidden"><code>{{ $question->code }}</code></pre>
-                </div>
-            </div>
+    <div class="relative rounded-lg bg-slate-900 p-2">
+        <div class="relative flex text-center">
+          <div class="flex pl-3.5 pt-3"><svg viewBox="0 0 24 24" fill="currentColor" class="-ml-0.5 mr-1.5 h-3 w-3 text-red-500/20">
+            </svg></div><span class="absolute inset-x-0 top-2 text-xs text-slate-500">foo</span>
         </div>
-    </div>
+       <pre><code class="language-{{ $question->language }}">{{ $question->code }} </code></pre>
+        </div>
+      </div>
 </x-card>
