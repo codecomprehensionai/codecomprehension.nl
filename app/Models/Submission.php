@@ -47,40 +47,10 @@ class Submission extends Model
 
                 $submission->attempt = $maxAttempt + 1;
             }
-            
+
             // After scoring, check if we should sync to Canvas
             static::maybeSyncAssignmentToCanvas($submission);
         });
-
-        static::updated(function (self $submission) {
-            // After scoring, check if we should sync to Canvas
-            static::maybeSyncAssignmentToCanvas($submission);
-        });
-    }
-
-    /**
-     * Determine if we should sync the assignment to Canvas.
-     * This happens when a submission is scored and either:
-     * 1. The assignment is complete for the user, OR
-     * 2. This is an update to an existing submission (immediate feedback)
-     */
-    protected static function maybeSyncAssignmentToCanvas(self $submission): void
-    {
-        // Wait for the scoring job to complete by chaining the sync job
-        Bus::chain([
-            new CalculateSubmissionScoreJob($submission),
-            function () use ($submission) {
-                // Refresh the submission to get the latest score
-                $submission->refresh();
-                
-                $assignment = $submission->assignment();
-                $user = $submission->user;
-                
-                // Always sync to Canvas after scoring - this allows for both
-                // partial submissions (for progress tracking) and final submissions
-                SyncAssignmentToCanvasJob::dispatch($assignment, $user);
-            }
-        ])->dispatch();
     }
 
     /**
