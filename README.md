@@ -137,6 +137,8 @@ These choices help create a more efficient application, reducing energy consumpt
     - **Ziaad:** Rate limitter unit
     - **Tim/Jimme:** Initial front-end / LLM integration
     - **Sven:** API controllers / Inertia / LLM integration
+  
+Alot of the coding was done in small groups
 - **Buddy Coding**
     - **Tim/Jimme/Sven** 
     - **Daniel/Luca**
