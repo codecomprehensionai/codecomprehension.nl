@@ -99,8 +99,9 @@ class AssignmentTeacher extends Component implements HasActions, HasSchemas
                     ->maxItems(25)
                     ->collapsible()
                     ->collapsed()
+                    ->cloneable()
+                    ->reorderable(true)
                     ->schema([
-                        // TODO: check if FusedGroup is pretty
                         Flex::make([
                             Select::make('language')
                                 ->label(__('Language'))
@@ -128,6 +129,7 @@ class AssignmentTeacher extends Component implements HasActions, HasSchemas
                                 ->label(__('Max Score'))
                                 ->required()
                                 ->numeric()
+                                ->live()
                                 ->minValue(1)
                                 ->maxValue(10)
                                 ->step(0.5)
@@ -156,10 +158,11 @@ class AssignmentTeacher extends Component implements HasActions, HasSchemas
                             ]),
                     ])
                     ->itemLabel(function (array $state): ?string {
-                        // TODO: in itemLabel vraagnummer en aantal punten tonen
+                        $score = $state['score_max'] ?? '?';
                         ray($state);
+                        $label = Str::limit($state['question'] ?? '', 100);
 
-                        return Str::limit($state['question'], 100) ?? null;
+                        return "{$score} pts: {$label}";
                     })
                     ->extraItemActions([
                         // TODO: updateQuestion
