@@ -18,8 +18,7 @@ class EnsureUserTypeMiddleware
     public function handle(Request $request, Closure $next, string $type): Response
     {
         if (Auth::user()->type !== UserType::from($type)) {
-            // TODO: remove returning user
-            return response()->json(['error' => 'Unauthorized', 'user' => Auth::user()], 403);
+            return response()->json(['error' => 'Unauthorized'], 403);
         }
 
         return $next($request);

@@ -11,6 +11,7 @@ return new class extends Migration
         Schema::create('questions', function (Blueprint $table) {
             $table->ulid('id')->primary();
             $table->foreignUlid('assignment_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
+            $table->integer('order');
             $table->string('language');
             $table->string('type');
             $table->string('level');

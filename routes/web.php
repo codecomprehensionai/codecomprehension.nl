@@ -11,10 +11,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', Welcome::class)->name('login');
 
-Route::get('api/v1/oidc', [OidcController::class, 'launch'])->name('oidc.launch');
+Route::get('api/v1/oidc', [OidcController::class, 'launch']);
 Route::post('api/v1/oidc', [OidcController::class, 'launch'])->name('oidc.launch');
 
-Route::get('api/v1/oidc/callback', [OidcController::class, 'callback'])->name('oidc.callback');
+Route::get('api/v1/oidc/callback', [OidcController::class, 'callback']);
 Route::post('api/v1/oidc/callback', [OidcController::class, 'callback'])->name('oidc.callback');
 
 Route::get('api/v1/jwks', JwksController::class)->name('oidc.jwks');

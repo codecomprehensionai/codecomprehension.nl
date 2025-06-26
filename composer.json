@@ -22,6 +22,7 @@
         "laravel/tinker": "^2.10.1",
         "lcobucci/jwt": "^5.5",
         "livewire/livewire": "^3.6",
+        "spatie/eloquent-sortable": "^4.5",
         "spatie/laravel-data": "^4.15",
         "tightenco/ziggy": "^2.5"
     },

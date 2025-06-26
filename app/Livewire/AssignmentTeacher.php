@@ -24,7 +24,6 @@ use Filament\Schemas\Contracts\HasSchemas;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\HtmlString;
-use Illuminate\Support\Str;
 use Livewire\Component;
 
 class AssignmentTeacher extends Component implements HasActions, HasSchemas
@@ -43,6 +42,7 @@ class AssignmentTeacher extends Component implements HasActions, HasSchemas
     public function form(Schema $schema): Schema
     {
         return $schema
+            ->statePath('data')
             ->record($this->assignment)
             ->disabled(fn (Assignment $record) => filled($record->published_at))
             ->components([
@@ -114,7 +114,8 @@ class AssignmentTeacher extends Component implements HasActions, HasSchemas
                     ->maxItems(25)
                     ->collapsible()
                     ->collapsed()
-                    ->reorderable(true)
+                    ->reorderable()
+                    ->orderColumn('order')
                     ->schema([
                         Flex::make([
                             Select::make('language')
@@ -173,16 +174,16 @@ class AssignmentTeacher extends Component implements HasActions, HasSchemas
                                 ['undo', 'redo'],
                             ]),
                     ])
-                    ->itemLabel(
-                        fn (array $state): ?string => trans_choice(
-                            '{1} :score point: :question |[2,*] :score points: :question',
+                    ->itemLabel(function (array $state): ?string {
+                        return trans_choice(
+                            '{1} Question :order (:score point) |[2,*] Question :order (:score points)',
                             $state['score_max'] ?? 0,
                             [
-                                'score'    => $state['score_max'] ?? 0,
-                                'question' => Str::limit($state['question'] ?? '', 100),
+                                'order' => $state['order'],
+                                'score' => $state['score_max'] ?? 0,
                             ]
-                        )
-                    )
+                        );
+                    })
                     ->extraItemActions([
                         Action::make('generate')
                             ->label(__('AI Update'))
@@ -254,8 +255,7 @@ class AssignmentTeacher extends Component implements HasActions, HasSchemas
                         fn (Action $action) => $action
                             ->requiresConfirmation(),
                     ),
-            ])
-            ->statePath('data');
+            ]);
     }
 
     public function render()
