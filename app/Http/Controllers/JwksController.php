@@ -6,12 +6,6 @@
  * This controller handles the generation and serving of JSON Web Key Sets (JWKS).
  * It retrieves all JWT public keys from the database, formats them according to the JWKS specification,
  * and returns them as a JSON response.
- *
- * Methods:
- *   __invoke()
- *     - If no JWT keys exist in the database, creates a new one.
- *     - Retrieves all JWT keys, extracts their public key details, and formats them for JWKS.
- *     - Returns a JSON response containing the array of keys.
  */
 
 namespace App\Http\Controllers;

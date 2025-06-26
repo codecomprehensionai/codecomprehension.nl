@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * AssignmentResults
+ *
+ * This Livewire component handles the display of assignment results for a user.
+ * It retrieves the assignment data, calculates scores, time spent, and class rank,
+ * and provides feedback based on the user's performance.
+ */
+
 namespace App\Livewire;
 
 use App\Models\Assignment;

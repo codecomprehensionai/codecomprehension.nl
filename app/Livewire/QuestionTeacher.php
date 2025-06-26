@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * QuestionTeacher
+ *
+ * This Livewire component handles the display of a question for teachers.
+ * It allows teachers to view the question details and associated assignment.
+ */
+
 namespace App\Livewire;
 
 use App\Models\Assignment;
