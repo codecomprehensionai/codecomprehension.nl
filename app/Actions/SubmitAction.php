@@ -7,14 +7,12 @@ namespace App\Actions;
 use App\Enums\AssignmentStatus;
 use App\Jobs\CalculateSubmissionScoreJob;
 use App\Models\Assignment;
-use App\Models\Submission;
 use App\Models\User;
 use Illuminate\Bus\Batch;
 use Illuminate\Support\Facades\Bus;
 
 final readonly class SubmitAction
 {
-
     public function handle(User $user, Assignment $assignment, array $submissions)
     {
         // Set the assignmentstatus of this user for this assignment to submitted
@@ -32,7 +30,6 @@ final readonly class SubmitAction
         // Batch the jobs and afterwards set assignment status to GRADED
         Bus::batch($jobs)
             ->then(function (Batch $batch) use ($user, $assignment) {
-
                 // When job comes back set status to graded
                 $assignment->assignmentStatuses()->updateOrCreate(
                     ['user_id' => $user->id],

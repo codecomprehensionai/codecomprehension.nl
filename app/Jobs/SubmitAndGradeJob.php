@@ -3,7 +3,6 @@
 namespace App\Jobs;
 
 use App\Models\Assignment;
-use App\Models\Question;
 use App\Models\User;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
@@ -23,7 +22,5 @@ class SubmitAndGradeJob implements ShouldQueue
     /**
      * Execute the job.
      */
-    public function handle(): void
-    {
-    }
+    public function handle(): void {}
 }
