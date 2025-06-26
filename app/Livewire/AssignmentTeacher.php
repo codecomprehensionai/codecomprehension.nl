@@ -2,6 +2,9 @@
 
 namespace App\Livewire;
 
+use App\Actions\QuestionGenerateAction;
+use App\Actions\QuestionUpdateAction;
+use App\Data\QuestionData;
 use App\Enums\QuestionLanguage;
 use App\Enums\QuestionLevel;
 use App\Enums\QuestionType;
@@ -14,7 +17,6 @@ use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
-use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Flex;
 use Filament\Schemas\Components\Section;
@@ -42,30 +44,30 @@ class AssignmentTeacher extends Component implements HasActions, HasSchemas
     {
         return $schema
             ->record($this->assignment)
-            ->disabled(fn(Assignment $record) => filled($record->published_at))
+            ->disabled(fn (Assignment $record) => filled($record->published_at))
             ->components([
-                Section::make(fn(Assignment $record) => $record->title)
+                Section::make(fn (Assignment $record) => $record->title)
                     ->description(function (Assignment $record): HtmlString {
                         return new HtmlString(
                             __(':count_questions questions, :sum_score_max total score', [
                                 'count_questions' => $record->questions->count(),
-                                'sum_score_max' => $record->questions->sum('score_max'),
+                                'sum_score_max'   => $record->questions->sum('score_max'),
                             ])
                         );
                     })
                     ->afterHeader([
                         Action::make('published')
-                            ->label(fn(Assignment $record) => __(
+                            ->label(fn (Assignment $record) => __(
                                 'Published at :date',
                                 ['date' => $record->published_at->inTimezone()->formatDateTime()]
                             ))
-                            ->visible(fn(Assignment $record) => filled($record->published_at))
-                            ->disabled(fn(Assignment $record) => filled($record->published_at))
+                            ->visible(fn (Assignment $record) => filled($record->published_at))
+                            ->disabled(fn (Assignment $record) => filled($record->published_at))
                             ->outlined(),
 
                         Action::make('publish')
                             ->label(__('Publish'))
-                            ->visible(fn(Assignment $record) => blank($record->published_at))
+                            ->visible(fn (Assignment $record) => blank($record->published_at))
                             ->requiresConfirmation()
                             ->color('gray')
                             ->outlined()
@@ -81,7 +83,7 @@ class AssignmentTeacher extends Component implements HasActions, HasSchemas
 
                         Action::make('save')
                             ->label(__('Save'))
-                            ->visible(fn(Assignment $record) => blank($record->published_at))
+                            ->visible(fn (Assignment $record) => blank($record->published_at))
                             ->action(function (Assignment $record) {
                                 $this->form->model($record)->saveRelationships();
 
@@ -114,6 +116,7 @@ class AssignmentTeacher extends Component implements HasActions, HasSchemas
                             Select::make('level')
                                 ->label(__('Level'))
                                 ->options(QuestionLevel::class)
+                                ->default(QuestionLevel::Beginner)
                                 ->required()
                                 ->native(false)
                                 ->searchable(),
@@ -121,6 +124,7 @@ class AssignmentTeacher extends Component implements HasActions, HasSchemas
                             Select::make('type')
                                 ->label(__('Type'))
                                 ->options(QuestionType::class)
+                                ->default(QuestionType::CodeExplanation)
                                 ->required()
                                 ->native(false)
                                 ->searchable(),
@@ -165,24 +169,74 @@ class AssignmentTeacher extends Component implements HasActions, HasSchemas
                         return "{$score} pts: {$label}";
                     })
                     ->extraItemActions([
-                        // TODO: updateQuestion
-                        Action::make('update')
-                            ->icon(Heroicon::Envelope)
+                        Action::make('generate')
+                            ->label(__('AI Update'))
+                            ->icon(Heroicon::Bolt)
+                            ->modalHeading(__('Update Question with Prompt'))
                             ->schema([
-                                //
+                                TextInput::make('prompt')
+                                    ->label(__('Prompt'))
+                                    ->placeholder(__('e.g. Make this question more challenging...'))
+                                    ->required(),
                             ])
-                            ->action(function (array $arguments, Repeater $component): void {
-                                // TODO: een vraag kunnen genereren
-                                // TODO: bij een vraag een prompt kunnen uitvoeren om te updaten
+                            ->action(function (array $arguments, $record, array $data, Repeater $component): void {
+                                $itemKey = $arguments['item'] ?? null;
+                                $fullState = $component->getRawState();
+
+                                $item = $fullState[$itemKey] ?? [];
+
+                                $isNew = blank($item['question'] ?? '') && blank($item['answer'] ?? '');
+                                if ($isNew) {
+                                    $questionData = QuestionData::from([
+                                        'language' => QuestionLanguage::tryFrom($item['language'] ?? ''),
+                                        'level'    => QuestionLevel::tryFrom($item['level'] ?? ''),
+                                        'type'     => QuestionType::tryFrom($item['type'] ?? ''),
+                                    ]);
+
+                                    $response = app(QuestionGenerateAction::class)->handle(
+                                        $this->assignment,
+                                        $questionData
+                                    );
+                                } else {
+                                    $existing = QuestionData::from([
+                                        'language'  => QuestionLanguage::tryFrom($item['language'] ?? ''),
+                                        'level'     => QuestionLevel::tryFrom($item['level'] ?? ''),
+                                        'type'      => QuestionType::tryFrom($item['type'] ?? ''),
+                                        'question'  => $item['question'],
+                                        'answer'    => $item['answer'],
+                                        'score_max' => $item['score_max'],
+                                    ]);
+
+                                    $update = QuestionData::from([
+                                        ...$existing->toArray(),
+                                    ]);
+
+                                    $response = app(QuestionUpdateAction::class)->handle(
+                                        $this->assignment,
+                                        $existing,
+                                        $update,
+                                        $data['prompt']
+                                    );
+                                }
+                                $payload = $response['question'] ?? [];
+
+                                $updatedItem = array_merge($item, $payload['question']);
+                                $fullState[$itemKey] = $updatedItem;
+                                $component->state($fullState);
+
+                                Notification::make()
+                                    ->title(__('Question updated'))
+                                    ->success()
+                                    ->send();
                             }),
                     ])
                     ->addAction(
-                        fn(Action $action) => $action
+                        fn (Action $action) => $action
                             ->label(__('Add Question'))
                             ->color('primary'),
                     )
                     ->deleteAction(
-                        fn(Action $action) => $action
+                        fn (Action $action) => $action
                             ->requiresConfirmation(),
                     ),
             ])
