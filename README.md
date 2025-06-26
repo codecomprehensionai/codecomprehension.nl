@@ -147,4 +147,4 @@ These choices help create a more efficient application, reducing energy consumpt
     - **Luca:** Scrum master / Setup Cloudfare and Dokploy
     - **Reinout:** Design LLM 
   
-Alot of the coding was done in pairs/groups
+Alot of the coding was done in pairs/groups.
