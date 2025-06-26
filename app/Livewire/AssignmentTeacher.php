@@ -66,12 +66,14 @@ class AssignmentTeacher extends Component implements HasActions, HasSchemas
                             ->outlined(),
 
                         Action::make('publish')
-                            ->label(__('Publish'))
+                            ->label(__('Save & Publish'))
                             ->visible(fn(Assignment $record) => blank($record->published_at))
                             ->requiresConfirmation()
                             ->color('gray')
                             ->outlined()
                             ->action(function (Assignment $record, Action $action) {
+                                $this->form->model($record)->saveRelationships();
+
                                 if ($record->questions->isEmpty()) {
                                     Notification::make()
                                         ->title(__('Cannot publish without questions'))
@@ -171,13 +173,16 @@ class AssignmentTeacher extends Component implements HasActions, HasSchemas
                                 ['undo', 'redo'],
                             ]),
                     ])
-                    ->itemLabel(function (array $state): ?string {
-                        $score = $state['score_max'] ?? '?';
-                        ray($state);
-                        $label = Str::limit($state['question'] ?? '', 100);
-
-                        return "{$score} pts: {$label}";
-                    })
+                    ->itemLabel(
+                        fn(array $state): ?string => trans_choice(
+                            '{1} :score point: :question |[2,*] :score points: :question',
+                            $state['score_max'] ?? 0,
+                            [
+                                'score'    => $state['score_max'] ?? 0,
+                                'question' => Str::limit($state['question'] ?? '', 100),
+                            ]
+                        )
+                    )
                     ->extraItemActions([
                         Action::make('generate')
                             ->label(__('AI Update'))
