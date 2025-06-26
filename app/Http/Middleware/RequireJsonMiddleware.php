@@ -1,4 +1,10 @@
 <?php
+/**
+ * RequireJsonMiddleware
+ *
+ * This middleware checks if the incoming request expects a JSON response.
+ * If not, it throws a NotAcceptableHttpException with an error message.
+ */
 
 namespace App\Http\Middleware;
 

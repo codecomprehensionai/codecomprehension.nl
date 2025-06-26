@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * SyncSubmisionToCanvasJob
+ *
+ * This job synchronizes a submission to Canvas by sending the submission data
+ * to the Canvas API using the provided line item endpoint.
+ *
+ * It includes the score, maximum score, and other relevant submission details.
+ */
+
 namespace App\Jobs;
 
 use App\Models\Submission;

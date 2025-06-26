@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * AssignmentStudent
+ *
+ * This Livewire component handles the display and navigation of assignment questions for students.
+ * It allows students to view questions, navigate to the next or previous question, and renders the component view.
+ */
+
 namespace App\Livewire;
 
 use App\Models\Assignment;
