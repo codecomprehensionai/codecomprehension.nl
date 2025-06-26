@@ -70,3 +70,11 @@ composer run dev
 # Open app
 herd open
 ```
+
+### About
+
+### Security measures 
+
+### Energy efficienc
+
+### Credits 
