@@ -118,13 +118,12 @@ These measures help protect user data and maintain a secure environment.
 
 To minimize energy consumption, we made several conscious design decisions in this project:
 
-- **Efficient Data Handling:**
-- **LLM Token Reduction:** 
-- **LLM Time reduction:**
-- **Optimized Development Workflow:**
-- **Less Redirects**
+- **Efficient Data Handling:** We use eager loading and caching to reduce unnecessary database queries and minimize server workload.
+- **LLM Reduction:** Prompts sent to language models are optimized to use fewer tokens, reducing compute time and API usage.
+- **Optimized Development Workflow:** Only essential services are run during development, and Docker is used for efficient resource allocation.
+- **Less Redirects** The authentication and callback flows are streamlined to minimize HTTP redirects, reducing network overhead.
 
-These choices help create a more efficient application, reducing energy consumption both on the server and for
+These choices help create a more efficient application, reducing energy consumption both on the server and for users.
 
 ### Credits 
 
