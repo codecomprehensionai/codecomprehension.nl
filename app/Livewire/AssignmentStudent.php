@@ -4,13 +4,14 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use App\Models\Assignment;
+use App\Models\Submission;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class AssignmentStudent extends Component
 {
     public Assignment $assignment;
     public int $index = 0;
-    public array $answer = [];
     public array $answers = [];
 
     public function mount()
@@ -22,9 +23,6 @@ class AssignmentStudent extends Component
                 'question_id' => $question->id,
                 'user_id' => Auth::id(),
                 'answer' => $question->type->value === 'multiple_choice' ? [] : '',
-                'selected_option' => [],
-                'feedback' => '',
-                'is_correct' => false,
             ];
         }
     }
@@ -36,58 +34,28 @@ class AssignmentStudent extends Component
 
     public function nextQuestion()
     {
-        // $this->createSubmission();
         if ($this->index < count($this->assignment->questions) - 1) {
             $this->index++;
-            // $this->loadCurrentAnswer();
         }
     }
 
     public function previousQuestion()
     {
-        // $this->createSubmission();
         if ($this->index > 0) {
             $this->index--;
-            // $this->loadCurrentAnswer();
         }
-    }
-
-    private function loadCurrentAnswer()
-    {
-        $this->answer = $this->answers[$this->index]['answer'] ?? [];
     }
 
     public function submitAnswer()
     {
-        // $this->createSubmission();
-        dd($this->answers);
+        DB::transaction(function () {
+            foreach ($this->answers as $submission) {
+                Submission::create($submission);
+            }
+        });
+
+        return redirect()->route('assignment.results', ['assignment' => $this->assignment->id])
+            ->with('success', 'Your answers have been submitted successfully.');
     }
 
-    // private function getQuestionType()
-    // {
-    //     $question = $this->assignment->questions[$this->index] ?? null;
-    //     if (!$question) {
-    //         return null;
-    //     }
-
-    //     return $question->type;
-    // }
-
-    // private function createSubmission()
-    // {
-    //     $question = $this->assignment->questions[$this->index] ?? null;
-    //     if (!$question) {
-    //         return;
-    //     }
-
-    //     $this->answers[$this->index] = [
-    //         'lti_id' => $this->assignment->lti_id,
-    //         'question_id' => $question->id,
-    //         'user_id' => Auth::id(),
-    //         'answer' => $this->answer,
-    //         'selected_option' => [],
-    //         'feedback' => '',
-    //         'is_correct' => false,
-    //     ];
-    // }
 }

@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Bus;
 
 /**
- * 
+ *
  *
  * @property string $id
  * @property string|null $lti_id
@@ -49,6 +49,13 @@ class Submission extends Model
     protected static function booted(): void
     {
         static::created(function (self $submission) {
+            if (!$submission->attempt) {
+                $maxAttempt = static::where('question_id', $submission->question_id)
+                    ->where('user_id', $submission->user_id)
+                    ->max('attempt') ?? 0;
+
+                $submission->attempt = $maxAttempt + 1;
+            }
             Bus::chain([
                 new CalculateSubmissionScoreJob($submission),
                 new SyncSubmisionToCanvasJob($submission),
@@ -83,6 +90,18 @@ class Submission extends Model
         return $this->belongsTo(User::class);
     }
 
+
+    /**
+     * Scope to get users with their correct answer counts for specific questions
+     */
+    public function scopeCorrectCountsByUser($query, $questionIds)
+    {
+        return $query->whereIn('question_id', $questionIds)
+            ->where('is_correct', true)
+            ->selectRaw('user_id, COUNT(*) as correct_count')
+            ->groupBy('user_id');
+    }
+
     /**
      * Get the attributes that should be cast.
      *
@@ -91,6 +110,7 @@ class Submission extends Model
     protected function casts(): array
     {
         return [
+            'answer' => 'json',
             'is_correct' => 'boolean',
         ];
     }
