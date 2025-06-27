@@ -15,9 +15,9 @@ class QuestionData extends Data
         public QuestionLanguage $language,
         public QuestionType $type,
         public QuestionLevel $level,
-        public ?string $question = null,
-        public ?string $answer = null,
+        public string $question = '',
+        public string $answer = '',
         #[MapInputName('score_max'), MapOutputName('score_max')]
-        public ?string $scoreMax = null,
+        public string $scoreMax = '',
     ) {}
 }

@@ -47,9 +47,9 @@ class AssignmentTeacher extends Component implements HasActions, HasSchemas
         return $schema
             ->statePath('data')
             ->record($this->assignment)
-            ->disabled(fn(Assignment $record) => filled($record->published_at))
+            ->disabled(fn (Assignment $record) => filled($record->published_at))
             ->components([
-                Section::make(fn(Assignment $record) => $record->title)
+                Section::make(fn (Assignment $record) => $record->title)
                     ->description(function (Assignment $record): HtmlString {
                         return new HtmlString(
                             __(':count_questions questions, :sum_score_max total points', [
@@ -60,17 +60,17 @@ class AssignmentTeacher extends Component implements HasActions, HasSchemas
                     })
                     ->afterHeader([
                         Action::make('published')
-                            ->label(fn(Assignment $record) => __(
+                            ->label(fn (Assignment $record) => __(
                                 'Published at :date',
                                 ['date' => $record->published_at->inTimezone()->formatDateTime()]
                             ))
-                            ->visible(fn(Assignment $record) => filled($record->published_at))
-                            ->disabled(fn(Assignment $record) => filled($record->published_at))
+                            ->visible(fn (Assignment $record) => filled($record->published_at))
+                            ->disabled(fn (Assignment $record) => filled($record->published_at))
                             ->outlined(),
 
                         Action::make('publish')
                             ->label(__('Save & Publish'))
-                            ->visible(fn(Assignment $record) => blank($record->published_at))
+                            ->visible(fn (Assignment $record) => blank($record->published_at))
                             ->requiresConfirmation()
                             ->color('gray')
                             ->outlined()
@@ -99,7 +99,7 @@ class AssignmentTeacher extends Component implements HasActions, HasSchemas
 
                         Action::make('save')
                             ->label(__('Save'))
-                            ->visible(fn(Assignment $record) => blank($record->published_at))
+                            ->visible(fn (Assignment $record) => blank($record->published_at))
                             ->action(function (Assignment $record) {
                                 $this->form->model($record)->saveRelationships();
 
@@ -193,7 +193,7 @@ class AssignmentTeacher extends Component implements HasActions, HasSchemas
                             ->color('primary')
                             ->modalHeading(__('Update question'))
                             ->modalFooterActionsAlignment(Alignment::End)
-                            ->visible(fn(Assignment $record) => blank($record->published_at))
+                            ->visible(fn (Assignment $record) => blank($record->published_at))
                             ->schema([
                                 Textarea::make('prompt')
                                     ->label(__('Prompt'))
@@ -223,8 +223,8 @@ class AssignmentTeacher extends Component implements HasActions, HasSchemas
                                         'language'  => $newQuestionData['language'],
                                         'level'     => $newQuestionData['level'],
                                         'type'      => $newQuestionData['type'],
-                                        'question'  => $newQuestionData['question'] ?? '',
-                                        'answer'    => $newQuestionData['answer'] ?? '',
+                                        'question'  => $newQuestionData['question'],
+                                        'answer'    => $newQuestionData['answer'],
                                         'score_max' => $newQuestionData['score_max'],
                                     ]);
 
@@ -248,12 +248,12 @@ class AssignmentTeacher extends Component implements HasActions, HasSchemas
                             }),
                     ])
                     ->addAction(
-                        fn(Action $action) => $action
+                        fn (Action $action) => $action
                             ->label(__('Add Question'))
                             ->color('primary'),
                     )
                     ->deleteAction(
-                        fn(Action $action) => $action
+                        fn (Action $action) => $action
                             ->requiresConfirmation(),
                     ),
             ]);

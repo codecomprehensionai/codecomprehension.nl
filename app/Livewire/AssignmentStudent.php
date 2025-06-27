@@ -64,9 +64,9 @@ class AssignmentStudent extends Component implements HasActions, HasSchemas
         return $schema
             ->statePath('data')
             ->record($this->assignment)
-            ->disabled(fn() => $this->isSubmitted)
+            ->disabled(fn () => $this->isSubmitted)
             ->components([
-                Section::make(fn(Assignment $record) => $record->title)
+                Section::make(fn (Assignment $record) => $record->title)
                     ->description(function (Assignment $record): string {
                         if (!$this->isSubmitted) {
                             return __(':score_max points', [
@@ -85,7 +85,7 @@ class AssignmentStudent extends Component implements HasActions, HasSchemas
                     })
                     ->afterHeader([
                         Action::make('submitted')
-                            ->label(fn(Assignment $record) => __(
+                            ->label(fn (Assignment $record) => __(
                                 'Submitted at :date',
                                 [
                                     'date' => Submission::where('user_id', Auth::id())
@@ -96,13 +96,13 @@ class AssignmentStudent extends Component implements HasActions, HasSchemas
                                         ->formatDateTime(),
                                 ]
                             ))
-                            ->visible(fn() => $this->isSubmitted)
-                            ->disabled(fn() => $this->isSubmitted)
+                            ->visible(fn () => $this->isSubmitted)
+                            ->disabled(fn () => $this->isSubmitted)
                             ->outlined(),
 
                         Action::make('submit')
                             ->label(__('Submit'))
-                            ->hidden(fn() => $this->isSubmitted)
+                            ->hidden(fn () => $this->isSubmitted)
                             ->requiresConfirmation()
                             ->action(function () {
                                 $data = $this->form->getState();
@@ -131,7 +131,7 @@ class AssignmentStudent extends Component implements HasActions, HasSchemas
                     ]),
 
                 Wizard::make(
-                    fn(Assignment $record): array => $record->questions->map(
+                    fn (Assignment $record): array => $record->questions->map(
                         function (Question $question) {
                             $submission = Submission::where('user_id', Auth::id())
                                 ->where('question_id', $question->id)
@@ -186,20 +186,20 @@ class AssignmentStudent extends Component implements HasActions, HasSchemas
                                             ]),
 
                                         MarkdownEditor::make(sprintf('%s.feedback', $record->id))
-                                            ->visible(fn() => $this->isSubmitted),
+                                            ->visible(fn () => $this->isSubmitted),
                                     ];
                                 });
                         }
                     )->all()
                 )
                     ->previousAction(
-                        fn(Action $action) => $action
+                        fn (Action $action) => $action
                             ->label(__('Previous'))
                             ->color('primary')
                             ->outlined(),
                     )
                     ->nextAction(
-                        fn(Action $action) => $action
+                        fn (Action $action) => $action
                             ->label(__('Next'))
                             ->color('primary')
                             ->outlined(),
