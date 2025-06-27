@@ -27,7 +27,7 @@ class GradeAndSyncAssignmentJob implements ShouldQueue
         $submissions = $this->submissions;
         $user = $submissions->first()->user;
 
-        Bus::batch($submissions->map(fn(Submission $submission) => new GradeSubmissionJob($submission)))
+        Bus::batch($submissions->map(fn (Submission $submission) => new GradeSubmissionJob($submission)))
             ->then(function () use ($assignment, $user) {
                 dispatch(new SyncAssignmentToCanvasJob($assignment, $user));
             })

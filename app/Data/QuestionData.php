@@ -18,6 +18,6 @@ class QuestionData extends Data
         public ?string $question = null,
         public ?string $answer = null,
         #[MapInputName('score_max'), MapOutputName('score_max')]
-        public ?float $scoreMax = null,
+        public ?string $scoreMax = null,
     ) {}
 }

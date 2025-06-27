@@ -9,12 +9,14 @@ use App\Enums\QuestionLanguage;
 use App\Enums\QuestionLevel;
 use App\Enums\QuestionType;
 use App\Models\Assignment;
+use App\Models\Question;
 use Filament\Actions\Action;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Notifications\Notification;
@@ -22,6 +24,7 @@ use Filament\Schemas\Components\Flex;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Contracts\HasSchemas;
 use Filament\Schemas\Schema;
+use Filament\Support\Enums\Alignment;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\HtmlString;
 use Livewire\Component;
@@ -155,7 +158,6 @@ class AssignmentTeacher extends Component implements HasActions, HasSchemas
 
                         MarkdownEditor::make('question')
                             ->label(__('Question'))
-                            ->required()
                             ->toolbarButtons([
                                 ['bold', 'italic', 'link'],
                                 ['heading'],
@@ -165,7 +167,6 @@ class AssignmentTeacher extends Component implements HasActions, HasSchemas
 
                         MarkdownEditor::make('answer')
                             ->label(__('Answer'))
-                            ->required()
                             ->toolbarButtons([
                                 ['bold', 'italic', 'link'],
                                 ['heading'],
@@ -184,60 +185,60 @@ class AssignmentTeacher extends Component implements HasActions, HasSchemas
                         );
                     })
                     ->extraItemActions([
-                        Action::make('generate')
-                            ->label(__('AI Update'))
+                        Action::make('update')
+                            ->label(__('Update'))
                             ->icon(Heroicon::Sparkles)
-                            ->modalHeading(__('Update Question with Prompt'))
+                            ->button()
+                            ->outlined()
+                            ->color('primary')
+                            ->modalHeading(__('Update question'))
+                            ->modalFooterActionsAlignment(Alignment::End)
                             ->schema([
-                                TextInput::make('prompt')
+                                Textarea::make('prompt')
                                     ->label(__('Prompt'))
                                     ->placeholder(__('e.g. Make this question more challenging...'))
                                     ->required(),
                             ])
-                            ->action(function (array $arguments, $record, array $data, Repeater $component): void {
-                                $itemKey = $arguments['item'] ?? null;
-                                $fullState = $component->getRawState();
+                            ->action(function (array $arguments, array $data, Repeater $component): void {
+                                $newQuestionData = $component->getItemState($arguments['item']);
 
-                                $item = $fullState[$itemKey] ?? [];
+                                $isNewQuestion = blank($newQuestionData['question']);
 
-                                $isNew = blank($item['question'] ?? '') && blank($item['answer'] ?? '');
-                                if ($isNew) {
-                                    $questionData = QuestionData::from([
-                                        'language' => QuestionLanguage::tryFrom($item['language'] ?? ''),
-                                        'level'    => QuestionLevel::tryFrom($item['level'] ?? ''),
-                                        'type'     => QuestionType::tryFrom($item['type'] ?? ''),
+                                if ($isNewQuestion) {
+                                    $newQuestionData = QuestionData::from([
+                                        'language' => $newQuestionData['language'],
+                                        'level'    => $newQuestionData['level'],
+                                        'type'     => $newQuestionData['type'],
                                     ]);
 
-                                    $response = app(QuestionGenerateAction::class)->handle(
+                                    $responseQuestionData = app(QuestionGenerateAction::class)->handle(
                                         $this->assignment,
-                                        $questionData
+                                        $newQuestionData
                                     );
                                 } else {
-                                    $existing = QuestionData::from([
-                                        'language'  => QuestionLanguage::tryFrom($item['language'] ?? ''),
-                                        'level'     => QuestionLevel::tryFrom($item['level'] ?? ''),
-                                        'type'      => QuestionType::tryFrom($item['type'] ?? ''),
-                                        'question'  => $item['question'],
-                                        'answer'    => $item['answer'],
-                                        'score_max' => $item['score_max'],
+                                    // TODO: how to get original question data?
+
+                                    $updateQuestionData = QuestionData::from([
+                                        'language'  => $newQuestionData['language'],
+                                        'level'     => $newQuestionData['level'],
+                                        'type'      => $newQuestionData['type'],
+                                        'question'  => $newQuestionData['question'],
+                                        'answer'    => $newQuestionData['answer'],
+                                        'score_max' => $newQuestionData['score_max'],
                                     ]);
 
-                                    $update = QuestionData::from([
-                                        ...$existing->toArray(),
-                                    ]);
-
-                                    $response = app(QuestionUpdateAction::class)->handle(
+                                    $responseQuestionData = app(QuestionUpdateAction::class)->handle(
                                         $this->assignment,
-                                        $existing,
-                                        $update,
+                                        $updateQuestionData,
+                                        $updateQuestionData,
                                         $data['prompt']
                                     );
                                 }
-                                $payload = $response['question'] ?? [];
 
-                                $updatedItem = array_merge($item, $payload['question']);
-                                $fullState[$itemKey] = $updatedItem;
-                                $component->state($fullState);
+                                /* Update the question state */
+                                $state = $component->getState();
+                                $state[$arguments['item']] = array_merge($state[$arguments['item']], $responseQuestionData->toArray());
+                                $component->state($state);
 
                                 Notification::make()
                                     ->title(__('Question updated'))
