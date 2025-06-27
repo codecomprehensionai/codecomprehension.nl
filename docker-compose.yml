@@ -152,6 +152,8 @@ services:
         environment:
             TUNNEL_TOKEN: ${CLOUDFLARED_TOKEN}
         depends_on:
+            app:
+                condition: service_healthy
             mysql:
                 condition: service_healthy
             redis:
