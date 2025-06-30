@@ -14,7 +14,7 @@
         "vite": "^6.2.4"
     },
     "dependencies": {
-        "@sentry/browser": "^9.28.1",
+        "@sentry/browser": "^9.33.0",
         "@sentry/vite-plugin": "^3.5.0",
         "puppeteer": "^24.10.1"
     }
